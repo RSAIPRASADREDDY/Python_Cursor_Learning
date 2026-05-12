@@ -136,32 +136,35 @@ except NameError:
 
 
 
+
+'''
     # --- Interview Q&A: Variables in Python ---
+    Q: What is a variable in Python?
+    A: A variable is a name that refers to a value stored in memory.
+       Variables let you save data and use it later in your code.
 
-    # Q: What is a variable in Python?
-    # A: A variable is a name that refers to a value stored in memory.
-    #    Variables let you save data and use it later in your code.
+    Q: Do you need to declare variable types in Python?
+    A: No, Python uses dynamic typing, so you just assign a value
+       and Python figures out the type.
 
-    # Q: Do you need to declare variable types in Python?
-    # A: No, Python uses dynamic typing, so you just assign a value
-    #    and Python figures out the type.
+    Q: Can a variable change type in Python?
+    A: Yes! The same variable can refer to different types of values
+       at different times.
 
-    # Q: Can a variable change type in Python?
-    # A: Yes! The same variable can refer to different types of values
-    #    at different times.
+    Q: How do you name a variable, and are there rules?
+    A: Variable names can have letters, numbers, and underscores,
+       but cannot start with a number. Names are case-sensitive.
 
-    # Q: How do you name a variable, and are there rules?
-    # A: Variable names can have letters, numbers, and underscores,
-    #    but cannot start with a number. Names are case-sensitive.
+    Q: What happens if you use a variable before assigning a value?
+    A: You get a NameError because the variable does not exist yet.
 
-    # Q: What happens if you use a variable before assigning a value?
-    # A: You get a NameError because the variable does not exist yet.
+    Q: What's the difference between a variable and a constant in Python?
+    A: By convention, constants are written in all CAPS (like PI), but
+       Python does not enforce this, and you can still change their value.
 
-    # Q: What's the difference between a variable and a constant in Python?
-    # A: By convention, constants are written in all CAPS (like PI), but
-    #    Python does not enforce this, and you can still change their value.
+    Q: Explain variable scope in Python.
+    A: Variables defined inside a function are local to that function.
+       Variables defined outside are global. You need 'global' keyword to
+       modify global variables inside a function.
 
-    # Q: Explain variable scope in Python.
-    # A: Variables defined inside a function are local to that function.
-    #    Variables defined outside are global. You need 'global' keyword to
-    #    modify global variables inside a function.
+'''
