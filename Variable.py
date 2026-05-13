@@ -135,6 +135,32 @@ except NameError:
 
 
 
+# --- Mini Project: Simple Bank Balance Tracker using Variables ---
+
+print("\n--- Simple Bank Balance Tracker ---")
+
+# Step 1: Initial balance
+balance = 0
+
+# Step 2: Deposit money
+deposit = 500
+balance = balance + deposit
+print(f"Deposited: {deposit}")
+print(f"Current balance: {balance}")
+
+# Step 3: Withdraw money
+withdraw = 200
+balance = balance - withdraw
+print(f"Withdrew: {withdraw}")
+print(f"Current balance: {balance}")
+
+# Step 4: Add interest to balance (e.g., 5% interest)
+interest_rate = 0.05
+interest = balance * interest_rate
+balance = balance + interest
+print(f"Added interest: {interest}")
+print(f"Final balance: {balance}")
+
 
 
 '''
