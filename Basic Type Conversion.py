@@ -31,8 +31,8 @@ s_int = int(s)
 print(f"String: '{s}', as int: {s_int}")
 
 # Attempting invalid conversion (uncomment to see error)
-# invalid_s = "abc"
-# invalid_int = int(invalid_s)  # ValueError
+#invalid_s = "abc"
+#invalid_int = int(invalid_s)  # ValueError
 
 # Converting input (always string) to other types
 user_age_str = "23"
@@ -91,6 +91,82 @@ int_numbers = list(map(int, str_numbers))
 print(f"str_numbers: {str_numbers}, converted to ints: {int_numbers}")
 
 
+# --- Mini Project: Simple Data Entry & Conversion Dashboard ---
+
+"""
+Mini project: Data Entry & Conversion Dashboard
+
+Demonstrates type conversion, input, and validation for beginner/intermediate learners.
+"""
+
+def get_number(prompt, number_type=float):
+    """Safely get a number (int or float) from user input."""
+    while True:
+        inp = input(prompt)
+        try:
+            return number_type(inp)
+        except ValueError:
+            print(f"Please enter a valid {number_type.__name__} value.")
+
+def get_bool(prompt):
+    """Get boolean input from user: yes/y/true/1 means True, else False."""
+    val = input(prompt).strip().lower()
+    return val in ['yes', 'y', 'true', '1']
+
+def main():
+    print("#--- Data Entry & Conversion Dashboard ---#")
+
+    name = input("Enter your name: ")
+    age = get_number("Enter your age: ", int)
+    height = get_number("Enter your height in cm: ", float)
+    is_student = get_bool("Are you a student? (yes/no): ")
+
+    # Store all in a dict
+    profile = {
+        "name": name,
+        "age": age,
+        "height": height,
+        "is_student": is_student
+    }
+
+    print("\n#--- Profile Entered ---#")
+    print(f"Raw data: {profile}")
+    print("Types per field:")
+    for k, v in profile.items():
+        print(f"  {k}: {v} -> {type(v)}")
+
+    # Type conversions demonstration
+    print("\n#--- Type Conversion Demos ---#")
+    age_str = str(age)
+    print(f"Age as string: '{age_str}' (type: {type(age_str)})")
+    height_int = int(height)
+    print(f"Height as integer: {height_int} (type: {type(height_int)})")
+    student_str = str(is_student)
+    print(f"is_student as string: '{student_str}' (type: {type(student_str)})")
+
+    # List/Tuple/Set demo with hobbies
+    hobbies_raw = input("Enter some hobbies (comma-separated): ")
+    hobbies_list = [h.strip() for h in hobbies_raw.split(",") if h.strip()]
+    hobbies_set = set(hobbies_list)
+    hobbies_tuple = tuple(hobbies_list)
+    print(f"\nHobbies as list: {hobbies_list}")
+    print(f"Hobbies as set (unique only): {hobbies_set}")
+    print(f"Hobbies as tuple: {hobbies_tuple}")
+
+    # Safe string-to-int conversion for challenge
+    fav_num_str = input("Enter your favorite number (as string): ")
+    try:
+        fav_num = int(fav_num_str)
+        print(f"Converted to int: {fav_num}")
+    except ValueError:
+        print(f"'{fav_num_str}' is not a valid integer!")
+
+    # Bool conversion trap
+    answer = input("Type the word 'False' and see what bool('False') is: ")
+    print(f"bool('{answer}') --> {bool(answer)} (remember, any non-empty string is True!)")
+
+if __name__ == "__main__":
+    main()
 
 '''
     # --- Interview Q&A: Type Conversion in Python ---
