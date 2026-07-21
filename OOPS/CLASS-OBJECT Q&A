@@ -1,0 +1,497 @@
+Class & Object — Interview Q&A (Easy → Hard)
+Aligned with your class.py and Object.py notes: class vs object, __init__, self, attributes/methods, class vs instance vars, encapsulation, __str__/__repr__, copying, identity, and common traps.
+________________________________________
+Level 1: Easy
+Q1. What is a class in Python?
+A: A class is a blueprint for creating objects. It defines attributes (data) and methods (behavior).
+class Person:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+________________________________________
+Q2. What is an object in Python?
+A: An object is an instance of a class — a real usable entity created from the blueprint.
+p = Person("Alice", 20)   # p is an object
+p.say_hello()
+________________________________________
+Q3. What is the difference between a class and an object?
+A:
+Class	Object
+Blueprint / template	Real instance
+Defined once	Can create many from one class
+Person	p1 = Person(...), p2 = Person(...)
+class Fruit:
+    pass
+apple = Fruit()   # Fruit = class, apple = object
+________________________________________
+Q4. How do you create a class and an object?
+A:
+class Car:
+    def __init__(self, brand, year):
+        self.brand = brand
+        self.year = year
+my_car = Car("Toyota", 2020)   # object creation
+print(my_car.brand)            # Toyota
+________________________________________
+Q5. What is __init__? Is it a constructor?
+A: __init__ is the initializer. It runs after the object is created to set initial attributes. In Python it is commonly called a constructor, but the true object creation happens via __new__.
+class Student:
+    def __init__(self, name):
+        self.name = name
+s = Student("Alice")
+________________________________________
+Q6. What is self?
+A: self is a reference to the current object instance. It is the first parameter of instance methods and is passed automatically when you call obj.method().
+class Person:
+    def say_hello(self):
+        print(f"Hello, my name is {self.name}")
+self is a convention, not a keyword — but always use self.
+________________________________________
+Q7. What are attributes and methods?
+A:
+•	Attributes — data stored in an object (name, age)
+•	Methods — functions defined inside a class that operate on the object
+class Car:
+    def __init__(self, brand):
+        self.brand = brand      # attribute
+    def honk(self):             # method
+        print(f"{self.brand} says Honk!")
+________________________________________
+Q8. How do you access attributes and call methods?
+A:
+car1 = Car("Toyota")
+print(car1.brand)   # access attribute
+car1.honk()         # call method
+________________________________________
+Q9. Can you create multiple objects from the same class?
+A: Yes — each object has its own data:
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+p1 = Point(1, 2)
+p2 = Point(4, 5)
+print(p1.x, p1.y)   # 1 2
+print(p2.x, p2.y)   # 4 5
+________________________________________
+Q10. What happens if you forget parentheses when creating an object?
+A: You get the class itself, not an instance:
+obj = Person          # class reference, not object
+obj2 = Person("Raj", 28)   # actual object
+print(type(obj))      # <class 'type'> related / class object
+print(obj2.name)      # Raj
+________________________________________
+Q11. What error occurs if you miss a required __init__ argument?
+A: TypeError:
+# p = Person("Bob")   # TypeError: __init__() missing 1 required positional argument: 'age'
+________________________________________
+Q12. What error occurs if you forget self in a method?
+A: TypeError: takes 0 positional arguments but 1 was given — Python still passes the instance.
+class Cat:
+    def speak():      # missing self
+        print("Meow")
+# c = Cat(); c.speak()  # TypeError
+________________________________________
+Q13. What is isinstance()?
+A: Checks if an object is an instance of a class (or subclass):
+class Animal:
+    pass
+dog = Animal()
+print(isinstance(dog, Animal))   # True
+________________________________________
+Q14. What is the difference between type(obj) and id(obj)?
+A:
+•	type(obj) — returns the class/type of the object
+•	id(obj) — unique identity (memory address) of the object
+print(type(dog))   # <class '__main__.Animal'>
+print(id(dog))     # e.g. 140712345
+________________________________________
+Q15. What is encapsulation at a basic level?
+A: Hiding internal data and exposing it only through methods:
+class BankAccount:
+    def __init__(self, balance=0):
+        self.__balance = balance   # "private"
+    def get_balance(self):
+        return self.__balance
+________________________________________
+Level 2: Medium
+Q16. What is the difference between class variables and instance variables?
+A:
+•	Class variable — shared by all objects
+•	Instance variable — unique to each object
+class Student:
+    school = "ABC High School"   # class variable
+    def __init__(self, name):
+        self.name = name         # instance variable
+s1 = Student("Sai")
+s2 = Student("Shrihansh")
+print(s1.school, s2.school)   # both ABC High School
+________________________________________
+Q17. What is variable shadowing with class vs instance attributes?
+A: Assigning via an instance creates an instance attribute that shadows the class attribute:
+s1.school = "New School"
+print(s1.school)          # New School (instance)
+print(s2.school)          # ABC High School (class)
+print(Student.school)     # ABC High School
+________________________________________
+Q18. What are instance methods, class methods, and static methods?
+A:
+Type	Decorator	First arg	Use
+Instance	none	self	Works with object data
+Class	@classmethod	cls	Works with class data
+Static	@staticmethod	none	Utility; no self/cls
+class MathOps:
+    base = 10
+    @classmethod
+    def get_base(cls):
+        return cls.base
+    @staticmethod
+    def add(x, base):
+        return x + base
+________________________________________
+Q19. What is __str__ vs __repr__?
+A:
+•	__str__ — user-friendly string (print(obj), str(obj))
+•	__repr__ — unambiguous / debug representation (repr(obj))
+class Book:
+    def __init__(self, title):
+        self.title = title
+    def __str__(self):
+        return f"Book: {self.title}"
+    def __repr__(self):
+        return f"Book('{self.title}')"
+________________________________________
+Q20. How do you add/get/delete attributes dynamically?
+A:
+class Empty:
+    pass
+obj = Empty()
+obj.x = 10                    # add
+setattr(obj, 'y', 20)         # add/modify
+print(getattr(obj, 'y'))      # 20
+print(hasattr(obj, 'x'))      # True
+delattr(obj, 'x')             # delete
+________________________________________
+Q21. What does == vs is mean for objects?
+A:
+•	== — value equality (uses __eq__ if defined)
+•	is — identity (same object in memory)
+user1 = User("alice")
+user2 = User("alice")
+print(user1 == user2)                 # False (default: different objects)
+print(user1.username == user2.username)  # True
+print(user1 is user2)                 # False
+________________________________________
+Q22. What happens when you assign one object to another variable?
+A: Both names point to the same object (aliasing):
+a = [10]
+b = a
+b.append(20)
+print(a)   # [10, 20]
+Same for custom objects — no copy unless you explicitly copy.
+________________________________________
+Q23. What is shallow copy vs deep copy for objects?
+A:
+import copy
+class Data:
+    def __init__(self, numbers):
+        self.numbers = numbers
+data1 = Data([1, 2, 3])
+data2 = copy.copy(data1)       # shallow
+data3 = copy.deepcopy(data1)   # deep
+data1.numbers[0] = 99
+print(data2.numbers)   # [99, 2, 3] — shared list
+print(data3.numbers)   # [1, 2, 3]  — independent
+________________________________________
+Q24. What are private attributes (__)? Are they truly private?
+A: Name mangling: __balance becomes _ClassName__balance. Not true privacy — a convention + mangling, not a security lock.
+class BankAccount:
+    def __init__(self, owner, balance):
+        self.owner = owner
+        self.__balance = balance
+    def get_balance(self):
+        return self.__balance
+acc = BankAccount("Bob", 1000)
+# print(acc.__balance)              # AttributeError
+print(acc.get_balance())           # 1000
+print(acc._BankAccount__balance)   # 1000 — still accessible
+________________________________________
+Q25. Can objects be passed to and returned from functions?
+A: Yes:
+class Rectangle:
+    def __init__(self, width, height):
+        self.width = width
+        self.height = height
+def area(rect):
+    return rect.width * rect.height
+print(area(Rectangle(6, 7)))   # 42
+________________________________________
+Q26. What is operator overloading with objects?
+A: Define special methods so operators work on your objects:
+class Vector:
+    def __init__(self, x, y):
+        self.x, self.y = x, y
+    def __add__(self, other):
+        return Vector(self.x + other.x, self.y + other.y)
+    def __str__(self):
+        return f"<{self.x}, {self.y}>"
+print(Vector(1, 2) + Vector(3, 4))   # <4, 6>
+________________________________________
+Q27. What is the difference between deleting an instance attribute and a class attribute?
+A:
+s1.school = "New School"
+del s1.school
+print(s1.school)   # falls back to class variable "ABC High School"
+Deleting an instance attribute restores lookup to the class attribute if it exists.
+________________________________________
+Q28. What happens if you call an instance method on the class without an instance?
+A: Usually TypeError — self is missing:
+# Student.display()      # TypeError
+Student.display(s1)      # OK if you pass instance manually
+________________________________________
+Q29. Can you use custom objects as dictionary keys?
+A: Only if they are hashable (implement __hash__ and __eq__ properly). Default mutable custom objects are usually not safe as keys unless made hashable by design.
+# Built-in immutables work as keys; custom objects need careful __hash__/__eq__
+________________________________________
+Q30. What is the difference between Person() and Person?
+A:
+Person      # the class object
+Person()    # creates a new instance (calls __init__)
+________________________________________
+Q31. How do you check if an object has an attribute before using it?
+A:
+if hasattr(p, "age"):
+    print(p.age)
+print(getattr(p, "email", "N/A"))   # safe with default
+________________________________________
+Q32. What is method overriding (basic OOP with class/object)?
+A: Child class redefines a parent method; calling it on a child object uses the child’s version:
+class Animal:
+    def speak(self):
+        print("Animal speaks.")
+class Dog(Animal):
+    def speak(self):
+        print("Woof!")
+Dog().speak()   # Woof!
+________________________________________
+Q33. What is an abstract class briefly, and how does it relate to objects?
+A: An abstract class cannot be instantiated directly; subclasses must implement abstract methods:
+from abc import ABC, abstractmethod
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+# Shape()  # TypeError
+Circle(5).area()  # OK if Circle implements area
+________________________________________
+Q34. Real-world example of classes and objects together?
+A: Library system — Book and Library classes; each book is an object with state (is_lent) and behavior (lend, return_book):
+book1 = Book("The Alchemist", "Paulo Coelho")
+lib = Library()
+lib.add_book(book1)
+lib.lend_book("The Alchemist")
+________________________________________
+Q35. What are common beginner errors with classes/objects?
+A:
+1.	Wrong case: person(...) vs Person(...)
+2.	Missing __init__ args
+3.	Forgetting self
+4.	Accessing missing attributes → AttributeError
+5.	Writing obj = Person instead of Person(...)
+________________________________________
+Level 3: Hard
+Q36. What is the output and why?
+class A:
+    x = []
+a1 = A()
+a2 = A()
+a1.x.append(1)
+print(a2.x)
+A: [1] — x is a mutable class variable shared by all instances. Classic interview trap. Prefer setting mutable data in __init__ as instance attributes.
+________________________________________
+Q37. What is the output?
+class Student:
+    school = "ABC"
+    def __init__(self, name):
+        self.name = name
+s1 = Student("Sai")
+s1.school = "ZP"
+print(Student.school)
+print(s1.__dict__)
+print(Student.__dict__["school"])
+A:
+ABC
+{'name': 'Sai', 'school': 'ZP'}
+ABC
+s1.school = "ZP" creates an instance attribute; class attribute stays "ABC".
+________________________________________
+Q38. Explain object creation order: __new__ vs __init__.
+A:
+1.	__new__(cls, ...) — creates and returns the new instance
+2.	__init__(self, ...) — initializes that instance
+__init__ does not create the object; it configures it after creation.
+________________________________________
+Q39. What is the output?
+class User:
+    def __init__(self, username):
+        self.username = username
+u1 = User("alice")
+u2 = User("alice")
+print(u1 == u2)
+print(u1 is u2)
+A:
+False
+False
+Default == for user-defined classes compares identity (same as is) unless __eq__ is overridden.
+________________________________________
+Q40. How do you make two objects compare equal by value?
+A: Override __eq__ (and usually __hash__ if used in sets/dicts):
+class User:
+    def __init__(self, username):
+        self.username = username
+    def __eq__(self, other):
+        return isinstance(other, User) and self.username == other.username
+________________________________________
+Q41. What is the output?
+class BankAccount:
+    def __init__(self, balance):
+        self.__balance = balance
+acc = BankAccount(100)
+print(hasattr(acc, "__balance"))
+print(hasattr(acc, "_BankAccount__balance"))
+A:
+False
+True
+Name mangling renames __balance to _BankAccount__balance.
+________________________________________
+Q42. What is the output?
+class A:
+    def show(self):
+        print("A")
+class B(A):
+    def show(self):
+        print("B")
+obj = B()
+A.show(obj)
+obj.show()
+A:
+A
+B
+You can call the parent method explicitly with the instance; normal call uses the overridden method.
+________________________________________
+Q43. What happens here?
+class Test:
+    def show(self):
+        print(self.x)
+t = Test()
+t.show()
+A: AttributeError — self.x was never assigned. Attributes must be set (usually in __init__) before use.
+________________________________________
+Q44. What is the MRO and why does it matter for classes/objects?
+A: Method Resolution Order — the lookup path Python uses when calling a method on an object with inheritance (especially multiple inheritance). Inspect with ClassName.__mro__ or ClassName.mro().
+print(Child.__mro__)
+________________________________________
+Q45. What is the output?
+class Data:
+    def __init__(self, nums):
+        self.nums = nums
+d1 = Data([1, 2])
+d2 = d1
+d3 = copy.copy(d1)
+d1.nums.append(3)
+print(d2.nums)
+print(d3.nums)
+A:
+[1, 2, 3]
+[1, 2, 3]
+Assignment and shallow copy both share the inner list. Only deepcopy would isolate nested mutables.
+________________________________________
+Q46. Why can print(acc.__balance) fail but print(acc.__dict__) still show private data?
+A: Attribute access uses name mangling / lookup rules. The real storage is still in the instance __dict__ under the mangled name _BankAccount__balance. Encapsulation in Python is by convention, not hard enforcement.
+________________________________________
+Q47. What is the difference between class object and instance object in memory terms?
+A:
+•	Class object — one object representing the class (Student), holds class attributes/methods
+•	Instance objects — many objects created from that class, each with its own __dict__ for instance data
+Attribute lookup: instance → class → bases (MRO).
+________________________________________
+Q48. What is the output?
+class MathOps:
+    base = 10
+    @classmethod
+    def get_base(cls):
+        return cls.base
+    @staticmethod
+    def add(x, y):
+        return x + y
+print(MathOps.get_base())
+print(MathOps.add(5, MathOps.base))
+m = MathOps()
+print(m.get_base())
+A:
+10
+15
+10
+Class methods can be called on class or instance; static methods are independent utilities.
+________________________________________
+Q49. Can __init__ return a value?
+A: No. __init__ must return None. Returning anything else raises TypeError.
+# def __init__(self): return 5  # TypeError
+To customize creation, override __new__.
+________________________________________
+Q50. What is composition vs inheritance (class/object design)?
+A:
+•	Inheritance — “is-a” (Dog is an Animal)
+•	Composition — “has-a” (Library has Book objects)
+class Library:
+    def __init__(self):
+        self.books = []   # composition: Library has Books
+Prefer composition when you need flexibility over deep inheritance trees.
+________________________________________
+Q51. What is the output?
+class A:
+    def __init__(self):
+        self.value = 10
+a = A()
+b = A()
+print(a is b)
+print(a.value is b.value)  # small ints may be interned
+A:
+False
+True (often, due to int interning for small ints)
+Objects are different; immutable values may share identity due to Python optimizations. Don’t rely on is for values.
+________________________________________
+Q52. How do __str__ and default object printing relate?
+A: Without __str__/__repr__, print(obj) shows something like <__main__.Book object at 0x...>. Defining __str__ makes printed output readable for users.
+________________________________________
+Q53. What is monkey patching an object/class?
+A: Dynamically adding/changing attributes or methods at runtime:
+def new_honk(self):
+    print("Beep!")
+Car.honk = new_honk
+car1.honk()
+Powerful but can make code harder to maintain.
+________________________________________
+Q54. Design question: BankAccount — why use class + object instead of plain variables?
+A: Because you need:
+•	Multiple accounts with separate state
+•	Encapsulated rules (deposit, withdraw)
+•	Clear identity per account object
+•	Reusable blueprint (BankAccount class)
+acc1 = BankAccount("Bob", 1000)
+acc2 = BankAccount("Amy", 500)
+acc1.deposit(200)
+________________________________________
+Q55. Predict the output:
+class Person:
+    def __init__(self, name):
+        self.name = name
+    def greet(self):
+        return f"Hi {self.name}"
+p = Person("Sai")
+f = p.greet
+print(f())
+print(Person.greet(p))
+A:
+Hi Sai
+Hi Sai
