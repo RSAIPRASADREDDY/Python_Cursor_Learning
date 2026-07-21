@@ -1,0 +1,376 @@
+Encapsulation — Interview Q&A (Easy → Hard)
+Aligned with your Encapsulation.py topics: public/protected/private, name mangling, getters/setters, @property, private methods, read-only attributes, inheritance + mangling, and BankVault-style design.
+________________________________________
+Level 1: Easy
+Q1. What is encapsulation in Python?
+A: Encapsulation means bundling data + methods in a class and restricting direct access to internal state. Outside code should interact through a controlled public interface (methods/properties).
+class Person:
+    def __init__(self, name, age):
+        self.__name = name
+        self.__age = age
+    def get_age(self):
+        return self.__age
+________________________________________
+Q2. Why do we use encapsulation?
+A:
+•	Prevent accidental data changes
+•	Protect sensitive info (PIN, balance)
+•	Enforce validation rules
+•	Improve modularity and maintainability
+•	Allow internal changes without breaking callers
+________________________________________
+Q3. How is encapsulation achieved in Python?
+A:
+1.	_name — protected by convention
+2.	__name — private via name mangling
+3.	Public methods / @property getters & setters for controlled access
+________________________________________
+Q4. What are public, protected, and private members?
+A:
+Style	Syntax	Meaning
+Public	self.name	Accessible anywhere
+Protected	self._name	Internal use (convention)
+Private	self.__name	Name-mangled; harder to access outside
+________________________________________
+Q5. Is encapsulation strictly enforced in Python?
+A: No. Python follows “we are all consenting adults.” _ is convention only; __ can still be bypassed with _ClassName__attr.
+________________________________________
+Q6. What is a getter and setter?
+A: Methods that read and update private data safely:
+def get_name(self):
+    return self.__name
+def set_name(self, name):
+    if isinstance(name, str):
+        self.__name = name
+________________________________________
+Q7. What happens if you access a private attribute directly?
+A: Usually AttributeError:
+p1 = Person("Alice", 25)
+# print(p1.__name)   # AttributeError
+print(p1.get_name()) # Alice
+________________________________________
+Q8. Can you access a protected attribute from outside?
+A: Yes — Python allows it, but it’s discouraged:
+class Demo:
+    def __init__(self):
+        self._x = 10
+print(Demo()._x)   # works, but bad practice
+________________________________________
+Q9. What is name mangling?
+A: Python rewrites __attr inside a class to _ClassName__attr to avoid accidental clashes and discourage external access.
+# self.__balance  →  _Account__balance
+________________________________________
+Q10. Give a basic BankAccount encapsulation example.
+A:
+class Account:
+    def __init__(self, balance):
+        self.__balance = balance
+    def get_balance(self):
+        return self.__balance
+    def deposit(self, amount):
+        if amount > 0:
+            self.__balance += amount
+________________________________________
+Q11. What is a private method?
+A: A method meant for internal use only:
+class Machine:
+    def __toggle(self):
+        ...
+    def operate(self):
+        self.__toggle()   # OK inside class
+# mac.__toggle()          # AttributeError outside
+________________________________________
+Q12. Encapsulation vs data hiding?
+A:
+•	Encapsulation — bundling data + methods, exposing a clean interface
+•	Data hiding — specifically restricting access to internals
+Data hiding is a key technique used to achieve encapsulation.
+________________________________________
+Q13. Real-world example of poor encapsulation?
+A:
+class UnsafeATM:
+    def __init__(self):
+        self.pin = 1234   # public — anyone can change it
+Anyone can do atm.pin = 1111. PIN should be private and changeable only via validated methods.
+________________________________________
+Q14. What should be public in a well-encapsulated class?
+A: Only the stable interface: methods like deposit(), withdraw(), get_balance(). Internal fields like __pin, __balance stay hidden.
+________________________________________
+Q15. Does encapsulation improve security by itself?
+A: It improves integrity and controlled access, but it is not cryptographic security. Determined code can still reach mangled names. It’s mainly for design safety, not hard security.
+________________________________________
+Level 2: Medium
+Q16. How does @property help encapsulation?
+A: Lets you expose attribute-like access while keeping validation/control behind the scenes:
+class Account:
+    def __init__(self, balance):
+        self.__balance = balance
+    @property
+    def balance(self):
+        return self.__balance
+    @balance.setter
+    def balance(self, amount):
+        if amount >= 0:
+            self.__balance = amount
+acct = Account(500)
+print(acct.balance)   # looks like attribute, runs getter
+acct.balance = 700    # runs setter with validation
+________________________________________
+Q17. How do you make a read-only attribute?
+A: Provide @property getter, no setter:
+class ImmutablePoint:
+    def __init__(self, x, y):
+        self.__x = x
+        self.__y = y
+    @property
+    def x(self):
+        return self.__x
+# p.x = 10  # AttributeError
+________________________________________
+Q18. Can a subclass access parent private attributes?
+A: Not directly. Parent __secret becomes _Base__secret, child __secret becomes _Derived__secret — they don’t clash and aren’t shared automatically.
+class Derived(Base):
+    def show(self):
+        print(self.__secret)         # child's own
+        print(self._Base__secret)    # parent's (possible, discouraged)
+________________________________________
+Q19. Difference between _x and __x?
+A:
+•	_x — convention only; no language rewrite
+•	__x — name mangling to _ClassName__x
+________________________________________
+Q20. Are dunder methods like __init__ private?
+A: No. Names that start and end with __ (e.g. __init__, __str__) are special methods and are not name-mangled.
+________________________________________
+Q21. What validation belongs in setters/methods?
+A: Business rules:
+•	age between 1 and 149
+•	balance >= 0
+•	withdraw only if PIN valid and funds enough
+•	PIN must be 4 digits
+Encapsulation places these checks in one place.
+________________________________________
+Q22. BankVault: how does encapsulation protect state?
+A: __owner, __balance, __pin are private. Public methods (deposit, withdraw, get_balance, change_pin) require PIN checks and rule validation.
+________________________________________
+Q23. Encapsulation vs abstraction?
+A:
+•	Encapsulation — control access to data/methods
+•	Abstraction — hide complexity; show only essentials
+Encapsulation is one way to implement abstraction.
+________________________________________
+Q24. Why prefer methods over public fields?
+A: Methods can:
+•	validate input
+•	log changes
+•	maintain invariants
+•	change internal storage later without breaking API
+________________________________________
+Q25. What is an invariant in encapsulation?
+A: A rule that must always stay true (e.g., balance >= 0, PIN is 4 digits). Encapsulated methods preserve invariants.
+________________________________________
+Q26. Can you bypass encapsulation? Should you?
+A: Yes:
+print(acct._Account__balance)
+Only for debugging/tests/emergencies. Normal code should not bypass it.
+________________________________________
+Q27. How do getters/setters differ from properties?
+A:
+•	Getters/setters: obj.get_x(), obj.set_x(v) — explicit
+•	Properties: obj.x, obj.x = v — cleaner syntax, same control
+Properties are the Pythonic style.
+________________________________________
+Q28. What happens here?
+acct = Account(500)
+acct.__balance = 1000
+print(acct.balance)
+A: Creates a new public attribute __balance on the instance (not the private one). Private storage remains _Account__balance. acct.balance still shows original private value (500) unless setter was used. This is a common gotcha.
+________________________________________
+Q29. Private method use case?
+A: Internal helpers that shouldn’t be part of the API, e.g. __toggle(), __validate_pin(), __calculate_interest().
+________________________________________
+Q30. Encapsulation in large projects — benefits?
+A:
+•	Hide complexity
+•	Stable public API
+•	Safer refactoring of internals
+•	Clear module boundaries
+•	Fewer unintended side effects
+________________________________________
+Q31. How to enforce critical business logic with encapsulation?
+A: Keep critical state private; expose only vetted methods; put all rules in those methods (as in BankVault).
+________________________________________
+Q32. Protected members in inheritance?
+A: _protected is accessible in subclasses by convention and is commonly used for “internal but inheritable” state. Still not language-enforced.
+________________________________________
+Q33. What is information hiding?
+A: Hiding implementation details so callers depend on interface, not internals. Core idea behind encapsulation.
+________________________________________
+Q34. Example of computed property (encapsulation of logic)?
+A:
+class Rectangle:
+    def __init__(self, w, h):
+        self.__w = w
+        self.__h = h
+    @property
+    def area(self):
+        return self.__w * self.__h
+Caller uses r.area without knowing formula storage.
+________________________________________
+Q35. Mini-design: change PIN safely.
+A:
+def change_pin(self, old_pin, new_pin):
+    if old_pin == self.__pin and 1000 <= new_pin <= 9999:
+        self.__pin = new_pin
+Old PIN required; new PIN validated; field stays private.
+________________________________________
+Level 3: Hard
+Q36. What is the output?
+class A:
+    def __init__(self):
+        self.__x = 10
+a = A()
+print(a.__dict__)
+# print(a.__x)
+print(a._A__x)
+A:
+{'_A__x': 10}
+# AttributeError for a.__x
+10
+________________________________________
+Q37. What is the output?
+class Base:
+    def __init__(self):
+        self.__secret = "base"
+class Derived(Base):
+    def __init__(self):
+        super().__init__()
+        self.__secret = "derived"
+    def show(self):
+        print(self.__secret)
+        print(self._Base__secret)
+Derived().show()
+A:
+derived
+base
+Two different mangled attributes coexist.
+________________________________________
+Q38. Explain why obj.__attr = 1 does not overwrite private state.
+A: Assignment to __attr from outside does not apply mangling the same way as in-class code. It creates a separate attribute literally named __attr, while private data remains _Class__attr.
+________________________________________
+Q39. How does name mangling help in inheritance hierarchies?
+A: Prevents subclass attributes from accidentally overwriting parent private attributes with the same __name.
+________________________________________
+Q40. Design a truly read-only public API field.
+A:
+class Const:
+    def __init__(self, x):
+        self.__x = x
+    @property
+    def x(self):
+        return self.__x
+    @x.setter
+    def x(self, val):
+        raise AttributeError("Read only")
+Or omit setter entirely.
+________________________________________
+Q41. Is __slots__ related to encapsulation?
+A: Indirectly. __slots__ restricts allowed attributes and can reduce dynamic attribute injection, supporting tighter object structure — but it’s mainly for memory/layout, not privacy.
+________________________________________
+Q42. How would you encapsulate a mutable internal list?
+A: Keep list private; expose copies or controlled methods:
+class Team:
+    def __init__(self):
+        self.__members = []
+    def add(self, name):
+        self.__members.append(name)
+    @property
+    def members(self):
+        return list(self.__members)  # copy, not internal reference
+Returning the internal list directly breaks encapsulation.
+________________________________________
+Q43. What bug does this cause?
+@property
+def members(self):
+    return self.__members
+A: Caller can do obj.members.append(...) and mutate private state. Return a copy or tuple.
+________________________________________
+Q44. Encapsulation + property migration example.
+A: Start with public balance, later change to computed/validated property named balance — callers keep using obj.balance without code changes. That’s a major encapsulation benefit.
+________________________________________
+Q45. What is the output?
+class Account:
+    def __init__(self, balance):
+        self.__balance = balance
+    @property
+    def balance(self):
+        return self.__balance
+a = Account(100)
+a.__balance = 999
+print(a.balance)
+print(a.__dict__)
+A:
+100
+{'_Account__balance': 100, '__balance': 999}
+________________________________________
+Q46. How do private methods interact with inheritance?
+A: A child’s __helper is _Child__helper; parent’s is _Parent__helper. Overriding private methods by same __name does not work like public overriding.
+________________________________________
+Q47. When is single underscore preferred over double?
+A: Use _ for “internal API” meant for subclasses/module users who understand the risk. Use __ when you need stronger collision avoidance or clearer “do not touch” intent.
+________________________________________
+Q48. Can encapsulation replace authentication/authorization?
+A: No. Class privacy is not access control for users/systems. BankVault PIN checks are application logic; real security needs proper auth, hashing, encryption, etc.
+________________________________________
+Q49. Write encapsulated Celsius with validation.
+A:
+class Celsius:
+    def __init__(self, temperature=0):
+        self.temperature = temperature
+    @property
+    def temperature(self):
+        return self.__temperature
+    @temperature.setter
+    def temperature(self, value):
+        if value < -273.15:
+            raise ValueError("Below absolute zero")
+        self.__temperature = value
+________________________________________
+Q50. How does encapsulation support unit testing?
+A: Test through public methods (behavior). Avoid testing private internals unless necessary; private details may change. If needed, tests can use mangled names carefully.
+________________________________________
+Q51. Composition and encapsulation together?
+A: A class can hide internal helper objects:
+class Car:
+    def __init__(self):
+        self.__engine = Engine()
+    def start(self):
+        self.__engine.start()
+Caller uses car.start(), not engine internals.
+________________________________________
+Q52. What is Law of Demeter (related idea)?
+A: “Talk only to your immediate friends.” Don’t chain deep into internals (obj.a.b.c). Encapsulation encourages calling methods on the object you own, not digging through nested structure.
+________________________________________
+Q53. Predict:
+class Machine:
+    def __init__(self):
+        self.__status = "OFF"
+    def __toggle(self):
+        self.__status = "ON" if self.__status == "OFF" else "OFF"
+    def operate(self):
+        self.__toggle()
+        return self.__status
+m = Machine()
+print(m.operate())
+print(hasattr(m, "__toggle"))
+print(hasattr(m, "_Machine__toggle"))
+A:
+ON
+False
+True
+________________________________________
+Q54. Design question: why BankVault methods need PIN every time?
+A: Because private fields alone aren’t enough — methods must authorize each sensitive action. Encapsulation stores secrets; method logic enforces access policy.
+________________________________________
+Q55. 30-second encapsulation summary for interviews.
+A: Encapsulation hides internal state and exposes a safe interface. In Python use _/__, getters/setters or @property, and put validation in methods. It’s by convention (bypassable via mangling), but essential for clean, maintainable, rule-enforcing OOP design.
