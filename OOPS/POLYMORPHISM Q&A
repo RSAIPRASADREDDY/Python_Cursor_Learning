@@ -1,0 +1,377 @@
+Polymorphism — Interview Q&A (Easy → Hard)
+Aligned with your Polymorphism.py topics: duck typing, method overriding, operator overloading, built-in polymorphism, ABCs, payment/drawing examples, and runtime vs static polymorphism.
+________________________________________
+Level 1: Easy
+Q1. What is polymorphism in Python?
+A: Polymorphism means “many forms”. Objects of different classes can be used through a common interface (same method names), and each object behaves differently.
+def animal_sound(animal):
+    animal.speak()
+animal_sound(Dog())   # Woof!
+animal_sound(Cat())   # Meow!
+________________________________________
+Q2. Why is polymorphism important?
+A:
+•	Flexible and extensible code
+•	Less duplication (no big if-else by type)
+•	One interface for many types
+•	Easier to add new classes without changing callers
+________________________________________
+Q3. How is polymorphism achieved in Python?
+A:
+1.	Method overriding
+2.	Duck typing
+3.	Operator overloading
+4.	Built-in polymorphic functions (len(), +, etc.)
+5.	Abstract Base Classes (ABC) for enforced interfaces
+________________________________________
+Q4. What is duck typing?
+A: “If it walks like a duck and quacks like a duck, treat it as a duck.”
+Python cares that the method exists, not the exact class.
+class Dog:
+    def speak(self):
+        print("Woof!")
+class Cat:
+    def speak(self):
+        print("Meow!")
+def animal_sound(animal):
+    animal.speak()   # no isinstance check needed
+________________________________________
+Q5. What is method overriding?
+A: A child class redefines a parent method with the same name:
+class Shape:
+    def area(self):
+        print("No area formula defined.")
+class Circle(Shape):
+    def area(self):
+        print("Area of circle:", 3.14 * self.radius * self.radius)
+________________________________________
+Q6. Give a simple polymorphic loop example.
+A:
+shapes = [Circle(2), Square(3), Shape()]
+for shp in shapes:
+    shp.area()   # each object uses its own area()
+________________________________________
+Q7. How do built-in functions show polymorphism?
+A: Same function works on different types:
+print(len([1, 2, 3]))         # 3
+print(len("Hello"))           # 5
+print(len({'a': 10, 'b': 20})) # 2
+len() calls each object’s __len__.
+________________________________________
+Q8. What is operator overloading?
+A: Redefining how operators (+, -, *, etc.) work for your class using dunder methods:
+class Book:
+    def __add__(self, other):
+        return Book(self.pages + other.pages)
+print(Book(100) + Book(200))   # Book(300 pages)
+________________________________________
+Q9. Is Python polymorphism static or dynamic?
+A: Dynamic (runtime). Which method runs is decided when the code executes, not at compile time.
+for shape in shapes:
+    shape.draw()   # resolved at runtime per object
+________________________________________
+Q10. Does Python support traditional method overloading?
+A: No (not like Java/C++). Same method name with different signatures isn’t supported natively. Use:
+•	Default arguments
+•	*args / **kwargs
+•	Operator overloading via dunder methods
+________________________________________
+Q11. Difference between overriding and overloading?
+A:
+Overriding	Overloading
+Same method in parent & child	Same name, different signatures
+Runtime polymorphism	Compile-time (other languages)
+Fully supported in Python	Not traditional in Python
+________________________________________
+Q12. Real-world polymorphism example?
+A: Payment methods:
+def process_payment(payment_method, amount):
+    payment_method.pay(amount)
+process_payment(PayPal(), 50)
+process_payment(CreditCard(), 50)
+Caller doesn’t care which payment class it is.
+________________________________________
+Q13. What is a common interface in polymorphism?
+A: A shared set of method names (e.g., draw(), area(), pay(), speak()) that different classes implement differently.
+________________________________________
+Q14. What happens if a method is missing in duck typing?
+A: AttributeError at runtime:
+class Rock:
+    pass
+# animal_sound(Rock())  # AttributeError: no speak()
+________________________________________
+Q15. How does polymorphism reduce if-else?
+A: Without polymorphism:
+if type == "email": send_email()
+elif type == "sms": send_sms()
+With polymorphism:
+channel.send()   # Email/SMS each implement send()
+________________________________________
+Level 2: Medium
+Q16. Explain polymorphism with inheritance vs without inheritance.
+A:
+•	With inheritance: shared parent + overriding (Circle(Shape))
+•	Without inheritance: duck typing (PayPal and CreditCard unrelated, both have pay())
+Python supports both.
+________________________________________
+Q17. How do ABCs support polymorphism?
+A: ABCs enforce a required interface so all subclasses implement the same methods:
+from abc import ABC, abstractmethod
+class Vehicle(ABC):
+    @abstractmethod
+    def start(self):
+        pass
+class Car(Vehicle):
+    def start(self):
+        print("Car engine started.")
+You can safely loop over Vehicle subclasses and call start().
+________________________________________
+Q18. Can you instantiate an abstract class?
+A: No — raises TypeError if abstract methods are unimplemented.
+# Vehicle()  # TypeError
+________________________________________
+Q19. What special methods enable polymorphic operators?
+A: Examples:
+•	+ → __add__
+•	* → __mul__
+•	== → __eq__
+•	len() → __len__
+•	str() → __str__
+•	print uses __str__/__repr__
+________________________________________
+Q20. Why return NotImplemented in __add__?
+A: Tells Python the operation isn’t supported for that type, so it can try the other operand’s reflected method (__radd__) instead of failing immediately:
+def __add__(self, other):
+    if isinstance(other, Book):
+        return Book(self.pages + other.pages)
+    return NotImplemented
+________________________________________
+Q21. What is runtime polymorphism with a list of shapes?
+A:
+shapes = [Rectangle(4, 5), Circle(3), Triangle(6, 2)]
+for shape in shapes:
+    shape.draw()
+    print(shape.area())
+Each object’s own draw/area runs — classic polymorphic dispatch.
+________________________________________
+Q22. How is + polymorphic in Python?
+A:
+print(1 + 2)          # arithmetic
+print("a" + "b")      # concatenation
+print([1] + [2])      # list join
+print(Book(1) + Book(2))  # custom via __add__
+Same operator, different behavior by type.
+________________________________________
+Q23. What is the Liskov Substitution Principle (LSP) in polymorphism?
+A: Objects of a subclass should be usable wherever the parent is expected, without breaking behavior. If notify(channel) expects send(), every subclass must honor that contract.
+________________________________________
+Q24. Duck typing vs nominal typing?
+A:
+•	Duck typing — based on behavior/methods present
+•	Nominal typing — based on declared class/interface names
+Python is primarily duck-typed; ABCs/isinstance add optional nominal checks.
+________________________________________
+Q25. How can you restrict polymorphic inputs?
+A:
+def start_all(vehicles):
+    for v in vehicles:
+        if not isinstance(v, Vehicle):
+            raise TypeError("Expected Vehicle")
+        v.start()
+Or rely on ABC inheritance so only valid subclasses exist.
+________________________________________
+Q26. Polymorphism vs inheritance — are they the same?
+A: No.
+•	Inheritance — code reuse / is-a relationship
+•	Polymorphism — one interface, many behaviors
+Inheritance often enables polymorphism, but duck typing can do polymorphism without inheritance.
+________________________________________
+Q27. What is ad-hoc polymorphism?
+A: Same function/operator works on different types via separate implementations (e.g., operator overloading, overloaded functions in other languages). In Python, dunder methods are a common form.
+________________________________________
+Q28. What is subtype polymorphism?
+A: Using a child object where a parent is expected (inheritance-based):
+def render(shape: Shape):
+    shape.area()
+render(Circle(2))
+render(Square(3))
+________________________________________
+Q29. Show polymorphism reducing duplication (notify example).
+A:
+class Email:
+    def send(self): print("Email sent")
+class SMS:
+    def send(self): print("SMS sent")
+def notify(channel):
+    channel.send()
+for c in [Email(), SMS()]:
+    notify(c)
+________________________________________
+Q30. How does method overriding enable polymorphism?
+A: Parent reference/loop variable can point to child objects; the child’s overridden method is called at runtime (dynamic dispatch).
+________________________________________
+Q31. What is the role of super() in polymorphic overrides?
+A: Extend parent behavior instead of fully replacing it:
+class Car(Vehicle):
+    def start(self):
+        super().start()
+        print("Car-specific startup")
+________________________________________
+Q32. Can unrelated classes be polymorphic together?
+A: Yes, via duck typing — as long as they share needed methods (pay, speak, draw).
+________________________________________
+Q33. What should developers be careful about with polymorphism?
+A:
+•	Missing methods → runtime AttributeError
+•	Weak contracts without ABC/docs
+•	Breaking LSP (child changes expected behavior)
+•	Overusing clever operator overloads (hard to read)
+________________________________________
+Q34. How do abstract methods differ from normal overridden methods?
+A: Abstract methods must be implemented; normal parent methods are optional to override and may provide default behavior.
+________________________________________
+Q35. Mini-project idea: polymorphic drawing app — key design?
+A: Common ABC interface (area, draw); concrete shapes implement it; main loop processes a list of shapes without type checks.
+________________________________________
+Level 3: Hard
+Q36. Why is Python said to have no compile-time polymorphism?
+A: Python is dynamically typed and resolves method/operator behavior at runtime. There is no compile-time signature selection like Java method overloading. Operator overloading still dispatches dynamically via dunder methods.
+________________________________________
+Q37. What is the output?
+class A:
+    def show(self): print("A")
+class B(A):
+    def show(self): print("B")
+class C(A):
+    def show(self): print("C")
+for obj in [A(), B(), C()]:
+    obj.show()
+A:
+A
+B
+C
+________________________________________
+Q38. What is the output?
+class Book:
+    def __init__(self, pages): self.pages = pages
+    def __add__(self, other):
+        return Book(self.pages + other.pages)
+    def __str__(self):
+        return f"Book({self.pages})"
+print(Book(10) + Book(20))
+print(Book(10) + 5)
+A: First prints Book(30). Second raises TypeError (unless you handle non-Book and/or define __radd__).
+________________________________________
+Q39. Explain dynamic dispatch in one sentence.
+A: The concrete method that runs is chosen from the object’s actual class at runtime, not from the variable’s declared type.
+________________________________________
+Q40. What is the output?
+class Shape:
+    def area(self): return 0
+class Circle(Shape):
+    def __init__(self, r): self.r = r
+    def area(self): return 3.14 * self.r * self.r
+def total(shapes):
+    return sum(s.area() for s in shapes)
+print(total([Circle(1), Shape(), Circle(2)]))
+A: 0 + 3.14 + 12.56 = 15.7 (approx). Polymorphic area() calls.
+________________________________________
+Q41. How do protocols (typing) relate to duck typing?
+A: typing.Protocol documents structural interfaces (methods expected) while remaining duck-typed at runtime. Useful for static checkers without forcing inheritance.
+________________________________________
+Q42. What is the difference between isinstance checks and pure duck typing?
+A:
+•	isinstance — safer, more explicit, less flexible
+•	Duck typing — more flexible, fails later if interface missing
+ABCs sit in between: enforce interface + allow isinstance.
+________________________________________
+Q43. Predict:
+class PayPal:
+    def pay(self, amount): print("PayPal", amount)
+class CreditCard:
+    def pay(self, amount): print("Card", amount)
+class Cash:
+    def give(self, amount): print("Cash", amount)
+def process(m, amount):
+    m.pay(amount)
+for m in [PayPal(), CreditCard(), Cash()]:
+    try:
+        process(m, 10)
+    except AttributeError as e:
+        print("Error:", type(m).__name__)
+A:
+PayPal 10
+Card 10
+Error: Cash
+________________________________________
+Q44. How can polymorphism be abused?
+A:
+•	Assuming methods exist without documenting/enforcing them
+•	Overloading operators with non-intuitive meaning
+•	Deep hierarchies where behavior is surprising
+•	Silent fallbacks that hide bugs
+________________________________________
+Q45. Implement a safe polymorphic payment processor.
+A:
+from abc import ABC, abstractmethod
+class Payment(ABC):
+    @abstractmethod
+    def pay(self, amount): ...
+def process_payment(method: Payment, amount):
+    if amount <= 0:
+        raise ValueError("Invalid amount")
+    method.pay(amount)
+________________________________________
+Q46. What is parametric polymorphism? Does Python have it?
+A: Same code works for many types via generics/templates. Python supports this style dynamically (e.g., generic functions) and with typing (TypeVar, generics), but not like C++ templates at compile time.
+________________________________________
+Q47. Why is len polymorphic across containers?
+A: Because each type implements __len__. len(obj) is a common interface over different implementations — built-in polymorphism.
+________________________________________
+Q48. What is the output?
+class A:
+    def f(self): return "A"
+class B(A):
+    def f(self): return "B"
+def call(x: A):
+    return x.f()
+print(call(B()))
+A: "B" — annotations don’t change runtime dispatch in normal Python.
+________________________________________
+Q49. How does multiple inheritance affect polymorphic method calls?
+A: MRO decides which override is used. Polymorphism still holds, but which implementation runs depends on C3 linearization order.
+________________________________________
+Q50. Design question: notification system — inheritance or duck typing?
+A: Both work.
+•	Duck typing: fastest to add channels with send()
+•	ABC: better when you need enforced contracts and isinstance
+For large systems, ABC/Protocol is usually safer.
+________________________________________
+Q51. What is the output?
+class Point:
+    def __init__(self, x, y): self.x, self.y = x, y
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+print(Point(1, 2) + Point(3, 4))
+A: (4, 6)
+________________________________________
+Q52. How do __str__ and __repr__ fit polymorphism?
+A: print(obj) / str(obj) polymorphically call each class’s string conversion method — same operation, type-specific formatting.
+________________________________________
+Q53. Compare compile-time polymorphism (other languages) vs Python.
+A:
+Feature	Java/C++	Python
+Method overloading	Yes	No (native)
+Operator overloading	C++ yes / Java limited	Yes via dunders
+Dispatch	Often static + virtual	Mostly runtime
+Duck typing	No	Yes
+________________________________________
+Q54. Write a one-liner idea: total area of mixed shapes.
+A:
+total = sum(s.area() for s in shapes)
+This works only because every shape implements polymorphic area().
+________________________________________
+Q55. Interview closer: explain polymorphism in 30 seconds.
+A: Polymorphism lets you call the same method name on different objects and get type-specific behavior. In Python this is mainly runtime via overriding, duck typing, operator dunders, and optional ABCs — so you write generic loops/functions once and plug in new classes later.
