@@ -1,0 +1,393 @@
+Abstraction — Interview Q&A (Easy → Hard)
+Aligned with your Abstraction.py topics: ABC, @abstractmethod, concrete vs abstract methods, abstract properties, instantiation rules, NotImplementedError, payment/plugin designs, and abstraction vs encapsulation.
+
+Level 1: Easy
+Q1. What is abstraction in Python?
+A: Abstraction means hiding complex implementation details and showing only essential features. Focus on what an object does, not how it does it.
+
+payment.pay(500)   # you care that it pays, not how CreditCard/PayPal works internally
+Q2. Why / when do we use abstraction?
+A:
+
+Hide complex logic from users
+Design large systems cleanly
+Enforce a common interface/contract for subclasses
+Make code easier to extend and maintain
+Q3. How is abstraction achieved in Python?
+A: Mainly with Abstract Base Classes (ABC) and @abstractmethod from the abc module:
+
+from abc import ABC, abstractmethod
+class Vehicle(ABC):
+    @abstractmethod
+    def start(self):
+        pass
+Q4. What is an abstract class?
+A: A class that defines a blueprint/interface and usually cannot be used directly. Subclasses must implement its abstract methods.
+
+class Car(Vehicle):
+    def start(self):
+        print("Car has started.")
+Q5. What is an abstract method?
+A: A method declared in an abstract class that must be implemented by concrete subclasses.
+
+@abstractmethod
+def start(self):
+    pass
+Q6. Can you instantiate an abstract class?
+A: No. It raises TypeError:
+
+# v = Vehicle()  # TypeError: Can't instantiate abstract class Vehicle...
+Q7. What happens if a subclass misses an abstract method?
+A: That subclass stays abstract and also cannot be instantiated until all abstract methods are implemented.
+
+class Bike(Vehicle):
+    pass
+# Bike()  # TypeError
+Q8. Give a simple abstraction example.
+A:
+
+class Animal(ABC):
+    @abstractmethod
+    def eat(self): pass
+    @abstractmethod
+    def sound(self): pass
+class Dog(Animal):
+    def eat(self): print("Dog eats bones.")
+    def sound(self): print("Woof!")
+Q9. Abstraction vs encapsulation?
+A:
+
+Abstraction	Encapsulation
+Hide complexity / show interface	Hide data / control access
+“What it does”	“How state is protected”
+ABC, abstract methods	_, __, getters/setters, @property
+Q10. Abstraction vs inheritance?
+A:
+
+Inheritance — reuse/extend class behavior
+Abstraction — define required interface/contract
+They often work together: abstract parent + concrete children.
+
+Q11. Real-world abstraction example?
+A: Payment system:
+
+class PaymentMethod(ABC):
+    @abstractmethod
+    def pay(self, amount): pass
+class CreditCard(PaymentMethod): ...
+class PayPal(PaymentMethod): ...
+class UPI(PaymentMethod): ...
+Caller uses pay() without knowing internal payment logic.
+
+Q12. What is a concrete class?
+A: A class with no remaining abstract methods, so it can be instantiated (Car, Dog, Rectangle).
+
+Q13. Do users of an abstract API need implementation details?
+A: No. They only need the interface:
+
+def process_payment(payment_method: PaymentMethod, amount):
+    payment_method.pay(amount)
+Q14. What module provides ABC support?
+A: abc module — mainly ABC and abstractmethod.
+
+Q15. Can an abstract class have normal attributes?
+A: Yes. Example: Shape stores name in __init__ while keeping area abstract.
+
+Level 2: Medium
+Q16. Can abstract classes have concrete methods?
+A: Yes. Shared/default behavior can live in the abstract class:
+
+class Base(ABC):
+    @abstractmethod
+    def foo(self): pass
+    def bar(self):
+        print("Concrete bar")
+Subclasses must implement foo, and can reuse bar.
+
+Q17. Can abstract classes have constructors (__init__)?
+A: Yes:
+
+class Shape(ABC):
+    def __init__(self, name):
+        self.name = name
+    @abstractmethod
+    def area(self):
+        pass
+Concrete subclasses call super().__init__(...).
+
+Q18. What is an abstract property?
+A: A property that subclasses must implement:
+
+class Shape(ABC):
+    @property
+    @abstractmethod
+    def sides(self):
+        pass
+class Rectangle(Shape):
+    @property
+    def sides(self):
+        return 4
+Q19. Order of decorators for abstract property?
+A: Common pattern:
+
+@property
+@abstractmethod
+def sides(self):
+    pass
+Subclass implements with @property.
+
+Q20. Abstraction without abc module?
+A: Possible with NotImplementedError, but weaker:
+
+class Base:
+    def foo(self):
+        raise NotImplementedError
+Problem: class can still be instantiated; error appears only when method is called. Prefer @abstractmethod.
+
+Q21. Which is safer: ABC or NotImplementedError?
+A: ABC + @abstractmethod — fails at instantiation time if contract incomplete. NotImplementedError fails later at call time.
+
+Q22. How does abstraction help large projects?
+A:
+
+Consistent interfaces
+Plugin-style extension
+Lower coupling
+Swap implementations easily
+Team can work against contracts
+Q23. Design exporters (PDF/CSV/XLSX) with abstraction.
+A:
+
+class Exporter(ABC):
+    @abstractmethod
+    def export(self, data): pass
+class PDFExporter(Exporter):
+    def export(self, data): print("Exporting PDF")
+Loader depends on Exporter.export, not concrete classes.
+
+Q24. Can abstract methods contain code?
+A: Yes, though uncommon. Subclasses can call super():
+
+class A(ABC):
+    @abstractmethod
+    def foo(self):
+        print("Shared logic")
+class B(A):
+    def foo(self):
+        super().foo()
+        print("B specific")
+Q25. What is an interface in Python terms?
+A: Python has no separate interface keyword. ABC with only abstract methods acts like an interface contract.
+
+Q26. Abstraction + polymorphism together?
+A: Abstraction defines the common method (pay, start, area). Polymorphism lets different concrete objects respond differently through that same method.
+
+for method in [CreditCard(), PayPal(), UPI()]:
+    process_payment(method, 500)
+Q27. What error do you get instantiating incomplete subclass?
+A: TypeError: Can't instantiate abstract class ... with abstract method ...
+
+Q28. Can one abstract class have many abstract methods?
+A: Yes — all must be implemented:
+
+class Animal(ABC):
+    @abstractmethod
+    def eat(self): pass
+    @abstractmethod
+    def sound(self): pass
+Q29. Partial implementation pattern?
+A: Intermediate abstract class implements some methods, leaves others abstract:
+
+class Vehicle(ABC):
+    @abstractmethod
+    def start(self): pass
+class FourWheeler(Vehicle):
+    def start(self):
+        print("Four-wheeler started.")
+Or keep some methods abstract in mid-level classes for further subclasses.
+
+Q30. Why annotate payment_method: PaymentMethod?
+A: Documents that any object satisfying the PaymentMethod contract is accepted — programming to an interface, not a concrete class.
+
+Q31. Abstraction vs duck typing?
+A:
+
+Duck typing — no formal contract; method just needs to exist
+Abstraction (ABC) — formal contract enforced by language
+ABC is stricter and safer for large systems.
+
+Q32. Risks of poor abstraction?
+A:
+
+Inconsistent APIs
+Duplication and tight coupling
+Hard to extend
+More runtime surprises
+Weak plugin architecture
+Q33. Is every base class an abstract class?
+A: No. A normal parent class can be concrete and instantiable. Abstract classes are specially marked (ABC + abstract methods) and meant as incomplete blueprints.
+
+Q34. Mini-project idea with abstraction?
+A: Payment processing: abstract PaymentMethod.pay(), concrete CreditCard/PayPal/UPI, and one process_payment() function.
+
+Q35. What does “program to an interface” mean?
+A: Write code against abstract contracts (Shape, PaymentMethod) so new implementations can be added without changing callers.
+
+Level 3: Hard
+Q36. What is the output?
+from abc import ABC, abstractmethod
+class Vehicle(ABC):
+    @abstractmethod
+    def start(self):
+        pass
+try:
+    Vehicle()
+except TypeError as e:
+    print("Error")
+A: Prints Error.
+
+Q37. What is the output?
+class Animal(ABC):
+    @abstractmethod
+    def sound(self): pass
+class Dog(Animal):
+    pass
+try:
+    Dog()
+except TypeError:
+    print("Dog still abstract")
+A: Dog still abstract
+
+Q38. Does implementing only one of two abstract methods make class concrete?
+A: No. All abstract methods must be implemented.
+
+class Animal(ABC):
+    @abstractmethod
+    def eat(self): pass
+    @abstractmethod
+    def sound(self): pass
+class Dog(Animal):
+    def eat(self): print("eats")
+# Dog() still TypeError — sound missing
+Q39. What is the output?
+class Shape(ABC):
+    def __init__(self, name):
+        self.name = name
+    @abstractmethod
+    def area(self): pass
+    @property
+    @abstractmethod
+    def sides(self): pass
+class Rectangle(Shape):
+    def __init__(self, w, h):
+        super().__init__("Rectangle")
+        self.w, self.h = w, h
+    def area(self):
+        return self.w * self.h
+    @property
+    def sides(self):
+        return 4
+r = Rectangle(3, 5)
+print(r.name, r.area(), r.sides)
+A: Rectangle 15 4
+
+Q40. Can you use isinstance with ABC?
+A: Yes — useful for contract checks:
+
+isinstance(CreditCard(), PaymentMethod)  # True
+Virtual subclasses can also register with ABC (register), advanced use-case.
+
+Q41. What is @abstractmethod combined with @classmethod / @staticmethod?
+A: Supported patterns exist (e.g., abstract classmethod). Subclasses must provide matching concrete versions. Less common in interviews, but valid advanced ABC usage.
+
+Q42. Abstract method with body + super() — output?
+class A(ABC):
+    @abstractmethod
+    def foo(self):
+        print("Shared")
+class B(A):
+    def foo(self):
+        super().foo()
+        print("B")
+B().foo()
+A:
+
+Shared
+B
+Q43. Difference between interface-like ABC and mixin?
+A:
+
+ABC/interface — defines required methods, often no/little state
+Mixin — adds reusable behavior via multiple inheritance, usually concrete methods
+Q44. How does abstraction reduce coupling?
+A: High-level modules depend on abstract contracts, not concrete classes. You can replace PayPal with UPI without changing process_payment.
+
+Q45. Design a notification system with abstraction.
+A:
+
+class Notifier(ABC):
+    @abstractmethod
+    def send(self, message): pass
+class EmailNotifier(Notifier): ...
+class SMSNotifier(Notifier): ...
+def notify_all(notifiers, msg):
+    for n in notifiers:
+        n.send(msg)
+Q46. What if abstract class has no abstract methods?
+A: Technically possible, but unusual. Without @abstractmethod, inheriting from ABC alone doesn’t block instantiation. Abstractness comes from remaining abstract methods.
+
+Q47. Runtime check vs definition-time enforcement?
+A:
+
+NotImplementedError → runtime when called
+@abstractmethod → prevented at object creation
+Interview preference: ABC.
+
+Q48. How do frameworks use abstraction?
+A: Frameworks define abstract hooks (export, handle_request, render). Plugins/apps implement them. Framework calls the abstract API — classic dependency inversion style.
+
+Q49. Abstraction vs polymorphism — one-liner difference?
+A: Abstraction defines the common contract; polymorphism provides different behaviors through that contract.
+
+Q50. Predict:
+class PaymentMethod(ABC):
+    @abstractmethod
+    def pay(self, amount): pass
+class CreditCard(PaymentMethod):
+    def pay(self, amount):
+        print(f"Paid {amount} using Credit Card.")
+def process_payment(payment_method: PaymentMethod, amount):
+    payment_method.pay(amount)
+process_payment(CreditCard(), 500)
+A: Paid 500 using Credit Card.
+
+Q51. Can concrete methods call abstract methods in ABC?
+A: Yes — template method pattern:
+
+class Worker(ABC):
+    def run(self):
+        self.step1()
+        self.step2()
+    @abstractmethod
+    def step1(self): pass
+    @abstractmethod
+    def step2(self): pass
+run() is concrete; subclasses implement steps.
+
+Q52. Why is template method an abstraction pattern?
+A: Parent defines algorithm skeleton (what), children fill in steps (how) — hides overall flow details behind a stable method.
+
+Q53. Enterprise risk if teams skip abstraction?
+A: Every module depends on concrete classes → hard replacements, duplicated conditionals (if paypal... elif upi...), fragile releases, inconsistent APIs.
+
+Q54. Implement Shape hierarchy interview answer.
+A:
+
+Abstract Shape with area() (+ maybe sides)
+Concrete Rectangle, Circle, Triangle
+Client loops over list[Shape] and calls area() only
+This shows abstraction + polymorphism together.
+
+Q55. 30-second abstraction interview summary.
+A: Abstraction hides implementation and exposes a clean contract. In Python, use ABC + @abstractmethod so incomplete classes can’t be instantiated. Concrete subclasses implement the interface, enabling flexible designs like payments, exporters, and plugins while keeping callers decoupled from details.
+
