@@ -1,0 +1,453 @@
+Inheritance — Interview Q&A (Easy → Hard)
+Aligned with your Inheritance.py topics: single/multiple/multilevel/hierarchical inheritance, overriding, super(), MRO, diamond problem, isinstance/issubclass, and real-world Employee examples.
+________________________________________
+Level 1: Easy
+Q1. What is inheritance in Python?
+A: Inheritance lets a child (derived/subclass) class acquire attributes and methods from a parent (base/superclass). It supports code reuse and hierarchical design.
+class Animal:
+    def speak(self):
+        print("Animal speaks")
+class Dog(Animal):
+    pass
+Dog().speak()   # Animal speaks
+________________________________________
+Q2. Why is inheritance useful?
+A:
+•	Code reusability
+•	Extensibility (add/override behavior)
+•	Models is-a relationships (Dog is an Animal)
+•	Easier maintenance of shared logic in one place
+________________________________________
+Q3. What is the syntax of single inheritance?
+A:
+class Parent:
+    pass
+class Child(Parent):
+    pass
+Child inherits from Parent.
+________________________________________
+Q4. What types of inheritance does Python support?
+A:
+1.	Single — one parent
+2.	Multiple — many parents
+3.	Multilevel — child → parent → grandparent
+4.	Hierarchical — many children from one parent
+5.	Hybrid — combination of the above
+________________________________________
+Q5. What is method overriding?
+A: Redefining a parent method in the child so the child’s version runs:
+class Bird:
+    def fly(self):
+        print("Bird is flying")
+class Sparrow(Bird):
+    def fly(self):
+        print("Sparrow is flying low")
+Sparrow().fly()   # Sparrow is flying low
+________________________________________
+Q6. What happens if a child does not override a parent method?
+A: The parent method is used as-is (inherited):
+class Dog(Animal):
+    pass
+Dog().speak()   # uses Animal.speak()
+________________________________________
+Q7. What is super()?
+A: super() calls a method from the next class in the MRO (usually the parent), without hardcoding the parent name.
+class Car(Vehicle):
+    def start(self):
+        super().start()
+        print("Car started")
+________________________________________
+Q8. Why use super() in __init__?
+A: To initialize the parent part of the object correctly:
+class Employee:
+    def __init__(self, name, salary):
+        self.name = name
+        self.salary = salary
+class Developer(Employee):
+    def __init__(self, name, salary, prog_lang):
+        super().__init__(name, salary)
+        self.prog_lang = prog_lang
+________________________________________
+Q9. What is multilevel inheritance?
+A: A chain: Grandparent → Parent → Child:
+class Grandparent: ...
+class Parent(Grandparent): ...
+class Child(Parent): ...
+________________________________________
+Q10. What is hierarchical inheritance?
+A: Multiple classes inherit from the same parent:
+class Shape: ...
+class Rectangle(Shape): ...
+class Circle(Shape): ...
+________________________________________
+Q11. What is multiple inheritance?
+A: A class inherits from more than one parent:
+class Child(Father, Mother):
+    pass
+________________________________________
+Q12. How do you check inheritance relationships?
+A:
+isinstance(c, Child)      # object is instance of class?
+isinstance(c, Father)     # True if Father is parent
+issubclass(Child, Father) # Child is subclass of Father?
+________________________________________
+Q13. Can a child access parent attributes/methods?
+A: Yes, public and protected-by-convention members. Direct access to __private parent attributes is blocked by name mangling.
+________________________________________
+Q14. What is an “is-a” relationship?
+A: Inheritance models “is-a”:
+•	Developer is an Employee
+•	Dog is an Animal
+Use inheritance for true is-a design; use composition for “has-a”.
+________________________________________
+Q15. Give a real-world inheritance example.
+A: Employee hierarchy:
+class Employee: ...
+class Developer(Employee): ...
+class Manager(Employee): ...
+Shared fields (name, salary) live in Employee; role-specific behavior is overridden in children.
+________________________________________
+Level 2: Medium
+Q16. What is the difference between overriding and overloading?
+A:
+•	Overriding — child redefines parent method (Python supports this)
+•	Overloading — same name, different signatures (Python does not support true overloading; last definition wins)
+________________________________________
+Q17. How does super() work with method chaining?
+A: Each super().method() calls the next class up the MRO:
+class Base:
+    def greet(self):
+        print("Hello from Base")
+class Middle(Base):
+    def greet(self):
+        print("Hello from Middle, before Base")
+        super().greet()
+        print("Hello from Middle, after Base")
+class ChildMost(Middle):
+    def greet(self):
+        print("Hello from ChildMost, before Middle")
+        super().greet()
+        print("Hello from ChildMost, after Middle")
+Call order: ChildMost → Middle → Base → back down.
+________________________________________
+Q18. What is MRO (Method Resolution Order)?
+A: The order Python searches for methods/attributes in inheritance. View it with:
+print(D.mro())
+print(D.__mro__)
+Python uses C3 linearization.
+________________________________________
+Q19. What is the diamond problem?
+A: When a class inherits from two classes that share a common parent:
+    A
+   / \
+  B   C
+   \ /
+    D
+Python resolves this using MRO so each class appears once in a consistent order.
+class D(B, C):
+    pass
+D().show()   # follows D → B → C → A → object
+________________________________________
+Q20. What is the output?
+class A:
+    def show(self):
+        print("A")
+class B(A):
+    def show(self):
+        print("B")
+class C(A):
+    def show(self):
+        print("C")
+class D(B, C):
+    pass
+D().show()
+A: B — because B comes before C in D’s MRO.
+________________________________________
+Q21. How do you call a parent method without super()?
+A: Call it by class name (less preferred in multiple inheritance):
+Father.skills(self)
+Parent.feature(self)
+super() is safer with MRO.
+________________________________________
+Q22. What does this do?
+super(Child, c).feature()
+A: Calls the next method after Child in c’s MRO — here, Parent.feature().
+________________________________________
+Q23. What is polymorphism via inheritance?
+A: Same interface, different behavior by subclass:
+shapes = [Rectangle(), Circle()]
+for shape in shapes:
+    shape.area()   # each calls its own area()
+________________________________________
+Q24. Can constructors be inherited?
+A: Yes. If child defines no __init__, parent’s __init__ is used. If child defines __init__, it should usually call super().__init__(...).
+________________________________________
+Q25. What error occurs if a required parent method is not implemented?
+A: Often NotImplementedError (manual) or TypeError (with ABC):
+class Animal:
+    def speak(self):
+        raise NotImplementedError("Subclasses must implement speak")
+class Fish(Animal):
+    pass
+# Fish().speak()  # NotImplementedError
+________________________________________
+Q26. How do abstract base classes relate to inheritance?
+A: ABCs force subclasses to implement methods:
+from abc import ABC, abstractmethod
+class Shape(ABC):
+    @abstractmethod
+    def area(self):
+        pass
+You cannot instantiate Shape directly.
+________________________________________
+Q27. Can a child access __private members of a parent?
+A: Not directly. __value in parent becomes _Parent__value. Child cannot use self.__value for parent’s private attribute.
+________________________________________
+Q28. What is hybrid inheritance?
+A: A mix of inheritance types (e.g., multiple + multilevel). Python handles method lookup via MRO.
+________________________________________
+Q29. Difference between isinstance and issubclass?
+A:
+•	isinstance(obj, Class) — checks object
+•	issubclass(Sub, Super) — checks class relationship
+isinstance(dev1, Employee)     # True
+issubclass(Developer, Employee) # True
+________________________________________
+Q30. What is composition vs inheritance?
+A:
+•	Inheritance: is-a (Car is a Vehicle)
+•	Composition: has-a (Manager has a list of Employees)
+class Manager(Employee):
+    def __init__(self, name, salary, team):
+        super().__init__(name, salary)
+        self.team = team   # composition
+________________________________________
+Q31. What happens with conflicting methods in multiple inheritance?
+A: The first matching method in MRO wins:
+class Child(Father, Mother):
+    def skills(self):
+        super().skills()   # Father.skills if Father is first
+________________________________________
+Q32. How do you print MRO for learning?
+A:
+def print_mro(cls):
+    for c in cls.__mro__:
+        print(c.__name__)
+print_mro(ChildMost)
+# ChildMost, Middle, Base, object
+________________________________________
+Q33. What is cooperative multiple inheritance?
+A: Designing methods so every class uses super() and participates correctly in MRO chaining (especially important with diamond hierarchies).
+________________________________________
+Q34. Common inheritance errors?
+A:
+1.	Forgetting super().__init__(...)
+2.	Wrong argument order in child constructor
+3.	Calling nonexistent inherited method → AttributeError
+4.	Misunderstanding MRO in multiple inheritance
+5.	Overusing inheritance instead of composition
+________________________________________
+Q35. Employee example: how does inheritance help?
+A: Shared logic in Employee.show() / attributes; Developer and Manager override show() for role-specific output while reusing parent initialization via super().
+________________________________________
+Level 3: Hard
+Q36. What is C3 linearization?
+A: The algorithm Python uses to compute MRO. It ensures:
+•	Children before parents
+•	Parent order preserved as declared
+•	Each class appears only once
+This solves the diamond problem consistently.
+________________________________________
+Q37. What is the output?
+class A:
+    def do(self):
+        print("A.do()")
+class B(A):
+    pass
+class C(A):
+    def do(self):
+        print("C.do()")
+class D(B, C):
+    def do(self):
+        super().do()
+D().do()
+print(D.mro())
+A: Prints C.do() because MRO is roughly D → B → C → A → object, and B has no do, so super() from D reaches C.do().
+________________________________________
+Q38. What is the output?
+class Father:
+    def skills(self):
+        print("Father")
+class Mother:
+    def skills(self):
+        print("Mother")
+class Child(Father, Mother):
+    def skills(self):
+        super().skills()
+        print("Child")
+Child().skills()
+A:
+Father
+Child
+super() follows MRO: Child → Father → Mother → object.
+________________________________________
+Q39. How does changing parent order change behavior?
+class Child(Mother, Father):
+    def skills(self):
+        super().skills()
+A: Now super().skills() calls Mother.skills() first. Parent order in the class definition matters.
+________________________________________
+Q40. What is the difference between these?
+super().start()
+Vehicle.start(self)
+A:
+•	super().start() — MRO-aware; correct for multiple inheritance
+•	Vehicle.start(self) — hardcodes parent; can skip siblings in MRO and break cooperative inheritance
+________________________________________
+Q41. Predict the output:
+class Grandparent:
+    def feature(self):
+        print("Grandparent")
+class Parent(Grandparent):
+    def feature(self):
+        print("Parent")
+class Child(Parent):
+    def feature(self):
+        print("Child")
+c = Child()
+c.feature()
+super(Child, c).feature()
+super(Parent, c).feature()
+A:
+Child
+Parent
+Grandparent
+________________________________________
+Q42. What happens if you forget super().__init__?
+class Person:
+    def __init__(self, name):
+        self.name = name
+class Employee(Person):
+    def __init__(self, name, emp_id):
+        self.emp_id = emp_id
+A: Employee(...) won’t set name unless you call super().__init__(name). Accessing emp.name → AttributeError.
+________________________________________
+Q43. Can __init__ be overridden without calling parent __init__?
+A: Yes, but usually wrong if parent sets required state. Always call super().__init__ unless you intentionally replace full initialization.
+________________________________________
+Q44. What is the output?
+class A:
+    def __init__(self):
+        print("A init")
+class B(A):
+    def __init__(self):
+        print("B init")
+        super().__init__()
+class C(A):
+    def __init__(self):
+        print("C init")
+        super().__init__()
+class D(B, C):
+    def __init__(self):
+        print("D init")
+        super().__init__()
+D()
+A: Typical cooperative output:
+D init
+B init
+C init
+A init
+(Exact chain follows MRO: D → B → C → A.)
+________________________________________
+Q45. Why does Python prefer super() over hardcoding parent class names?
+A: Because with multiple inheritance, the “next” class is determined by MRO, not by a single hardcoded parent. super() keeps initialization/method chaining correct.
+________________________________________
+Q46. What is the output?
+print(isinstance(Manager("X", 1, []), Employee))
+print(issubclass(Manager, Developer))
+print(issubclass(Developer, Employee))
+A:
+True
+False
+True
+Manager is an Employee, but not a Developer.
+________________________________________
+Q47. How do you force subclasses to implement a method cleanly?
+A: Use ABC:
+from abc import ABC, abstractmethod
+class Animal(ABC):
+    @abstractmethod
+    def speak(self):
+        pass
+Instantiating a subclass without speak raises TypeError.
+________________________________________
+Q48. Inheritance vs interface-like design in Python?
+A: Python has no formal interfaces like Java. Use:
+•	Abstract base classes (abc)
+•	Duck typing (“if it has area(), treat it as a shape”)
+•	Inheritance when shared implementation exists
+________________________________________
+Q49. What is mixin inheritance?
+A: Small classes that provide extra behavior to be mixed into others via multiple inheritance (e.g., JsonMixin, LogMixin), usually without being used alone.
+class LogMixin:
+    def log(self, msg):
+        print(msg)
+class Service(LogMixin):
+    pass
+________________________________________
+Q50. What bug can mutable default args cause in inherited constructors?
+A: Same as elsewhere — shared mutable defaults. In inheritance hierarchies this can leak across instances if defaults are class-level or default list/dict args.
+Prefer None + create new list inside __init__ (as with team=[] anti-pattern).
+________________________________________
+Q51. What is the output?
+class A:
+    x = "A"
+class B(A):
+    pass
+class C(A):
+    x = "C"
+class D(B, C):
+    pass
+print(D.x)
+print(D.mro())
+A: "C" — attribute lookup follows MRO: D → B → C → A; B has no x, so C.x is found.
+________________________________________
+Q52. How does method lookup work step-by-step for an object?
+A:
+1.	Instance __dict__
+2.	Class of instance
+3.	Follow MRO of that class
+4.	If not found → AttributeError
+Inheritance affects steps 2–3.
+________________________________________
+Q53. When should you avoid inheritance?
+A: When relationship is not truly “is-a”, when hierarchies get deep/fragile, or when you only need reuse of behavior — prefer composition. Example: Library has Books, rather than Library(Book).
+________________________________________
+Q54. Design question: Manager contains Developers — inheritance or composition?
+A: Both:
+•	Manager inherits Employee (is-an employee)
+•	Manager composes a team list of employees (has-a team)
+This is the pattern in your mini-project.
+________________________________________
+Q55. Explain this interview favorite:
+class A: 
+    def f(self): print("A")
+class B(A):
+    def f(self):
+        print("B")
+        super().f()
+class C(A):
+    def f(self):
+        print("C")
+        super().f()
+class D(B, C):
+    def f(self):
+        print("D")
+        super().f()
+D().f()
+A: Output:
+D
+B
+C
+A
+Because cooperative super() walks MRO: D → B → C → A.
