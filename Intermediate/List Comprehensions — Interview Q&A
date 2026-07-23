@@ -1,0 +1,330 @@
+List Comprehensions — Interview Q&A (Easy → Hard)
+Aligned with your List comprehensions.py topics: basic syntax, filtering, transforms, nested loops, flatten, if-else expressions, enumerate/zip, dict/set comprehensions, generators, and word-frequency style use.
+
+Level 1: Easy
+Q1. What is a list comprehension?
+A: A concise one-line way to build a new list by applying an expression to each item in an iterable, optionally with a filter.
+
+squares = [n**2 for n in numbers]
+Q2. Basic syntax?
+A:
+
+[expression for item in iterable]
+[expression for item in iterable if condition]
+Q3. Benefits of list comprehensions?
+A:
+
+Shorter and often clearer than loops
+Returns a new list
+Good for map/filter style transforms
+Can nest for pairs/flattening
+Q4. Equivalent for-loop of [x*x for x in range(5)]?
+A:
+
+result = []
+for x in range(5):
+    result.append(x * x)
+Q5. Square numbers example?
+A:
+
+numbers = [1, 2, 3, 4, 5]
+squares = [n**2 for n in numbers]   # [1, 4, 9, 16, 25]
+Q6. Transform strings to uppercase?
+A:
+
+words = ["python", "List", "comprehension"]
+uppercase_words = [word.upper() for word in words]
+Q7. Create a list of characters from a string?
+A:
+
+chars = [char for char in "hello"]   # ['h', 'e', 'l', 'l', 'o']
+Q8. Filter even numbers?
+A:
+
+evens = [n for n in range(10) if n % 2 == 0]
+# [0, 2, 4, 6, 8]
+Q9. Filter odd numbers?
+A:
+
+odds = [n for n in mylist if n % 2 != 0]
+Q10. Does a comprehension modify the original list?
+A: No — it creates a new list. Original iterable stays unchanged (unless you reassign).
+
+Q11. Get word lengths only if length > 4?
+A:
+
+words = ["apple", "hi", "banana", "cat", "watermelon"]
+lengths = [len(word) for word in words if len(word) > 4]
+Q12. Strip whitespace from lines?
+A:
+
+clean_lines = [line.strip() for line in lines]
+Q13. Reverse each word?
+A:
+
+reversed_words = [word[::-1] for word in words]
+Q14. Select .py files from a list?
+A:
+
+files = ["test.py", "hello.txt", "main.py"]
+py_files = [f for f in files if f.endswith(".py")]
+Q15. Can comprehensions call methods/functions?
+A: Yes — upper(), lower(), strip(), len(), custom functions, etc.
+
+capitalized = [word.capitalize() for word in words]
+Level 2: Medium
+Q16. Difference between if filter and if-else expression?
+A:
+
+Filter (if at end): keeps/skips items
+Expression (if-else before for): transforms every item
+# filter
+[n for n in range(10) if n % 2 == 0]
+# expression (always one output per input)
+["even" if n % 2 == 0 else "odd" for n in range(10)]
+Q17. Nested loops / Cartesian product?
+A:
+
+colors = ['red', 'blue']
+objects = ['car', 'bike']
+pairs = [(color, obj) for color in colors for obj in objects]
+# [('red','car'), ('red','bike'), ('blue','car'), ('blue','bike')]
+Order: outer for first, then inner.
+
+Q18. Flatten a 2D list?
+A:
+
+matrix = [[1, 2], [3, 4], [5, 6]]
+flat = [num for row in matrix for num in row]
+# [1, 2, 3, 4, 5, 6]
+Q19. All 2-letter combinations from "abc" and "de"?
+A:
+
+res = [a + b for a in "abc" for b in "de"]
+# ['ad', 'ae', 'bd', 'be', 'cd', 'ce']
+Q20. Use enumerate in a comprehension?
+A:
+
+words = ["zero", "one", "two"]
+indexed = [f"{i}:{word}" for i, word in enumerate(words)]
+Q21. Dict comprehension from two lists?
+A:
+
+names = ["alice", "bob", "carol"]
+scores = [85, 90, 95]
+score_dict = {name: score for name, score in zip(names, scores)}
+Q22. Set comprehension to unique capitalized names?
+A:
+
+names_with_dupes = ["ALICE", "Bob", "bob", "carol", "ALICE"]
+unique_cap_names = {name.capitalize() for name in names_with_dupes}
+Q23. Dict of squares 1..n?
+A:
+
+n = 5
+d = {x: x**2 for x in range(1, n + 1)}
+# {1:1, 2:4, 3:9, 4:16, 5:25}
+Q24. List vs set vs dict comprehension syntax?
+A:
+
+[x for x in data]          # list
+{x for x in data}          # set
+{k: v for k, v in pairs}   # dict
+Q25. List comprehension vs map/filter?
+A: Comprehensions are often more readable. Roughly:
+
+list(map(func, data))
+# ≈ [func(x) for x in data]
+list(filter(pred, data))
+# ≈ [x for x in data if pred(x)]
+Q26. Multiple conditions?
+A:
+
+[n for n in range(50) if n % 2 == 0 if n % 3 == 0]
+# same as: if n % 2 == 0 and n % 3 == 0
+Q27. Normalize text words (mini-project style)?
+A:
+
+import string
+words = [word.strip(string.punctuation).lower() for word in text.split()]
+Q28. Word frequency with comprehensions?
+A:
+
+unique_words = set(words)
+freq = {word: words.count(word) for word in unique_words}
+Note: count in a loop is O(n²); for large text prefer Counter.
+
+Q29. When are nested comprehensions hard to read?
+A: Deep nesting (3+ levels) or heavy logic — better use normal loops for clarity.
+
+Q30. Can you use else alone at the end like filter?
+A: No. else belongs in a ternary expression before for, not as a trailing filter.
+
+Wrong: [x for x in data if cond else y]
+Right: [x if cond else y for x in data]
+
+Q31. Title-case phrases?
+A:
+
+titlecase_phrases = [phrase.title() for phrase in phrases]
+Q32. Pad strings in a comprehension?
+A:
+
+padded_words = [word.ljust(12, "_") for word in words]
+Q33. Create matrix with nested comprehension?
+A:
+
+matrix = [[j for j in range(3)] for i in range(2)]
+# [[0,1,2], [0,1,2]]
+Q34. Pitfall with mutable default/shared rows?
+A: Avoid [[0]*3]*3 (shared rows). Use comprehension:
+
+matrix = [[0 for _ in range(3)] for _ in range(3)]
+Q35. Performance/memory concern?
+A: Large comprehensions build full lists in memory. If you only iterate once, prefer a generator expression.
+
+Level 3: Hard
+Q36. List comprehension vs generator expression?
+A:
+
+list_comp = [x*x for x in range(1000000)]   # full list in memory
+gen_exp   = (x*x for x in range(1000000))   # lazy, one value at a time
+Generators save memory; lists allow indexing/reuse/len.
+
+Q37. What is the output?
+print([n for n in range(5) if n % 2])
+print(["even" if n % 2 == 0 else "odd" for n in range(4)])
+A:
+
+[1, 3]
+['even', 'odd', 'even', 'odd']
+Q38. What is the output?
+print([i for i in range(3) for j in range(2)])
+A: [0, 0, 1, 1, 2, 2] — outer i, inner j (2 repeats each i).
+
+Q39. Flatten irregular nested list with comprehension alone?
+A: Simple 2D yes; deeply irregular/recursive structures generally need a function/recursion — comprehensions aren’t ideal for arbitrary nesting.
+
+Q40. Scope of comprehension variables (Py3)?
+A: Loop variable is local to the comprehension (doesn’t leak):
+
+x = 10
+[x for x in range(3)]
+print(x)   # 10 in Python 3
+(In Python 2 list comps leaked; not relevant for modern Python.)
+
+Q41. Walrus operator in comprehension (3.8+)?
+A:
+
+values = [10, 20, 5, 30]
+big = [y for x in values if (y := x * 2) > 20]
+# [40, 60]
+Useful but easy to overuse — keep readable.
+
+Q42. Dict comprehension overwrite behavior?
+A: Duplicate keys keep the last value:
+
+{c: ord(c) for c in "abracadabra"}
+# key 'a' appears once with final mapping
+Q43. Efficient frequency counting alternative?
+A:
+
+from collections import Counter
+freq = Counter(words)
+Better than {w: words.count(w) for w in set(words)} for large data.
+
+Q44. What is the output?
+a = [1, 2, 3]
+b = [x for x in a]
+b.append(4)
+print(a, b)
+A: [1, 2, 3] [1, 2, 3, 4] — shallow copy of top-level list.
+
+Q45. Shallow copy caveat with nested lists?
+A:
+
+matrix = [[1, 2], [3, 4]]
+copy = [row for row in matrix]   # new outer list, same inner lists
+copy[0].append(99)
+print(matrix)   # [[1,2,99],[3,4]]
+Need copy.deepcopy or [row[:] for row in matrix] for independent rows.
+
+Q46. Conditional nested comprehension example?
+A:
+
+pairs = [(i, j) for i in range(4) for j in range(4) if i != j]
+Q47. Convert nested loops to comprehension carefully?
+A: Keep same order:
+
+# for x in A:
+#   for y in B:
+#     if cond: out.append(expr)
+[expr for x in A for y in B if cond]
+Q48. When NOT to use list comprehensions?
+A:
+
+Side effects (print, write files) — use loops
+Complex multi-step logic
+Need break/continue style control beyond simple filters
+Extremely large streams (use generators)
+Q49. sum with generator vs list comprehension?
+A:
+
+sum(x*x for x in range(1000))      # better
+sum([x*x for x in range(1000)])    # builds temporary list
+Prefer gen exp inside sum, any, all, max, etc.
+
+Q50. Unique normalized list preserving order?
+A:
+
+seen = set()
+unique = [w.lower() for w in names if not (w.lower() in seen or seen.add(w.lower()))]
+Or clearer loop / dict.fromkeys:
+
+unique = list(dict.fromkeys(w.lower() for w in names))
+Q51. Matrix transpose with comprehension?
+A:
+
+matrix = [[1, 2, 3], [4, 5, 6]]
+transpose = [[row[i] for row in matrix] for i in range(len(matrix[0]))]
+# [[1,4],[2,5],[3,6]]
+Or list(map(list, zip(*matrix))).
+
+Q52. What is the output?
+print([x if x > 0 else 0 for x in [-2, 3, -1, 4]])
+print([x for x in [-2, 3, -1, 4] if x > 0])
+A:
+
+[0, 3, 0, 4]
+[3, 4]
+Q53. Async / parallel note?
+A: List comprehensions are synchronous and single-threaded. For I/O concurrency use async patterns; for CPU parallelism use processes/pools — not plain comprehensions.
+
+Q54. Mini interview task: clean + count words.
+A:
+
+import string
+from collections import Counter
+words = [w.strip(string.punctuation).lower() for w in text.split()]
+freq = Counter(words)
+Shows comprehension + practical counting.
+
+Q55. 30-second interview summary.
+A: List comprehensions build lists with [expr for item in iterable if cond]. Use ternary expr if c else d for value transforms, nested fors for products/flattening, and switch to set/dict comprehensions or generator expressions when uniqueness, mapping, or memory matters. Keep them readable — complex logic belongs in loops.
+
+Quick revision checklist
+Topic	Questions
+Definition / syntax / benefits	Q1–Q4, Q55
+Basic transforms	Q5–Q7, Q13, Q15, Q31–Q32
+Filtering	Q8–Q9, Q11–Q12, Q14, Q26
+New list behavior	Q10, Q44–Q45
+if filter vs if-else expr	Q16, Q30, Q37, Q52
+Nested fors / pairs / flatten	Q17–Q19, Q18, Q33, Q38, Q46–Q47, Q51
+enumerate / zip	Q20–Q21
+Dict / set comprehensions	Q22–Q24, Q42
+map/filter comparison	Q25
+Text cleaning / frequency	Q27–Q28, Q43, Q50, Q54
+Readability / pitfalls	Q29, Q34–Q35, Q48
+Generators / memory	Q36, Q49
+Scope / walrus	Q40–Q41
+Advanced structure	Q39, Q45, Q51, Q53
