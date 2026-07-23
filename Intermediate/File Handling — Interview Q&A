@@ -1,0 +1,349 @@
+File Handling — Interview Q&A (Easy → Hard)
+Aligned with your File Handling.py topics: modes, open/with, read/write APIs, seek/tell, binary files, errors, os/pathlib, and CSV-style student records.
+
+Level 1: Easy
+Q1. What is file handling in Python?
+A: Working with files on disk — create, read, write, append, update, and close files using Python.
+
+Q2. How do you open and close a file?
+A:
+
+f = open('myfile.txt', 'r')
+data = f.read()
+f.close()
+Prefer with so closing is automatic.
+
+Q3. Why is with open(...) recommended?
+A: It is a context manager — file closes automatically even if an error occurs.
+
+with open('myfile.txt', 'r') as f:
+    data = f.read()
+# file already closed here
+Q4. List common file modes.
+A:
+
+Mode	Meaning
+r	Read (file must exist)
+w	Write (truncate/create)
+a	Append (create if missing)
+x	Exclusive create (fail if exists)
+b	Binary
+t	Text (default)
++	Read + write update
+Examples: rb, wb, a+, r+
+
+Q5. What happens in 'w' mode if file already exists?
+A: File is truncated (emptied); old content is lost.
+
+with open('file.txt', 'w') as f:
+    f.write('new data')
+Q6. How do you append without losing content?
+A: Use 'a' mode:
+
+with open('file.txt', 'a') as f:
+    f.write('\nAppended line')
+Q7. Difference between read(), readline(), readlines()?
+A:
+
+read() — whole file as one string (or read(n) chars)
+readline() — one line
+readlines() — all lines as a list
+with open('sample.txt') as f:
+    print(f.read())
+Q8. How do you write to a file?
+A:
+
+with open('output.txt', 'w') as f:
+    f.write('Hello, File!')
+    f.writelines(['Line1\n', 'Line2\n'])
+Q9. Text mode vs binary mode?
+A:
+
+Text (t) — works with str, handles encoding/newlines
+Binary (b) — works with bytes, no encoding translation
+f.write('hello')      # text
+f.write(b'hello')     # binary
+Q10. What error if file not found in read mode?
+A: FileNotFoundError
+
+try:
+    with open('doesnotexist.txt') as f:
+        f.read()
+except FileNotFoundError:
+    print("File not found!")
+Q11. Absolute vs relative path?
+A:
+
+Relative: myfolder/myfile.txt (from current working directory)
+Absolute: C:\Users\...\mydata.txt or /home/user/file.txt
+Q12. Why use raw strings for Windows paths?
+A: Avoid escape issues with \:
+
+path = r"C:\Users\redrsa01\Documents\mydata.txt"
+Better modern option: pathlib.Path.
+
+Q13. How do you iterate lines efficiently?
+A:
+
+with open('file.txt') as f:
+    for line in f:
+        print(line.strip())
+Does not load entire file into memory at once.
+
+Q14. What does f.close() do?
+A: Flushes buffered data and releases the file handle. Forgetting it (without with) can cause data loss/resource leaks.
+
+Q15. Real-life uses of file handling?
+A: Logging, saving configs/user data, CSV export/import, processing logs, report generation, backups.
+
+Level 2: Medium
+Q16. Difference between write() and writelines()?
+A:
+
+write(str) — writes one string
+writelines(iterable) — writes many strings; does not add \n automatically
+f.writelines(["First line\n", "Second line\n"])
+Q17. What are tell() and seek()?
+A:
+
+tell() — current pointer position
+seek(offset, whence) — move pointer
+with open('lines.txt') as f:
+    print(f.tell())
+    print(f.read(5))
+    f.seek(0)
+    print(f.readline())
+Q18. seek whence values?
+A:
+
+0 — from start (default)
+1 — from current position
+2 — from end
+In text mode, seeking from current/end has restrictions; binary is more flexible.
+
+Q19. What if you write() in 'r' mode?
+A: Raises io.UnsupportedOperation: not writable.
+
+Q20. What is 'x' mode used for?
+A: Create a new file only if it doesn’t exist; fails with FileExistsError if it does — prevents accidental overwrite.
+
+Q21. What is 'r+' / 'w+' / 'a+'?
+A: Update modes (read + write):
+
+r+ — read/write, file must exist, no truncate
+w+ — read/write, truncates/creates
+a+ — read/append, writes go to end
+Q22. How to handle large files (GBs)?
+A: Avoid read() / readlines(). Stream line-by-line:
+
+with open('hugefile.txt') as f:
+    for line in f:
+        process(line)
+Or read fixed-size chunks.
+
+Q23. How to check if a file exists?
+A:
+
+import os
+os.path.exists('sample.txt')
+from pathlib import Path
+Path('sample.txt').exists()
+Q24. Rename and delete files?
+A:
+
+import os
+os.rename('lines.txt', 'renamed_lines.txt')
+os.remove('binaryfile.bin')
+pathlib: Path('a.txt').rename('b.txt'), Path('a.txt').unlink()
+
+Q25. Why prefer pathlib?
+A: Cleaner cross-platform paths, object-oriented API:
+
+from pathlib import Path
+myfile = Path.home() / "Documents" / "demo.txt"
+Q26. Binary read/write example?
+A:
+
+data_bytes = bytes([120, 3, 255, 0, 100])
+with open('binaryfile.bin', 'wb') as f:
+    f.write(data_bytes)
+with open('binaryfile.bin', 'rb') as f:
+    print(f.read())
+Q27. Encoding in text files?
+A: Specify encoding explicitly for portability:
+
+with open('file.txt', 'r', encoding='utf-8') as f:
+    data = f.read()
+Avoid surprises across Windows/Linux default encodings.
+
+Q28. Difference between strip() and reading raw lines?
+A: readline() keeps \n. Use .strip() to remove whitespace/newlines when processing.
+
+Q29. CSV-style write/read without csv module?
+A:
+
+def save_marks(filename, records):
+    with open(filename, 'w') as f:
+        for name, mark in records:
+            f.write(f"{name},{mark}\n")
+def load_marks(filename):
+    students = []
+    with open(filename) as f:
+        for line in f:
+            name, mark = line.strip().split(',')
+            students.append((name, int(mark)))
+    return students
+For real CSV (commas in fields, quotes), use csv module.
+
+Q30. flush() vs close()?
+A:
+
+flush() — write buffers to OS now, file stays open
+close() — flush + release handle
+with block exit calls close.
+
+Q31. Context manager protocol briefly?
+A: with calls __enter__ / __exit__ on the file object, ensuring cleanup in __exit__ even after exceptions.
+
+Q32. How to count words in a file safely?
+A:
+
+def count_words(filename):
+    try:
+        with open(filename) as f:
+            return len(f.read().split())
+    except FileNotFoundError:
+        return 0
+Q33. Opening same file multiple times?
+A: Possible, but be careful with buffering and write visibility. Prefer one clear open scope; for concurrent access, consider locking/coordination.
+
+Q34. What is a file pointer / cursor?
+A: Internal position where next read/write happens. Moves forward as you read/write; seek repositions it.
+
+Q35. Common exceptions in file handling?
+A: FileNotFoundError, PermissionError, IsADirectoryError, FileExistsError (x mode), UnicodeDecodeError, UnsupportedOperation.
+
+Level 3: Hard
+Q36. What is the output idea?
+with open('t.txt', 'w') as f:
+    f.write('ABCDE')
+with open('t.txt') as f:
+    print(f.read(2))
+    print(f.tell())
+    f.seek(0)
+    print(f.read())
+A:
+
+AB
+2
+ABCDE
+Q37. Why can seek(1, 1) fail in text mode?
+A: In text mode, only seeks relative to start (and sometimes end with caveats) are reliably allowed, because character ≠ byte with variable encodings. Use binary mode for precise byte seeks.
+
+Q38. readlines() vs iterating — memory difference?
+A: readlines() builds a full list in memory. for line in f: streams lines — better for large files.
+
+Q39. What does this do?
+with open('f.txt', 'w') as f:
+    f.write('hello')
+with open('f.txt', 'w') as f:
+    pass
+A: Second open in 'w' truncates file → file becomes empty.
+
+Q40. Atomic write pattern (interview design)?
+A: Write to temp file, then replace original — avoids corrupt file if crash mid-write:
+
+from pathlib import Path
+tmp = Path('data.tmp')
+final = Path('data.txt')
+tmp.write_text('content', encoding='utf-8')
+tmp.replace(final)
+Q41. Binary vs text for images/PDFs?
+A: Always binary (rb/wb). Text mode can alter bytes/newlines and corrupt files.
+
+Q42. How does buffering affect writes?
+A: Data may stay in memory buffer until flush/close/buffer full. If process crashes before flush, recent writes can be lost. Use flush() or open(..., buffering=1) (line buffered) when needed.
+
+Q43. os.remove on open file (Windows)?
+A: Often fails with permission error if file still open. Close first, then delete.
+
+Q44. Reading UTF-8 file with wrong encoding?
+A: May raise UnicodeDecodeError or produce garbled text. Always set encoding='utf-8' (or correct encoding).
+
+Q45. Implement safe append log line.
+A:
+
+from datetime import datetime
+with open('log.txt', 'a', encoding='utf-8') as f:
+    f.write(f"{datetime.now()}: event X\n")
+Q46. Difference between Path.write_text and open().write?
+A: Path.write_text opens, writes, closes in one call — convenient for small files. open gives more control (chunking, binary, pointer ops).
+
+Q47. How to process student CSV and find topper (your mini-project)?
+A:
+
+loaded = load_marks('students.csv')
+topper = max(loaded, key=lambda x: x[1])
+print(topper[0], topper[1])
+Q48. Why is manual CSV with split(',') risky?
+A: Breaks if fields contain commas/quotes/newlines. Use:
+
+import csv
+with open('students.csv', newline='') as f:
+    reader = csv.reader(f)
+    for row in reader:
+        ...
+Q49. json file handling vs plain text?
+A:
+
+import json
+with open('data.json', 'w', encoding='utf-8') as f:
+    json.dump(obj, f)
+with open('data.json', encoding='utf-8') as f:
+    obj = json.load(f)
+Structured data with types preserved better than ad-hoc text formats.
+
+Q50. Context manager + exception — is file closed?
+A: Yes. with ensures __exit__ runs, so file closes even when exception is raised inside the block.
+
+Q51. What is 'x' vs exists-check then 'w'?
+A: Exists-check then write can race (TOCTOU). 'x' is safer for “create only if absent” in one operation.
+
+Q52. Reading file twice without reopening?
+with open('f.txt') as f:
+    print(f.read())
+    print(f.read())
+A: Second read() returns '' — pointer at EOF. Use f.seek(0) before reading again.
+
+Q53. Cross-platform newline handling?
+A: Text mode translates newlines (\n ↔ OS default). Binary mode does not. For protocol-exact bytes, use binary.
+
+Q54. Design: copy a large file efficiently?
+A:
+
+import shutil
+shutil.copyfile('src.bin', 'dst.bin')
+# or chunk copy:
+with open('src.bin', 'rb') as s, open('dst.bin', 'wb') as d:
+    while chunk := s.read(1024 * 1024):
+        d.write(chunk)
+Q55. 30-second interview summary.
+A: Use with open(path, mode, encoding='utf-8') for safe file I/O. Choose modes carefully (r/w/a/b/+). Prefer line iteration for large files, pathlib/os for path ops, handle FileNotFoundError, and use binary for non-text. seek/tell manage the file pointer; never forget that 'w' overwrites.
+
+Quick revision checklist
+Topic	Questions
+Basics / open / close	Q1–Q2, Q14
+with context manager	Q3, Q31, Q50
+Modes	Q4–Q6, Q19–Q21, Q39, Q51
+Read APIs	Q7, Q13, Q16, Q22, Q38, Q52
+Write/append	Q8, Q16, Q45
+Text vs binary	Q9, Q26, Q41, Q53
+Errors	Q10, Q35, Q44
+Paths / pathlib / raw strings	Q11–Q12, Q25, Q46
+seek / tell	Q17–Q18, Q34, Q36–Q37
+os file ops	Q23–Q24, Q43
+Large files / chunking	Q22, Q38, Q54
+Encoding / newlines	Q27, Q44, Q53
+CSV / structured data	Q29, Q47–Q49
+Buffering / atomic write	Q30, Q40, Q42
+Real-world use	Q15, Q32, Q55
