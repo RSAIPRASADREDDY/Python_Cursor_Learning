@@ -1,0 +1,397 @@
+Exception Handling — Interview Q&A (Easy → Hard)
+Aligned with your Exception Handling.py topics: try/except/else/finally, raise, multiple exceptions, custom exceptions, nesting, cleanup, and calculator-style error handling.
+
+Level 1: Easy
+Q1. What is an exception in Python?
+A: An error detected at runtime that interrupts normal flow (e.g. dividing by zero, invalid conversion). If unhandled, the program crashes with a traceback.
+
+Q2. What is exception handling?
+A: Using try, except, else, finally, and raise to catch and respond to errors gracefully instead of crashing.
+
+Q3. Basic try / except syntax?
+A:
+
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("You can't divide by zero!")
+Q4. Why use exception handling?
+A:
+
+Prevent crashes
+Show user-friendly messages
+Clean up resources (files, DB)
+Separate normal logic from error logic
+Make programs more robust
+Q5. What is raise?
+A: Manually triggers an exception:
+
+raise ValueError("Insufficient balance.")
+Q6. What does finally do?
+A: Runs always — whether an exception occurred or not. Used for cleanup.
+
+try:
+    file = open('somefile.txt')
+except FileNotFoundError:
+    print("File not found.")
+finally:
+    print("This block always executes.")
+Q7. What does else do with try?
+A: Runs only if no exception occurred in try:
+
+try:
+    age = int(input("Enter age: "))
+except ValueError:
+    print("Invalid number.")
+else:
+    print("Age accepted:", age)
+Q8. Common built-in exceptions?
+A: ValueError, TypeError, ZeroDivisionError, IndexError, KeyError, FileNotFoundError, AttributeError, NameError, ImportError, RuntimeError.
+
+Q9. How do you catch multiple exception types?
+A:
+
+try:
+    num = int(input("Enter a number: "))
+    inv = 10 / num
+except ValueError:
+    print("Not a valid integer.")
+except ZeroDivisionError:
+    print("Number cannot be zero.")
+Or combine:
+
+except (ValueError, ZeroDivisionError) as e:
+    print(e)
+Q10. How do you access the exception object?
+A:
+
+try:
+    lst = [1, 2, 3]
+    print(lst[8])
+except IndexError as error:
+    print("IndexError details:", error)
+Q11. Difference between syntax error and exception?
+A:
+
+SyntaxError — code is invalid; found before/at parse time
+Exception — code is syntactically valid but fails at runtime
+You generally handle exceptions, not syntax errors, with try/except.
+
+Q12. What is a traceback?
+A: The error report showing exception type, message, and call stack — where the error occurred.
+
+Q13. Simple withdraw example with raise?
+A:
+
+def withdraw(balance, amount):
+    if amount > balance:
+        raise ValueError("Insufficient balance.")
+    return balance - amount
+Q14. Does finally run if return is in try?
+A: Yes. finally still executes before the function actually returns.
+
+Q15. Real-world use of exception handling?
+A: Calculator input validation, file open failures, API/network errors, payment insufficient funds, database connection cleanup.
+
+Level 2: Medium
+Q16. Full order: try / except / else / finally?
+A:
+
+try runs
+If error → matching except
+If no error → else
+Always → finally
+try:
+    ...
+except ValueError:
+    ...
+else:
+    ...
+finally:
+    ...
+Q17. except Exception: vs bare except:?
+A:
+
+except Exception: — catches most regular errors (recommended if broad catch needed)
+except: — catches everything, including KeyboardInterrupt, SystemExit — usually bad
+Prefer specific exceptions, then except Exception if needed.
+
+Q18. Why avoid bare except:?
+A: Can hide Ctrl+C, system exits, and programming bugs — making debugging hard and apps unresponsive to interrupts.
+
+Q19. What is a custom exception?
+A: Your own exception class for domain-specific errors:
+
+class NegativeNumberError(Exception):
+    """Raised when a negative number is encountered."""
+    pass
+def sqrt(num):
+    if num < 0:
+        raise NegativeNumberError("Cannot take sqrt of negative number!")
+    return num ** 0.5
+Q20. Why create custom exceptions?
+A: Clearer intent, better API contracts, catch only your app errors without catching unrelated built-ins.
+
+Q21. Nested try/except example?
+A:
+
+try:
+    x = int(input("Numerator: "))
+    y = int(input("Denominator: "))
+    try:
+        print("Result:", x / y)
+    except ZeroDivisionError:
+        print("You tried to divide by zero.")
+except ValueError:
+    print("Entered value is not an integer.")
+Q22. How to ensure file cleanup with exceptions?
+A: Prefer with open(...). Or:
+
+try:
+    f = open("file.txt")
+    # work
+finally:
+    f.close()
+Q23. raise vs assert?
+A:
+
+raise — intentionally signal errors (production logic)
+assert — debugging checks; raises AssertionError; can be disabled with python -O
+assert age >= 0, "Age cannot be negative"
+Q24. Re-raising an exception?
+A:
+
+try:
+    ...
+except ValueError:
+    log_error()
+    raise   # re-raise same exception
+Q25. Exception chaining with raise from?
+A: Keeps original cause:
+
+try:
+    int("abc")
+except ValueError as e:
+    raise RuntimeError("Parsing failed") from e
+Q26. Catching all exceptions (when / how)?
+A:
+
+try:
+    val = int("10.8")
+except Exception as e:
+    print("Some error occurred:", e)
+Use sparingly — log and/or re-raise when appropriate.
+
+Q27. What is EAFP vs LBYL?
+A:
+
+EAFP — Easier to Ask Forgiveness than Permission (try/except) — Pythonic
+LBYL — Look Before You Leap (if checks first)
+# EAFP
+try:
+    value = my_dict[key]
+except KeyError:
+    value = default
+Q28. Retry logic with exceptions?
+A:
+
+import time
+for i in range(3):
+    try:
+        res = 10 / int(input("Enter divisor: "))
+        print("Result:", res)
+        break
+    except Exception as e:
+        print("Failed:", e)
+        time.sleep(1)
+else:
+    print("All retries used.")
+Q29. How to print stack trace?
+A:
+
+import traceback
+try:
+    1 / 0
+except Exception:
+    traceback.print_exc()
+Or logging.exception("msg").
+
+Q30. Exception hierarchy basics?
+A: Most user exceptions inherit from Exception.
+BaseException is top (includes SystemExit, KeyboardInterrupt).
+Catch Exception, not BaseException, in app code.
+
+Q31. Multiple except order matters?
+A: Yes. Put specific before general:
+
+except FileNotFoundError:
+    ...
+except OSError:   # parent of FileNotFoundError
+    ...
+except Exception:
+    ...
+Otherwise broad handler catches first and specific ones never run.
+
+Q32. Calculator mini-project pattern?
+A: Validate inputs in try, raise for invalid operator / divide-by-zero, print result in else, ask continue in finally.
+
+Q33. Can else run after except?
+A: No. else runs only when try succeeds with no exception.
+
+Q34. What if no matching except?
+A: Exception propagates to outer try or crashes the program with traceback.
+
+Q35. User-friendly vs developer error messages?
+A: Show simple message to users; log full traceback for developers (logging.exception).
+
+Level 3: Hard
+Q36. What if both try and finally raise?
+A: The exception from finally propagates (can suppress/override the try exception). Be careful raising inside finally.
+
+try:
+    raise ValueError("Try error")
+finally:
+    raise RuntimeError("Finally error")
+# RuntimeError is raised
+Q37. What is the output?
+def f():
+    try:
+        return 1
+    finally:
+        return 2
+print(f())
+A: 2 — finally return overrides try return. Avoid returning from finally.
+
+Q38. Custom exception with extra data?
+A:
+
+class WithdrawError(Exception):
+    def __init__(self, balance, amount):
+        super().__init__(f"Need {amount}, have {balance}")
+        self.balance = balance
+        self.amount = amount
+Q39. except Exception as e — what is e.args?
+A: Tuple of arguments passed to the exception. str(e) usually gives the message.
+
+Q40. Suppress exception in Python 3.4+?
+A:
+
+from contextlib import suppress
+with suppress(FileNotFoundError):
+    open('missing.txt').read()
+Q41. Context managers vs try/finally?
+A: with is cleaner for resources. Under the hood, __exit__ handles cleanup similar to finally, and can suppress exceptions if it returns True.
+
+Q42. What is the output?
+try:
+    print("A")
+    raise ValueError("B")
+except ValueError:
+    print("C")
+else:
+    print("D")
+finally:
+    print("E")
+A:
+
+A
+C
+E
+(D skipped because exception occurred)
+
+Q43. What is the output?
+try:
+    print("A")
+except ValueError:
+    print("B")
+else:
+    print("C")
+finally:
+    print("D")
+A:
+
+A
+C
+D
+Q44. Best practice for library APIs?
+A: Raise specific/custom exceptions; document them; don’t catch broadly and swallow silently; chain causes with raise ... from e.
+
+Q45. When is catching Exception acceptable?
+A: Top-level boundaries (request handlers, CLI loops, workers) where you must log, return error response, and continue — then often re-raise or exit cleanly.
+
+Q46. Exception in generator / close()?
+A: Advanced: generators use GeneratorExit (inherits BaseException). Bare except: can accidentally catch it — another reason to avoid bare except.
+
+Q47. Implement safe division function for interview.
+A:
+
+def safe_div(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return None  # or raise custom error
+Prefer raising custom error over returning magic values in larger systems.
+
+Q48. How does Python look up except handlers?
+A: Uses isinstance(raised_exc, ExceptType) matching — subclasses match parent handlers.
+
+except OSError:  # also catches FileNotFoundError
+Q49. raise ValueError vs raise ValueError()?
+A: Both work; class form is normalized to an instance. Prefer explicit message: raise ValueError("msg").
+
+Q50. Debugging: silent failure anti-pattern?
+A:
+
+try:
+    do_work()
+except Exception:
+    pass   # BAD — hides bugs
+Always log or handle meaningfully.
+
+Q51. Nested exception handling — which runs?
+try:
+    try:
+        1 / 0
+    except ZeroDivisionError:
+        print("inner")
+        raise
+except ZeroDivisionError:
+    print("outer")
+A:
+
+inner
+outer
+Q52. else with loops + exceptions retry pattern meaning?
+A: for/else else runs if no break. Combined with retries, else means all attempts failed (as in your retry Q&A style).
+
+Q53. Assertions in production?
+A: Don’t use assert for required runtime validation (security checks, user input). Use raise ValueError/.... Asserts may be disabled with optimization.
+
+Q54. Design calculator errors properly.
+A:
+
+ValueError — invalid operator / bad number conversion
+ZeroDivisionError — divide by zero
+else — print result only on success
+finally — prompt continue / cleanup UI state
+Matches your mini-project structure.
+
+Q55. 30-second interview summary.
+A: Exception handling keeps programs robust using try/except/else/finally and raise. Catch specific errors, use else for success-only logic, finally/with for cleanup, create custom exceptions for domain errors, avoid bare except, and log tracebacks when failures happen.
+
+Quick revision checklist
+Topic	Questions
+Definition / why	Q1–Q2, Q4, Q15
+try/except basics	Q3, Q8–Q10
+raise	Q5, Q13, Q24–Q25, Q49
+else / finally	Q6–Q7, Q14, Q16, Q33, Q36–Q37, Q42–Q43
+Multiple / nested	Q9, Q21, Q31, Q51
+Custom exceptions	Q19–Q20, Q38
+except Exception vs bare	Q17–Q18, Q26, Q45–Q46
+Cleanup / with	Q22, Q41
+assert vs raise	Q23, Q53
+EAFP / retries	Q27–Q28, Q52
+Traceback / logging	Q12, Q29, Q35, Q50
+Hierarchy / matching	Q30, Q48
+Design / calculator	Q32, Q44, Q47, Q54–Q55
+Syntax vs exception	Q11
