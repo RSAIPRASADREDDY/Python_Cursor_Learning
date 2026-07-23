@@ -1,0 +1,361 @@
+String Manipulation — Interview Q&A (Easy → Hard)
+Aligned with your string_Manipulation.py topics: immutability, indexing/slicing, case methods, strip/search/replace, split/join, formatting, validation, reverse/palindrome, translate, encode/decode, and email parsing.
+
+Level 1: Easy
+Q1. What is a string in Python?
+A: An immutable sequence of Unicode characters used to store text.
+
+name = "Sai"
+greet = 'Hello'
+Q2. What is string manipulation?
+A: Changing, searching, parsing, formatting, validating, or analyzing text — usually by creating new strings (because strings are immutable).
+
+Q3. Why are strings immutable?
+A: Once created, contents can’t change in place. Benefits: hashable (dict keys), safer sharing, predictable behavior. “Changes” create new string objects.
+
+Q4. How do you create strings?
+A:
+
+s = 'Hello'
+t = "World"
+multiline = """line1
+line2"""
+Q5. Indexing and slicing?
+A:
+
+name = "Sai"
+print(name[0])     # 'S'
+print(name[-1])    # 'i'
+print(name[1:3])   # 'ai'
+print(name[:2])    # 'Sa'
+print(name[2:])    # 'i'
+Q6. Concatenation and repetition?
+A:
+
+full = "Hello" + " " + "Sai"
+repeat = ("Hello! ") * 2
+Q7. How do you get string length?
+A:
+
+print(len("Sai"))   # 3
+Q8. Case conversion methods?
+A:
+
+s = "pYtHon stRinG"
+s.upper()        # PYTHON STRING
+s.lower()        # python string
+s.title()        # Python String
+s.capitalize()   # Python string
+s.swapcase()     # PyThON STrINg
+Q9. Difference: title() vs capitalize()?
+A:
+
+capitalize() — first character upper, rest lower
+title() — first letter of each word upper
+Q10. Strip whitespace?
+A:
+
+messy = "   Hello Sai   "
+messy.strip()    # both sides
+messy.lstrip()   # left
+messy.rstrip()   # right
+Q11. find vs index?
+A: Both locate substring.
+
+find → returns -1 if missing
+index → raises ValueError if missing
+"banana".find('a')    # 1
+"banana".rfind('a')   # 5
+Q12. startswith / endswith / count?
+A:
+
+text = "banana"
+text.startswith("ba")  # True
+text.endswith("na")    # True
+text.count('a')        # 3
+Q13. Replace a substring?
+A:
+
+"I like apples".replace("apples", "oranges")
+Returns a new string.
+
+Q14. Split and join?
+A:
+
+colors = "red,green,blue".split(",")
+joined = "|".join(colors)   # red|green|blue
+Q15. f-string vs format()?
+A:
+
+age, city = 25, "Bangalore"
+f"My age is {age} and I live in {city}"
+"My age is {} and I live in {}".format(age, city)
+f-strings are usually preferred (Python 3.6+).
+
+Level 2: Medium
+Q16. Alignment methods?
+A:
+
+"cat".center(10, "*")   # ***cat****
+"cat".ljust(10, "-")    # cat-------
+"cat".rjust(10, ".")    # .......cat
+"123".zfill(6)          # 000123
+Q17. Common validation methods?
+A:
+
+"Sai21".isalnum()   # True
+"Sai21".isalpha()   # False
+"123".isdigit()     # True
+"abc".islower()     # True
+"ABC".isupper()     # True
+" ".isspace()       # True
+Also: isnumeric(), istitle(), isdecimal(), isidentifier().
+
+Q18. Reverse a string?
+A:
+
+"Python"[::-1]   # 'nohtyP'
+Q19. Palindrome check?
+A:
+
+def is_palindrome(word):
+    return word == word[::-1]
+Q20. Reverse words in a sentence (not characters)?
+A:
+
+sentence = "Python is awesome"
+rev = " ".join(reversed(sentence.split()))
+# 'awesome is Python'
+Q21. Why prefer join over repeated +?
+A: Each += may create a new string (costly in loops). join builds result more efficiently:
+
+".".join(["a", "b", "c"])   # a.b.c
+Q22. Clean CSV-like list with strip?
+A:
+
+langs = "  Python, Java  , C++ ,Go  "
+lst = [lang.strip() for lang in langs.split(",")]
+# ['Python', 'Java', 'C++', 'Go']
+Q23. Remove punctuation with translate?
+A:
+
+import string
+table = str.maketrans('', '', string.punctuation)
+clean = data.translate(table)
+Very efficient for character deletion/mapping.
+
+Q24. Extract all digits from a string?
+A:
+
+digits = ''.join(ch for ch in mix if ch.isdigit())
+Q25. Encode / decode?
+A:
+
+s = "Café"
+utf_bytes = s.encode('utf-8')   # bytes
+decoded = utf_bytes.decode('utf-8')
+Q26. str vs bytes?
+A:
+
+str — text (Unicode)
+bytes — raw binary data
+Convert with encode/decode.
+
+Q27. Format with dictionary?
+A:
+
+info = {"name": "Sai", "score": 92}
+"Name: {name}, Score: {score}".format(**info)
+Q28. Check numeric integer string (not float)?
+A:
+
+"12345".isdigit()    # True
+"12.5".isdigit()     # False
+For negatives/signs, isdigit() is False ("-5"). Use careful parsing/int() with try/except when needed.
+
+Q29. Character frequency?
+A:
+
+from collections import Counter
+Counter("banana")   # {'a':3,'n':2,'b':1}
+Or: {ch: s.count(ch) for ch in set(s)} (slower for large strings).
+
+Q30. Remove all vowels (case-insensitive)?
+A:
+
+import re
+re.sub(r'(?i)[aeiou]', '', "Hello World")  # 'Hll Wrld'
+Or comprehension:
+
+''.join(ch for ch in s if ch.lower() not in 'aeiou')
+Q31. split() vs split(' ')?
+A:
+
+split() — splits on any whitespace, removes empty chunks
+split(' ') — splits only on single space; can keep empties
+"a  b".split()      # ['a','b']
+"a  b".split(' ')   # ['a', '', 'b']
+Q32. partition / rpartition?
+A: Splits into 3 parts at first/last separator:
+
+"sai@gmail.com".partition("@")
+# ('sai', '@', 'gmail.com')
+Useful for email-like parsing.
+
+Q33. Email analyzer basics (your mini-project)?
+A:
+
+Validate one @
+username, domain = email.split("@")
+Mask username
+Check allowed domains
+username.isalnum() check
+Q34. Mask username for privacy?
+A:
+
+if len(username) > 2:
+    masked = username[0] + '*' * (len(username) - 2) + username[-1]
+Q35. Immutable gotcha?
+s = "hello"
+s.upper()
+print(s)
+A: Prints hello — must assign: s = s.upper().
+
+Level 3: Hard
+Q36. Are strings mutable via indexing?
+s = "hello"
+# s[0] = 'H'
+A: No — TypeError. Build a new string instead.
+
+Q37. Interning / is with strings?
+A: Small/identifier-like strings may be interned, so is can be True accidentally. Always compare with == for value equality.
+
+Q38. Unicode reverse caveat of s[::-1]?
+A: Can break grapheme clusters (emoji + modifiers, some accents). Visual reverse may look wrong even if code points reverse.
+
+Q39. isnumeric vs isdigit vs isdecimal?
+A: Increasingly broader sets of numeric characters:
+
+isdecimal ⊆ isdigit ⊆ isnumeric (generally)
+Example: some Unicode fractions may pass isnumeric but not isdigit
+Q40. Safe CSV parse when fields contain commas?
+A: Don’t use naive split(','):
+
+import csv
+from io import StringIO
+line = '"Sai, Kumar",21,"Bangalore, IN"'
+fields = next(csv.reader(StringIO(line)))
+# ['Sai, Kumar', '21', 'Bangalore, IN']
+Q41. Regex example for phone extraction?
+A:
+
+import re
+re.findall(r'\+\d{2}-\d{3}-\d{3}-\d{4}', text)
+Q42. Efficient multi-replace?
+A: str.translate for char mapping; loop/replace chain for simple cases; re.sub for patterns.
+
+Q43. What is the output?
+print("banana".find("na"))
+print("banana".find("na", 3))
+print("banana".replace("a", "o", 2))
+A:
+
+2
+4
+bonono
+(replace count=2 replaces first two as → bonona wait: b-a-n-a-n-a → first two a's: positions 1 and 3 → bonona)
+
+Let me recalculate: "banana" replace a with o, count 2:
+
+index 1 'a' → o → "bonana"
+index 3 'a' → o → "bonona"
+Yes: bonona
+
+Q44. f-string expression power?
+A:
+
+print(f"{name.upper():*^12}")
+print(f"{3.14159:.2f}")
+Supports expressions, format specs.
+
+Q45. % formatting vs format vs f-string?
+A:
+
+% — older
+str.format — flexible, reusable templates
+f-strings — fastest/readable for most inline cases
+Q46. Casefold vs lower for comparisons?
+A: casefold() is stronger for caseless matching (Unicode), e.g. German ß → ss. Prefer for international case-insensitive compare.
+
+a.casefold() == b.casefold()
+Q47. Remove prefix/suffix (3.9+)?
+A:
+
+"Test.py".removesuffix(".py")
+"pre_value".removeprefix("pre_")
+Q48. Memory note: slices?
+A: Slicing creates a new string (copy of selected chars). Large repeated slices can cost memory/time.
+
+Q49. Build anagram check interview answer?
+A:
+
+from collections import Counter
+def anagram(a, b):
+    return Counter(a.replace(" ", "").lower()) == Counter(b.replace(" ", "").lower())
+Q50. First non-repeating character?
+A:
+
+from collections import Counter
+def first_unique(s):
+    c = Counter(s)
+    for ch in s:
+        if c[ch] == 1:
+            return ch
+    return None
+Q51. Validate email simply vs robustly?
+A: Simple: one @, split user/domain, domain whitelist (your mini-project).
+Robust: regex/email-validator libraries; still not perfect without sending confirmation.
+
+Q52. What is the output?
+print("".join(reversed("ab")))
+print("a" * 0)
+print(bool(""))
+print(bool(" "))
+A:
+
+ba
+False
+True
+Q53. in operator on strings?
+A: Checks substring membership:
+
+"py" in "python"   # True
+"" in "python"     # True (empty string is substring)
+Q54. Design: normalize user input names?
+A:
+
+name = input().strip()
+name = " ".join(name.split())   # collapse inner spaces
+name = name.title()
+Q55. 30-second interview summary.
+A: Strings are immutable Unicode sequences. Manipulate via indexing/slicing and methods (upper, strip, find, replace, split/join, validation, formatting). Prefer join for building, f-strings for formatting, translate/regex for advanced cleaning, and always remember methods return new strings.
+
+Quick revision checklist
+Topic	Questions
+Definition / immutability	Q1–Q3, Q35–Q36
+Create / index / slice	Q4–Q5, Q48
++ / * / len	Q6–Q7, Q52
+Case methods	Q8–Q9, Q46
+Strip / search / replace	Q10–Q13, Q43
+Split / join	Q14, Q20–Q22, Q31–Q32
+Formatting / align	Q15–Q16, Q27, Q44–Q45
+Validation	Q17, Q28, Q39
+Reverse / palindrome	Q18–Q20, Q38
+Efficiency (join)	Q21
+Translate / digits / vowels	Q23–Q24, Q30, Q42
+Encode/decode	Q25–Q26
+Counter / anagram / unique	Q29, Q49–Q50
+Regex / CSV	Q40–Q41
+Email mini-project	Q33–Q34, Q51
+Membership / normalize	Q53–Q54
+Summary	Q55
