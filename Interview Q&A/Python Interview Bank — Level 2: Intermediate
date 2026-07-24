@@ -1,0 +1,2834 @@
+# Python Interview Bank — Level 2: Intermediate
+
+> **Scope:** Comprehensions, functional tools, memory model, standard library, concurrency basics, testing, and debugging.  
+> **Format:** Each topic includes explanation, 15 Q&A (Basic / Intermediate / Advanced), code, scenarios, and traps.
+
+---
+
+## Table of Contents
+
+1. [List Comprehensions](#1-list-comprehensions)
+2. [Dictionary Comprehensions](#2-dictionary-comprehensions)
+3. [Set Comprehensions](#3-set-comprehensions)
+4. [Generators](#4-generators)
+5. [Iterators](#5-iterators)
+6. [Decorators](#6-decorators)
+7. [Closures](#7-closures)
+8. [Recursion](#8-recursion)
+9. [*args and **kwargs](#9-args-and-kwargs)
+10. [Enumerate](#10-enumerate)
+11. [Zip](#11-zip)
+12. [Map](#12-map)
+13. [Filter](#13-filter)
+14. [Reduce](#14-reduce)
+15. [Shallow Copy](#15-shallow-copy)
+16. [Deep Copy](#16-deep-copy)
+17. [Memory Management](#17-memory-management)
+18. [Mutable vs Immutable Objects](#18-mutable-vs-immutable-objects)
+19. [Namespaces](#19-namespaces)
+20. [Context Managers](#20-context-managers)
+21. [Regular Expressions](#21-regular-expressions)
+22. [Logging](#22-logging)
+23. [JSON Handling](#23-json-handling)
+24. [CSV Handling](#24-csv-handling)
+25. [XML Parsing](#25-xml-parsing)
+26. [Pickle](#26-pickle)
+27. [Collections Module](#27-collections-module)
+28. [OS Module](#28-os-module)
+29. [Sys Module](#29-sys-module)
+30. [Argparse](#30-argparse)
+31. [Threading Basics](#31-threading-basics)
+32. [Multiprocessing Basics](#32-multiprocessing-basics)
+33. [Subprocess Module](#33-subprocess-module)
+34. [Unit Testing](#34-unit-testing)
+35. [PyTest Introduction](#35-pytest-introduction)
+36. [Debugging Techniques](#36-debugging-techniques)
+
+---
+
+## 1. List Comprehensions
+
+#### Concept Explanation
+
+List comprehensions provide a concise syntax to build lists from iterables: `[expression for item in iterable if condition]`. They are generally faster than equivalent `for` loops because the iteration runs in optimized C bytecode. Comprehensions create the **entire list in memory** immediately (eager evaluation), unlike generator expressions which are lazy. Use them for simple transforms and filters; switch to loops when logic is multi-step or nested deeply.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What is the syntax of a list comprehension?
+
+**Answer:** `[expr for item in iterable]` optionally followed by `if condition`.
+
+**Explanation:** The expression is evaluated for each item; the optional filter skips items where the condition is false.
+
+**Example:**
+```python
+squares = [x * x for x in range(5)]  # [0, 1, 4, 9, 16]
+evens = [x for x in range(10) if x % 2 == 0]
+```
+
+**Difficulty:** Easy
+
+**Interview Tips:** State that comprehensions are syntactic sugar over loops, not magic.
+
+---
+
+**Q2:** How do you convert strings to uppercase using a comprehension?
+
+**Answer:** `[s.upper() for s in words]`
+
+**Explanation:** The expression `s.upper()` runs once per element.
+
+**Example:**
+```python
+words = ["hello", "world"]
+result = [w.upper() for w in words]  # ['HELLO', 'WORLD']
+```
+
+**Difficulty:** Easy
+
+**Interview Tips:** Mention readability—don't chain too many operations in one expression.
+
+---
+
+**Q3:** Can you use `if-else` inside a list comprehension?
+
+**Answer:** Yes, but `if-else` must appear **before** `for` as a ternary: `[a if cond else b for x in items]`.
+
+**Explanation:** Trailing `if` filters; inline `if-else` chooses between two expressions.
+
+**Example:**
+```python
+labels = ["even" if x % 2 == 0 else "odd" for x in range(4)]
+```
+
+**Difficulty:** Easy
+
+**Interview Tips:** Many candidates confuse filter `if` (after `for`) with ternary `if-else` (before `for`).
+
+---
+
+**Q4:** What does `[x for x in range(3)]` return?
+
+**Answer:** `[0, 1, 2]`
+
+**Explanation:** Identity expression with simple range iteration.
+
+**Example:**
+```python
+>>> [x for x in range(3)]
+[0, 1, 2]
+```
+
+**Difficulty:** Easy
+
+**Interview Tips:** Use as a warm-up before harder nesting questions.
+
+---
+
+**Q5:** Are list comprehensions faster than for loops?
+
+**Answer:** Often yes for simple cases, but readability matters more for complex logic.
+
+**Explanation:** CPython optimizes comprehensions; difference is negligible for small data.
+
+**Example:**
+```python
+# Equivalent
+result = []
+for x in data:
+    if x > 0:
+        result.append(x * 2)
+# vs
+result = [x * 2 for x in data if x > 0]
+```
+
+**Difficulty:** Easy
+
+**Interview Tips:** Say "profile if it matters"—shows engineering maturity.
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Write a nested comprehension to flatten a 2D list.
+
+**Answer:** `[item for row in matrix for item in row]`
+
+**Explanation:** Left-to-right nesting mirrors nested for loops.
+
+**Example:**
+```python
+matrix = [[1, 2], [3, 4]]
+flat = [x for row in matrix for x in row]  # [1, 2, 3, 4]
+```
+
+**Difficulty:** Medium | **Interview Tips:** Draw loop order on paper.
+
+---
+
+**Q2:** How does a list comprehension differ from a generator expression?
+
+**Answer:** Comprehensions use `[]` and build a list; generators use `()` and yield items lazily.
+
+**Example:**
+```python
+lst = [x * 2 for x in range(3)]   # list
+gen = (x * 2 for x in range(3))   # generator
+```
+
+**Difficulty:** Medium | **Interview Tips:** Mention memory for large datasets.
+
+---
+
+**Q3:** Can side effects occur inside comprehensions?
+
+**Answer:** Technically yes (`print(x)`), but it's discouraged by style guides (PEP 8).
+
+**Example:**
+```python
+# Bad practice
+[x for x in range(3) if print(x) or True]
+```
+
+**Difficulty:** Medium | **Interview Tips:** Say "comprehensions should be pure transforms."
+
+---
+
+**Q4:** Build a list of (index, value) pairs without `enumerate` in the comprehension header.
+
+**Answer:** `[(i, v) for i, v in enumerate(items)]` — or manual counter (not recommended).
+
+**Example:**
+```python
+pairs = [(i, v) for i, v in enumerate(["a", "b"])]
+```
+
+**Difficulty:** Medium
+
+---
+
+**Q5:** What happens with `[x for x in items]` when `items` is modified during iteration?
+
+**Answer:** Comprehensions snapshot iteration over the original iterable protocol; mutating a list while iterating elsewhere can still cause surprises in loops, but comprehensions iterate once at creation.
+
+**Difficulty:** Medium | **Interview Tips:** Distinguish comprehension vs mutating while looping manually.
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Implement matrix transpose with nested comprehension.
+
+**Answer:** `[[row[i] for row in matrix] for i in range(len(matrix[0]))]`
+
+**Example:**
+```python
+m = [[1, 2], [3, 4]]
+t = [[row[i] for row in m] for i in range(len(m[0]))]  # [[1, 3], [2, 4]]
+```
+
+**Difficulty:** Hard
+
+---
+
+**Q2:** Why might a deeply nested comprehension be an anti-pattern?
+
+**Answer:** Readability, debug difficulty, and accidental O(n²) or worse complexity.
+
+**Difficulty:** Hard | **Interview Tips:** Propose helper functions or `itertools`.
+
+---
+
+**Q3:** Does `[f(x) for x in items]` call `f` eagerly for all items?
+
+**Answer:** Yes—all elements are computed when the comprehension runs.
+
+**Difficulty:** Hard
+
+---
+
+**Q4:** Compare memory of `[x for x in huge]` vs `(x for x in huge)`.
+
+**Answer:** List stores all elements; generator stores iterator state only.
+
+**Difficulty:** Hard
+
+---
+
+**Q5:** Can walrus operator `:=` appear in comprehensions (3.8+)?
+
+**Answer:** Yes, e.g. `[y for x in data if (y := f(x)) > 0]`
+
+**Example:**
+```python
+data = ["1", "x", "3"]
+nums = [int(x) for x in data if x.isdigit()]
+```
+
+**Difficulty:** Hard | **Interview Tips:** Know version-specific features if asked.
+
+#### Coding Examples
+
+```python
+# Filter + transform pipeline
+users = [{"name": "Ana", "active": True}, {"name": "Bo", "active": False}]
+active_names = [u["name"].upper() for u in users if u["active"]]
+
+# Nested with condition
+grid = [[1 if i == j else 0 for j in range(3)] for i in range(3)]  # identity matrix
+```
+
+#### Real-time Scenarios
+
+- **API response shaping:** Extract IDs from JSON list where `status == "open"`.
+- **Log parsing:** Pull IP addresses matching a pattern from access logs.
+- **ETL:** Normalize column values before loading to a database.
+
+#### Interview Traps
+
+- Confusing filter `if` placement vs ternary `if-else`.
+- Using comprehension when side effects or multi-line logic is needed.
+- Assuming comprehensions are always faster for complex branches.
+
+---
+
+## 2. Dictionary Comprehensions
+
+#### Concept Explanation
+
+Dictionary comprehensions build dicts inline: `{key_expr: value_expr for item in iterable if condition}`. Keys must be hashable. They are ideal for remapping, inverting (when values are unique), and filtering dicts. Like list comprehensions, they evaluate eagerly.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What is the syntax for a dict comprehension?
+
+**Answer:** `{k: v for item in iterable}`
+
+**Example:**
+```python
+squares = {x: x * x for x in range(5)}
+```
+
+**Difficulty:** Easy | **Interview Tips:** Note colon separates key and value.
+
+---
+
+**Q2:** How do you swap keys and values (invert) a dict?
+
+**Answer:** `{v: k for k, v in d.items()}` if values are unique and hashable.
+
+**Example:**
+```python
+d = {"a": 1, "b": 2}
+inv = {v: k for k, v in d.items()}
+```
+
+**Difficulty:** Easy
+
+---
+
+**Q3:** Filter dict by value?
+
+**Answer:** `{k: v for k, v in d.items() if v > 10}`
+
+**Difficulty:** Easy
+
+---
+
+**Q4:** Can keys be expressions?
+
+**Answer:** Yes, e.g. `{str(x): x for x in range(3)}`
+
+**Difficulty:** Easy
+
+---
+
+**Q5:** What if duplicate keys are produced?
+
+**Answer:** Later entries overwrite earlier ones.
+
+**Example:**
+```python
+{k: k for k in [1, 1, 2]}  # {1: 1, 2: 2}
+```
+
+**Difficulty:** Easy | **Interview Tips:** Mention dict insertion order (3.7+).
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Build word → count from a list of words.
+
+**Answer:** Use comprehension with preprocessing or prefer `Counter`; `{w: words.count(w) for w in set(words)}` is O(n²).
+
+**Difficulty:** Medium
+
+---
+
+**Q2:** Merge two lists into a dict.
+
+**Answer:** `{k: v for k, v in zip(keys, values)}` or `dict(zip(keys, values))`
+
+**Difficulty:** Medium
+
+---
+
+**Q3:** Conditional values in comprehension?
+
+**Answer:** `{k: (v1 if cond else v2) for k, v in d.items()}`
+
+**Difficulty:** Medium
+
+---
+
+**Q4:** Nested dict comprehension for 2D coordinates?
+
+**Answer:** `{(x, y): x + y for x in range(3) for y in range(3)}`
+
+**Difficulty:** Medium
+
+---
+
+**Q5:** Difference from `dict(map(...))`?
+
+**Answer:** Comprehension allows filtering and arbitrary key/value expressions inline.
+
+**Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Invert dict with duplicate values safely?
+
+**Answer:** Store lists: `defaultdict(list)` loop or comprehension with grouping logic—not simple inversion.
+
+**Difficulty:** Hard
+
+---
+
+**Q2:** Performance vs loop for millions of keys?
+
+**Answer:** Similar; comprehension slightly faster; I/O dominates in real apps.
+
+**Difficulty:** Hard
+
+---
+
+**Q3:** Use comprehension to rename JSON keys?
+
+**Answer:** `{new_key(k): v for k, v in record.items()}`
+
+**Difficulty:** Hard
+
+---
+
+**Q4:** Can values be unhashable types?
+
+**Answer:** Yes; only keys must be hashable.
+
+**Difficulty:** Hard
+
+---
+
+**Q5:** Dict comprehension vs dict generator (3.x)?
+
+**Answer:** No dict generator; use comprehension or `dict()` with generator of pairs.
+
+**Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+raw = {"user_id": "42", "score": "98"}
+parsed = {k: int(v) if v.isdigit() else v for k, v in raw.items()}
+
+permissions = ["read", "write", "admin"]
+access = {p: p in user_roles for p in permissions}
+```
+
+#### Real-time Scenarios
+
+- Config file normalization (string keys → typed values).
+- Building lookup tables from database query rows.
+- Feature flags map for A/B testing.
+
+#### Interview Traps
+
+- Inverting dicts when values aren't unique.
+- Using unhashable keys (lists) in comprehension.
+- O(n²) counting via `.count()` inside comprehension.
+
+---
+
+## 3. Set Comprehensions
+
+#### Concept Explanation
+
+Set comprehensions `{expr for item in iterable if cond}` create sets—unordered collections of unique, hashable elements. Duplicates are automatically discarded. Useful for deduplication and membership tests.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Syntax of set comprehension?
+
+**Answer:** `{expression for item in iterable}`
+
+**Example:**
+```python
+unique_lengths = {len(w) for w in ["hi", "hey", "hi"]}  # {2, 3}
+```
+
+**Difficulty:** Easy
+
+---
+
+**Q2:** How to deduplicate a list preserving uniqueness only?
+
+**Answer:** `list({x for x in items})` (order may change; use `dict.fromkeys` for order in 3.7+).
+
+**Difficulty:** Easy
+
+---
+
+**Q3:** Can set comprehensions contain lists?
+
+**Answer:** Only hashable elements; lists are unhashable → `TypeError`.
+
+**Difficulty:** Easy
+
+---
+
+**Q4:** Difference from list comprehension?
+
+**Answer:** Curly braces without colon → set; uniqueness enforced.
+
+**Difficulty:** Easy
+
+---
+
+**Q5:** Empty set comprehension?
+
+**Answer:** `{x for x in []}` → `set()`
+
+**Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Extract unique domains from emails.
+
+**Answer:** `{email.split("@")[1] for email in emails if "@" in email}`
+
+**Difficulty:** Medium
+
+---
+
+**Q2:** Set comp vs `set(map(...))`?
+
+**Answer:** Equivalent expressiveness; comprehension often clearer with filters.
+
+**Difficulty:** Medium
+
+---
+
+**Q3:** Nested set comprehension?
+
+**Answer:** `{item for sub in data for item in sub}`
+
+**Difficulty:** Medium
+
+---
+
+**Q4:** Why `{x: x for x in range(3)}` is dict not set?
+
+**Answer:** Colon denotes dict; `{x for x in range(3)}` is set.
+
+**Difficulty:** Medium | **Interview Trap:** `{}` is empty dict, not set.
+
+---
+
+**Q5:** Frozen set comprehension?
+
+**Answer:** `frozenset(...)` from iterable; no `frozenset` comprehension syntax—use `frozenset({...})`.
+
+**Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Set of tuples from two lists?
+
+**Answer:** `{ (a, b) for a, b in zip(A, B) }`
+
+**Difficulty:** Hard
+
+---
+
+**Q2:** Memory vs list for uniqueness on huge data?
+
+**Answer:** Set uses hash table; may use more memory than sorted unique list but O(1) lookups.
+
+**Difficulty:** Hard
+
+---
+
+**Q3:** Parallel set operations after comprehension?
+
+**Answer:** Union/intersection: `s1 | s2`, `s1 & s2`
+
+**Difficulty:** Hard
+
+---
+
+**Q4:** Can comprehension replace `distinct` in SQL pipelines?
+
+**Answer:** Conceptually yes for in-memory ETL dedup steps.
+
+**Difficulty:** Hard
+
+---
+
+**Q5:** Hashability of custom objects in set comp?
+
+**Answer:** Need `__hash__` and `__eq__` unless `__hash__` is None (unhashable).
+
+**Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+logs = ["ERROR a", "INFO b", "ERROR c"]
+error_ids = {line.split()[1] for line in logs if line.startswith("ERROR")}
+
+tags = [t.strip().lower() for doc in documents for t in doc.split(",")]
+unique_tags = {t for t in tags if t}
+```
+
+#### Real-time Scenarios
+
+- Unique visitor IDs from web logs.
+- Distinct error codes in monitoring alerts.
+- Tag normalization for search indexing.
+
+#### Interview Traps
+
+- `{}` creates dict; use `set()` for empty set.
+- Putting unhashable dicts into set comprehension.
+- Expecting set to preserve insertion order for algorithm logic (order is implementation detail for logic, though 3.7+ sets iterate in insertion order).
+
+---
+
+## 4. Generators
+
+#### Concept Explanation
+
+Generators are iterators that produce values lazily using `yield` (function generators) or generator expressions `(x for x in items)`. They maintain execution state between yields, enabling memory-efficient processing of large or infinite sequences. Once exhausted, they cannot be rewound without re-creation.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What keyword defines a generator function?
+
+**Answer:** `yield`
+
+**Example:**
+```python
+def count_up(n):
+    for i in range(n):
+        yield i
+```
+
+**Difficulty:** Easy | **Interview Tips:** Contrast with `return`.
+
+---
+
+**Q2:** How do you create a generator expression?
+
+**Answer:** `(expr for item in iterable)`
+
+**Example:**
+```python
+gen = (x * 2 for x in range(3))
+next(gen)  # 0
+```
+
+**Difficulty:** Easy
+
+---
+
+**Q3:** Can you reuse a generator after exhaustion?
+
+**Answer:** No; create a new generator object.
+
+**Difficulty:** Easy
+
+---
+
+**Q4:** What does `yield from` do?
+
+**Answer:** Delegates to another iterable/generator, flattening nested iteration.
+
+**Example:**
+```python
+def chain(a, b):
+    yield from a
+    yield from b
+```
+
+**Difficulty:** Easy
+
+---
+
+**Q5:** Are generators iterators?
+
+**Answer:** Yes—implement `__iter__` and `__next__`.
+
+**Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Difference between generator and list for 1M items?
+
+**Answer:** Generator O(1) memory; list holds all elements.
+
+**Difficulty:** Medium
+
+---
+
+**Q2:** How to send values into a generator?
+
+**Answer:** `gen.send(value)` after initial `next()`.
+
+**Difficulty:** Medium
+
+---
+
+**Q3:** Generator cleanup with `close()`?
+
+**Answer:** Raises `GeneratorExit` inside generator; use `try/finally` for cleanup.
+
+**Difficulty:** Medium
+
+---
+
+**Q4:** Infinite generator example?
+
+**Answer:**
+```python
+def naturals():
+    n = 1
+    while True:
+        yield n
+        n += 1
+```
+
+**Difficulty:** Medium
+
+---
+
+**Q5:** `return` in generator (3.3+)?
+
+**Answer:** Sets `StopIteration.value`; rarely used in interviews.
+
+**Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Implement pipeline: read lines → filter → parse.
+
+**Answer:** Chain generators without materializing full file.
+
+**Difficulty:** Hard
+
+---
+
+**Q2:** Generator vs coroutine (historical)?
+
+**Answer:** `yield from` and async evolved; know generators preceded async/await.
+
+**Difficulty:** Hard
+
+---
+
+**Q3:** Why `list(gen)` twice on same object fails second time?
+
+**Answer:** Iterator exhausted.
+
+**Difficulty:** Hard
+
+---
+
+**Q4:** Performance of generator vs vectorized NumPy?
+
+**Answer:** NumPy wins numeric bulk; generators win streaming/unknown size.
+
+**Difficulty:** Hard
+
+---
+
+**Q5:** Thread-safety of generators?
+
+**Answer:** Not thread-safe; one consumer per generator instance.
+
+**Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+def read_chunks(path, size=8192):
+    with open(path, "rb") as f:
+        while chunk := f.read(size):
+            yield chunk
+
+def moving_average(values, window=3):
+    buf = []
+    for v in values:
+        buf.append(v)
+        if len(buf) == window:
+            yield sum(buf) / window
+            buf.pop(0)
+```
+
+#### Real-time Scenarios
+
+- Streaming log analysis without loading full file.
+- Paginated API consumption (yield page results).
+- On-the-fly CSV row processing.
+
+#### Interview Traps
+
+- Calling `len()` on a generator.
+- Expecting generators to replay.
+- Using generator when random access is needed.
+
+---
+
+## 5. Iterators
+
+#### Concept Explanation
+
+An **iterator** is an object with `__iter__()` returning self and `__next__()` yielding successive items until `StopIteration`. **Iterables** (lists, dicts, files) produce iterators via `iter()`. The iterator protocol powers `for` loops, comprehensions, and unpacking.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What two methods define an iterator? **Answer:** `__iter__` and `__next__`. **Explanation:** Iterator protocol requirement. **Example:** `it = iter([1,2]); next(it)` **Difficulty:** Easy **Interview Tips:** Contrast with iterable.
+
+**Q2:** Is a list an iterator? **Answer:** No; list is iterable. **Example:** `iter([1])` creates iterator. **Difficulty:** Easy
+
+**Q3:** What ends iteration? **Answer:** `StopIteration`. **Difficulty:** Easy
+
+**Q4:** How does `for` work? **Answer:** `iter()` then repeated `next()`. **Difficulty:** Easy
+
+**Q5:** Can you iterate a dict? **Answer:** Yes, over keys by default. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Implement `Countdown` iterator class. **Answer:** Class with `__iter__`/`__next__` decrementing. **Difficulty:** Medium
+
+**Q2:** File object iteration? **Answer:** File is its own iterator; single pass. **Difficulty:** Medium
+
+**Q3:** Mutating list during iteration? **Answer:** Can skip elements or raise errors. **Difficulty:** Medium
+
+**Q4:** `iter(callable, sentinel)`? **Answer:** Calls until sentinel value. **Difficulty:** Medium
+
+**Q5:** Generator vs iterator class? **Answer:** Generators are simpler for most cases. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** PEP 479—`StopIteration` in generators becomes `RuntimeError`. **Difficulty:** Hard
+
+**Q2:** `collections.abc.Iterator` vs `Iterable`. **Difficulty:** Hard
+
+**Q3:** Iterator invalidation on concurrent modification. **Difficulty:** Hard
+
+**Q4:** Custom async iterator `__anext__`. **Difficulty:** Hard
+
+**Q5:** Implement `BatchIterator` for ML mini-batches. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+class Range:
+    def __init__(self, n):
+        self.i, self.n = 0, n
+    def __iter__(self):
+        return self
+    def __next__(self):
+        if self.i >= self.n:
+            raise StopIteration
+        val = self.i
+        self.i += 1
+        return val
+```
+
+#### Real-time Scenarios
+
+- Paginated API cursors; token streaming; ORM lazy fetch.
+
+#### Interview Traps
+
+- Confusing iterable vs iterator; iterating exhausted file handle twice.
+
+---
+
+## 6. Decorators
+
+#### Concept Explanation
+
+Decorators wrap functions/classes to extend behavior. `@deco` applies `func = deco(func)`. Implemented via nested functions or callable classes. Common for logging, auth, caching, and route registration.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What does `@decorator` do? **Answer:** Replaces function with decorator result. **Example:** `@timed` wraps call. **Difficulty:** Easy
+
+**Q2:** Purpose of `functools.wraps`? **Answer:** Preserves `__name__`, `__doc__`. **Difficulty:** Easy
+
+**Q3:** Stack decorators? **Answer:** Bottom-up application. **Difficulty:** Easy
+
+**Q4:** Parameterized decorator? **Answer:** Outer factory returns inner decorator. **Difficulty:** Easy
+
+**Q5:** When applied? **Answer:** At function definition (import time). **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Class decorator with `__call__`. **Difficulty:** Medium
+
+**Q2:** Decorating methods—forward `self`. **Difficulty:** Medium
+
+**Q3:** Flask `@app.route` as registry pattern. **Difficulty:** Medium
+
+**Q4:** Decorator must return callable. **Difficulty:** Medium
+
+**Q5:** `@property` is a descriptor, not classic decorator. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** `@retry(3)` with exponential backoff. **Difficulty:** Hard
+
+**Q2:** Async decorator must `await` inner. **Difficulty:** Hard
+
+**Q3:** Order of stacked decorators affects logging/auth. **Difficulty:** Hard
+
+**Q4:** `classmethod`/`staticmethod` as descriptors. **Difficulty:** Hard
+
+**Q5:** Preserve typing with `ParamSpec`. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import functools
+
+def retry(times=3):
+    def deco(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            last = None
+            for _ in range(times):
+                try:
+                    return func(*args, **kwargs)
+                except Exception as e:
+                    last = e
+            raise last
+        return wrapper
+    return deco
+```
+
+#### Real-time Scenarios
+
+- API auth, caching DB queries, timing SLA endpoints.
+
+#### Interview Traps
+
+- Missing `@wraps`; factory not returning wrapper; not forwarding `*args, **kwargs`.
+
+---
+
+## 7. Closures
+
+#### Concept Explanation
+
+A closure is a nested function capturing variables from an enclosing scope after the outer function returns. Cells stored in `__closure__`. Enables factories and decorators with persistent state.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Define closure. **Answer:** Inner fn + captured outer vars. **Example:** `make_adder(5)(3)`. **Difficulty:** Easy
+
+**Q2:** `nonlocal` purpose? **Answer:** Assign to enclosing scope variable. **Difficulty:** Easy
+
+**Q3:** Inspect closure? **Answer:** `func.__closure__`. **Difficulty:** Easy
+
+**Q4:** Modify outer immutable int? **Answer:** Need `nonlocal` for rebinding. **Difficulty:** Easy
+
+**Q5:** Closure vs global? **Answer:** Lexical scoping vs module global. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Loop lambda bug—late binding. **Answer:** `lambda i=i: i`. **Difficulty:** Medium
+
+**Q2:** Memoization via closure dict. **Difficulty:** Medium
+
+**Q3:** `functools.partial` vs closure. **Difficulty:** Medium
+
+**Q4:** Shared mutable state in threads needs lock. **Difficulty:** Medium
+
+**Q5:** Factory returning configured validators. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Cell objects and GC. **Difficulty:** Hard
+
+**Q2:** `cell_contents` inspection. **Difficulty:** Hard
+
+**Q3:** Closure in multiprocessing pickling issues. **Difficulty:** Hard
+
+**Q4:** Decorator closure holding request context. **Difficulty:** Hard
+
+**Q5:** Late vs early binding distinction. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+def multiplier(factor):
+    def mul(x):
+        return x * factor
+    return mul
+
+double = multiplier(2)
+```
+
+#### Real-time Scenarios
+
+- Rate limiters, configurable middleware, event callbacks.
+
+#### Interview Traps
+
+- Classic loop-lambda trap; forgetting `nonlocal`.
+
+---
+
+## 8. Recursion
+
+#### Concept Explanation
+
+Recursion calls self with smaller subproblems until a base case. Python default limit ~1000 frames. Best for trees/graphs; use iteration or memoization for deep linear chains.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Base case + recursive case required. **Difficulty:** Easy
+
+**Q2:** Factorial example. **Answer:** `n * fact(n-1)`. **Difficulty:** Easy
+
+**Q3:** No base case → `RecursionError`. **Difficulty:** Easy
+
+**Q4:** Check limit: `sys.getrecursionlimit()`. **Difficulty:** Easy
+
+**Q5:** Tail recursion not optimized in CPython. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Memoized Fibonacci with `@lru_cache`. **Difficulty:** Medium
+
+**Q2:** DFS tree traversal. **Difficulty:** Medium
+
+**Q3:** Mutual recursion. **Difficulty:** Medium
+
+**Q4:** Convert to explicit stack. **Difficulty:** Medium
+
+**Q5:** Cycle detection with visited set. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Skewed tree depth risks. **Difficulty:** Hard
+
+**Q2:** `setrecursionlimit` danger. **Difficulty:** Hard
+
+**Q3:** Divide-and-conquer merge sort. **Difficulty:** Hard
+
+**Q4:** Recursion on cyclic graphs. **Difficulty:** Hard
+
+**Q5:** Ackermann function as extreme example. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+def depth(node):
+    if not node.children:
+        return 1
+    return 1 + max(depth(c) for c in node.children)
+```
+
+#### Real-time Scenarios
+
+- Folder trees, nested JSON, org charts, comment threads.
+
+#### Interview Traps
+
+- Missing base case; exponential Fibonacci; assuming TCO.
+
+---
+
+## 9. *args and **kwargs
+
+#### Concept Explanation
+
+`*args` collects extra positional args as tuple; `**kwargs` as dict. Enable flexible APIs and decorator forwarding. Signature order: pos-only, positional, `*args`, keyword-only, `**kwargs`.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Types? **Answer:** tuple and dict. **Difficulty:** Easy
+
+**Q2:** Forward in wrapper? **Answer:** `func(*args, **kwargs)`. **Difficulty:** Easy
+
+**Q3:** Keyword-only after `*`? **Answer:** `def f(a, *, b):`. **Difficulty:** Easy
+
+**Q4:** Unpack call `func(*a, **k)`. **Difficulty:** Easy
+
+**Q5:** Names `args`/`kwargs` conventional not required. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Merge defaults `{**d, **kwargs}`. **Difficulty:** Medium
+
+**Q2:** Positional-only params (3.8+). **Difficulty:** Medium
+
+**Q3:** `inspect.signature(...).bind`. **Difficulty:** Medium
+
+**Q4:** Duplicate kwargs keys error. **Difficulty:** Medium
+
+**Q5:** Mutable default kwargs trap separate but related. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** `ParamSpec` for typed decorators. **Difficulty:** Hard
+
+**Q2:** Partial bind vs kwargs override rules. **Difficulty:** Hard
+
+**Q3:** `**` in TypedDict unpacking. **Difficulty:** Hard
+
+**Q4:** Wrapper preserving positional-only metadata. **Difficulty:** Hard
+
+**Q5:** Variadic stub generators for mocks. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+def tag(*args, **kwargs):
+    return {"args": args, "meta": kwargs}
+```
+
+#### Real-time Scenarios
+
+- Decorators, plugin hooks, SDK wrappers mirroring upstream APIs.
+
+#### Interview Traps
+
+- Wrong param order; mutating shared kwargs dict.
+
+---
+
+## 10. Enumerate
+
+#### Concept Explanation
+
+`enumerate(iterable, start=0)` yields `(index, value)` pairs lazily. Preferred over manual counters or `range(len())`.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** `for i, v in enumerate(items):`. **Difficulty:** Easy
+
+**Q2:** `start=1` for 1-based line numbers. **Difficulty:** Easy
+
+**Q3:** Returns iterator of tuples. **Difficulty:** Easy
+
+**Q4:** Works on any iterable. **Difficulty:** Easy
+
+**Q5:** O(1) extra memory. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Index map `{v:i for i,v in enumerate(seq)}`. **Difficulty:** Medium
+
+**Q2:** Don't mutate list while enumerating. **Difficulty:** Medium
+
+**Q3:** vs `zip(range(n), items)`. **Difficulty:** Medium
+
+**Q4:** Enumerate generator once. **Difficulty:** Medium
+
+**Q5:** Combine with `start=offset` for pagination. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Implement enumerate manually. **Difficulty:** Hard
+
+**Q2:** Sliding window index patterns. **Difficulty:** Hard
+
+**Q3:** Enumerate async iterables manually. **Difficulty:** Hard
+
+**Q4:** Performance identical to manual counter. **Difficulty:** Hard
+
+**Q5:** Off-by-one in UI display vs storage index. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+for i, line in enumerate(open("log.txt"), start=1):
+    if "ERROR" in line:
+        print(i, line.strip())
+```
+
+#### Real-time Scenarios
+
+- CLI menus, linter line reports, batch SQL offsets.
+
+#### Interview Traps
+
+- Off-by-one; using `range(len())` unnecessarily.
+
+---
+
+## 11. Zip
+
+#### Concept Explanation
+
+`zip(*iterables)` pairs elements by index into tuples; stops at shortest. `strict=True` (3.10+) errors on mismatch. `zip(*matrix)` transposes rows.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** `zip([1,2], 'ab')` → `(1,'a'),(2,'b')`. **Difficulty:** Easy
+
+**Q2:** Shortest wins. **Difficulty:** Easy
+
+**Q3:** Unzip: `zip(*pairs)`. **Difficulty:** Easy
+
+**Q4:** Lazy iterator Py3. **Difficulty:** Easy
+
+**Q5:** Empty → `[]`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `strict=True`. **Difficulty:** Medium
+
+**Q2:** `dict(zip(k,v))`. **Difficulty:** Medium
+
+**Q3:** `itertools.zip_longest`. **Difficulty:** Medium
+
+**Q4:** Sort two parallel lists via zipped pairs. **Difficulty:** Medium
+
+**Q5:** Three-way zip. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Irregular matrix transpose limits. **Difficulty:** Hard
+
+**Q2:** NumPy column stack alternative. **Difficulty:** Hard
+
+**Q3:** Infinite zip memory caution. **Difficulty:** Hard
+
+**Q4:** Async parallel iteration. **Difficulty:** Hard
+
+**Q5:** Star-unpack memory on huge transpose. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+records = [dict(zip(headers, row)) for row in rows]
+```
+
+#### Real-time Scenarios
+
+- CSV column merge, sensor alignment, parallel API arrays.
+
+#### Interview Traps
+
+- Silent truncation; forgetting `strict=True`.
+
+---
+
+## 12. Map
+
+#### Concept Explanation
+
+`map(fn, *iterables)` applies fn to items; returns iterator. Multiple iterables zipped internally. Often replaced by comprehensions but useful with builtins.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** `list(map(str, [1,2]))`. **Difficulty:** Easy
+
+**Q2:** Lazy in Py3. **Difficulty:** Easy
+
+**Q3:** Multiple iterables: `map(pow, a, b)`. **Difficulty:** Easy
+
+**Q4:** Dict maps keys only. **Difficulty:** Easy
+
+**Q5:** vs comprehension readability. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** map + filter pipeline. **Difficulty:** Medium
+
+**Q2:** Named function preferred over lambda in map. **Difficulty:** Medium
+
+**Q3:** Exhaust once. **Difficulty:** Medium
+
+**Q4:** `map` with `None` removed—use zip. **Difficulty:** Medium
+
+**Q5:** Star map patterns rare. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** `multiprocessing.Pool.map` different semantics. **Difficulty:** Hard
+
+**Q2:** `np.vectorize` not true vectorization. **Difficulty:** Hard
+
+**Q3:** asyncio gather vs map. **Difficulty:** Hard
+
+**Q4:** Benchmark vs comprehension negligible. **Difficulty:** Hard
+
+**Q5:** Functional composition style. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+clean = list(map(str.strip, lines))
+```
+
+#### Real-time Scenarios
+
+- Type coercion pipelines, batch normalization.
+
+#### Interview Traps
+
+- Forgetting list(); side effects in mapped fn.
+
+---
+
+## 13. Filter
+
+#### Concept Explanation
+
+`filter(predicate, iterable)` yields truthy results; `None` removes falsy items. Returns iterator. Comprehensions often clearer.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** `filter(lambda x: x>0, nums)`. **Difficulty:** Easy
+
+**Q2:** `filter(None, seq)` drops falsy. **Difficulty:** Easy
+
+**Q3:** Iterator result. **Difficulty:** Easy
+
+**Q4:** Equivalent comprehension with if. **Difficulty:** Easy
+
+**Q5:** Truthiness not strict bool. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `itertools.filterfalse`. **Difficulty:** Medium
+
+**Q2:** Filter dict keys only. **Difficulty:** Medium
+
+**Q3:** Custom callable class predicate. **Difficulty:** Medium
+
+**Q4:** Lazy stream processing. **Difficulty:** Medium
+
+**Q5:** SQL WHERE analogy. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Parallel filter needs care. **Difficulty:** Hard
+
+**Q2:** Typed predicates. **Difficulty:** Hard
+
+**Q3:** filter+map vs single comp. **Difficulty:** Hard
+
+**Q4:** Removing valid zero with filter(None). **Difficulty:** Hard
+
+**Q5:** Event stream filtering at scale. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+valid = list(filter(lambda r: r["score"] >= 60, records))
+```
+
+#### Real-time Scenarios
+
+- Pre-insert validation, client search, log level filtering.
+
+#### Interview Traps
+
+- `filter(None)` removing 0; not materializing iterator.
+
+---
+
+## 14. Reduce
+
+#### Concept Explanation
+
+`functools.reduce(fn, iterable[, init])` folds iterable left-to-right. General aggregation; use builtins `sum`/`max` when possible.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** `from functools import reduce`. **Difficulty:** Easy
+
+**Q2:** `reduce(add, [1,2,3])` → 6. **Difficulty:** Easy
+
+**Q3:** init for empty iterable. **Difficulty:** Easy
+
+**Q4:** Empty without init → TypeError. **Difficulty:** Easy
+
+**Q5:** prefer `sum()` for numbers. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `reduce(mul, nums, 1)` product. **Difficulty:** Medium
+
+**Q2:** Merge dicts fold. **Difficulty:** Medium
+
+**Q3:** Non-commutative order matters. **Difficulty:** Medium
+
+**Q4:** Moved from builtin Py2→Py3. **Difficulty:** Medium
+
+**Q5:** Compose functions via reduce. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Implement reduce from scratch. **Difficulty:** Hard
+
+**Q2:** Parallel tree reduce concept. **Difficulty:** Hard
+
+**Q3:** Single-pass generator reduce O(1) mem. **Difficulty:** Hard
+
+**Q4:** Readability vs fold elegance. **Difficulty:** Hard
+
+**Q5:** Associativity for distributed reduce. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+from functools import reduce
+import operator
+merged = reduce(lambda a, b: {**a, **b}, dicts, {})
+```
+
+#### Real-time Scenarios
+
+- Layered config merge, composite metrics across shards.
+
+#### Interview Traps
+
+- Empty iterable; wrong operator associativity assumptions.
+
+---
+
+
+## 15. Shallow Copy
+
+#### Concept Explanation
+
+A **shallow copy** creates a new container but references the same inner objects. `copy.copy()`, `list.copy()`, `dict.copy()`, and slicing `[:]` perform shallow copies. Nested mutable objects are shared between original and copy.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** What is shallow copy? **Answer:** New outer container, shared inner objects. **Example:** `b = a[:]` for list. **Difficulty:** Easy
+
+**Q2:** `copy.copy(x)` module? **Answer:** `import copy`. **Difficulty:** Easy
+
+**Q3:** Dict shallow copy? **Answer:** `d.copy()` or `dict(d)`. **Difficulty:** Easy
+
+**Q4:** Copy vs assignment? **Answer:** Assignment aliases; copy new top-level object. **Difficulty:** Easy
+
+**Q5:** Tuple "copy"? **Answer:** Immutable—assignment only creates alias. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Nested list copy shares inner lists. **Difficulty:** Medium
+
+**Q2:** Shallow copy of set? **Answer:** `set.copy()` or `set(s)`. **Difficulty:** Medium
+
+**Q3:** Custom class—`copy.copy` uses `__copy__`. **Difficulty:** Medium
+
+**Q4:** When shallow copy sufficient? **Answer:** Flat structures or immutable elements. **Difficulty:** Medium
+
+**Q5:** `list.copy()` vs `[:]` equivalent for lists. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Graph structures need deep or custom copy. **Difficulty:** Hard
+
+**Q2:** Copying objects with file handles shares handle. **Difficulty:** Hard
+
+**Q3:** Performance shallow vs deep on large nested data. **Difficulty:** Hard
+
+**Q4:** `copy.copy` on slotted classes. **Difficulty:** Hard
+
+**Q5:** Prototype pattern with shallow copy pitfalls. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import copy
+a = [[1, 2], [3, 4]]
+b = copy.copy(a)
+b[0].append(99)
+print(a)  # [[1, 2, 99], [3, 4]] — inner shared
+```
+
+#### Real-time Scenarios
+
+- Duplicating config dict before mutation; template records in CRUD APIs.
+
+#### Interview Traps
+
+- Expecting independence of nested mutables; confusing assign vs copy.
+
+---
+
+## 16. Deep Copy
+
+#### Concept Explanation
+
+**Deep copy** recursively copies all nested objects, producing full independence. `copy.deepcopy()` handles cycles via memo dict. Slower and more memory than shallow copy but safe for nested mutables.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Function? **Answer:** `copy.deepcopy(obj)`. **Difficulty:** Easy
+
+**Q2:** Nested independence? **Answer:** Changes in copy don't affect original. **Difficulty:** Easy
+
+**Q3:** Module? **Answer:** `import copy`. **Difficulty:** Easy
+
+**Q4:** vs shallow? **Answer:** Deep recurses; shallow one level. **Difficulty:** Easy
+
+**Q5:** Immutable internals? **Answer:** Still copied at container level; immutables may be reused. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Cycles handled by deepcopy memo. **Difficulty:** Medium
+
+**Q2:** Custom `__deepcopy__` hook. **Difficulty:** Medium
+
+**Q3:** deepcopy slow on huge graphs—consider alternatives. **Difficulty:** Medium
+
+**Q4:** deepcopy of lambda/functions limited. **Difficulty:** Medium
+
+**Q5:** JSON round-trip as pseudo-deep for dict/list. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** deepcopy vs serialization boundaries. **Difficulty:** Hard
+
+**Q2:** Thread locks copied by reference in some objects. **Difficulty:** Hard
+
+**Q3:** ORM model deepcopy anti-pattern. **Difficulty:** Hard
+
+**Q4:** Pickle vs deepcopy semantics. **Difficulty:** Hard
+
+**Q5:** Selective deep copy of subgraph. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import copy
+original = {"meta": {"tags": ["a"]}}
+clone = copy.deepcopy(original)
+clone["meta"]["tags"].append("b")
+assert original["meta"]["tags"] == ["a"]
+```
+
+#### Real-time Scenarios
+
+- Snapshotting nested request payloads; undo stacks in editors.
+
+#### Interview Traps
+
+- Using shallow when deep needed; deepcopy on non-picklable resources.
+
+---
+
+## 17. Memory Management
+
+#### Concept Explanation
+
+CPython uses **reference counting** plus a **generational garbage collector** for cycles. Objects live on heap; variables are references. `sys.getsizeof` gives shallow size. Interning applies to small strings/ints. Memory views and slots reduce overhead.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Primary mechanism? **Answer:** Reference counting. **Difficulty:** Easy
+
+**Q2:** Why GC exists? **Answer:** Break reference cycles. **Difficulty:** Easy
+
+**Q3:** `del x` effect? **Answer:** Decrements ref count; may deallocate. **Difficulty:** Easy
+
+**Q4:** `is` vs `==`? **Answer:** Identity vs equality. **Difficulty:** Easy
+
+**Q5:** Small int caching? **Answer:** CPython caches ints -5..256. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Generational GC (0,1,2). **Difficulty:** Medium
+
+**Q2:** `gc.collect()` manual trigger. **Difficulty:** Medium
+
+**Q3:** `__slots__` reduces dict overhead. **Difficulty:** Medium
+
+**Q4:** Memory leaks via global caches. **Difficulty:** Medium
+
+**Q5:** `weakref` for caches avoiding cycles. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** tracemalloc profiling. **Difficulty:** Hard
+
+**Q2:** Fragmentation and pymalloc arenas. **Difficulty:** Hard
+
+**Q3:** `__del__` resurrection pitfalls. **Difficulty:** Hard
+
+**Q4:** mmap for large files. **Difficulty:** Hard
+
+**Q5:** PyPy vs CPython memory model brief. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import sys, gc
+data = [bytearray(10**6) for _ in range(100)]
+print(sys.getsizeof(data[0]))
+gc.collect()
+```
+
+#### Real-time Scenarios
+
+- Long-running workers leaking cached responses; profiling ETL memory spikes.
+
+#### Interview Traps
+
+- Claiming `del` frees immediately always; ignoring cyclic refs.
+
+---
+
+## 18. Mutable vs Immutable Objects
+
+#### Concept Explanation
+
+**Immutable:** int, float, str, tuple, frozenset, bytes—cannot change value in place. **Mutable:** list, dict, set, bytearray, custom objects. Immutability enables hashing (dict keys) and safer sharing.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Examples immutable? **Answer:** str, int, tuple. **Difficulty:** Easy
+
+**Q2:** Mutable? **Answer:** list, dict, set. **Difficulty:** Easy
+
+**Q3:** Can tuple be dict key? **Answer:** Yes if all elements hashable. **Difficulty:** Easy
+
+**Q4:** str += creates new str. **Difficulty:** Easy
+
+**Q5:** list append in place. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Tuple with mutable list inside—tuple immutable but contents mutable. **Difficulty:** Medium
+
+**Q2:** Default arg mutable trap. **Difficulty:** Medium
+
+**Q3:** frozenset vs set. **Difficulty:** Medium
+
+**Q4:** Hashability requires immutability (mostly). **Difficulty:** Medium
+
+**Q5:** bytes immutable, bytearray mutable. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Custom immutable via `@dataclass(frozen=True)`. **Difficulty:** Hard
+
+**Q2:** String interning and identity. **Difficulty:** Hard
+
+**Q3:** Copy-on-write not in CPython for slices. **Difficulty:** Hard
+
+**Q4:** Thread safety—immutables safer to share read-only. **Difficulty:** Hard
+
+**Q5:** Named tuple immutability field replacement. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+t = (1, [2])
+t[1].append(3)  # OK — list inside mutates
+# t[0] = 9  # TypeError
+```
+
+#### Real-time Scenarios
+
+- Dict keys must be hashable; caching keys as tuples; avoiding shared mutable defaults.
+
+#### Interview Traps
+
+- "Immutable tuple" containing mutable list; mutable default arguments.
+
+---
+
+## 19. Namespaces
+
+#### Concept Explanation
+
+A **namespace** maps names to objects. Types: **LEGB**—Local, Enclosing, Global, Built-in. Modules, classes, and functions each create namespaces. `global` and `nonlocal` alter binding rules.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** LEGB stands for? **Answer:** Local, Enclosing, Global, Built-in. **Difficulty:** Easy
+
+**Q2:** `globals()` / `locals()`? **Answer:** Dict views of namespaces. **Difficulty:** Easy
+
+**Q3:** Module is namespace? **Answer:** Yes. **Difficulty:** Easy
+
+**Q4:** `global x` purpose? **Answer:** Bind assignment to module-level x. **Difficulty:** Easy
+
+**Q5:** Builtins namespace? **Answer:** `__builtins__`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Class body namespace vs instance `__dict__`. **Difficulty:** Medium
+
+**Q2:** Comprehension scope (Py3)—own local scope. **Difficulty:** Medium
+
+**Q3:** Shadowing builtins (`list = 1`). **Difficulty:** Medium
+
+**Q4:** `from module import *` pollutes namespace. **Difficulty:** Medium
+
+**Q5:** Enclosing scope in nested functions. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** PEP 563 postponed annotations. **Difficulty:** Hard
+
+**Q2:** `exec`/`eval` namespace args. **Difficulty:** Hard
+
+**Q3:** Class descriptor namespace MRO. **Difficulty:** Hard
+
+**Q4:** Module-level `__all__` controls exports. **Difficulty:** Hard
+
+**Q5:** Context-local `contextvars`. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        nonlocal x
+        x = "changed"
+    inner()
+    return x
+```
+
+#### Real-time Scenarios
+
+- Plugin registries in module namespace; config singletons; template scope in DSLs.
+
+#### Interview Traps
+
+- Unqualified assignment creates local; comprehension variable leak myth (Py3 fixed).
+
+---
+
+## 20. Context Managers
+
+#### Concept Explanation
+
+Context managers guarantee setup/teardown via `with` statement. Implement `__enter__`/`__exit__` or use `@contextmanager` generator. `__exit__` receives exception info; return True suppresses exception.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Syntax? **Answer:** `with open("f") as f:`. **Difficulty:** Easy
+
+**Q2:** Methods? **Answer:** `__enter__`, `__exit__`. **Difficulty:** Easy
+
+**Q3:** `@contextmanager` from? **Answer:** `contextlib`. **Difficulty:** Easy
+
+**Q4:** Multiple managers? **Answer:** `with A() as a, B() as b:`. **Difficulty:** Easy
+
+**Q5:** File auto-closes on exit. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `__exit__(exc_type, exc, tb)` signature. **Difficulty:** Medium
+
+**Q2:** Suppress exception if `__exit__` returns True. **Difficulty:** Medium
+
+**Q3:** `contextlib.closing`. **Difficulty:** Medium
+
+**Q4:** `ExitStack` dynamic managers. **Difficulty:** Medium
+
+**Q5:** Reentrant locks as context managers. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** `@contextmanager` must yield exactly once. **Difficulty:** Hard
+
+**Q2:** Async context managers `async with`. **Difficulty:** Hard
+
+**Q3:** Nested `with` vs `ExitStack` cleanup order. **Difficulty:** Hard
+
+**Q4:** Transaction rollback pattern in `__exit__`. **Difficulty:** Hard
+
+**Q5:** Testing context manager exception paths. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def timer(label):
+    start = time.perf_counter()
+    try:
+        yield
+    finally:
+        print(f"{label}: {time.perf_counter()-start:.3f}s")
+
+with timer("job"):
+    run_job()
+```
+
+#### Real-time Scenarios
+
+- DB transactions, file/lock handling, temporary env vars, API rate-limit windows.
+
+#### Interview Traps
+
+- Forgetting `finally` in `@contextmanager`; swallowing exceptions unintentionally.
+
+---
+
+## 21. Regular Expressions
+
+#### Concept Explanation
+
+The `re` module matches patterns in text via regex. Key functions: `match` (start), `search` (anywhere), `findall`, `sub`, `split`. Raw strings `r"..."` avoid escape issues. Prefer regex for structured patterns; simple splits may suffice otherwise.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Import? **Answer:** `import re`. **Difficulty:** Easy
+
+**Q2:** `\d+` meaning? **Answer:** One or more digits. **Difficulty:** Easy
+
+**Q3:** `search` vs `match`? **Answer:** match anchors start; search scans. **Difficulty:** Easy
+
+**Q4:** Raw string why? **Answer:** `\n` vs `\\n` in patterns. **Difficulty:** Easy
+
+**Q5:** `findall` returns? **Answer:** List of matches/groups. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Groups `(...)` and `(?P<name>...)`. **Difficulty:** Medium
+
+**Q2:** Non-greedy `*?`. **Difficulty:** Medium
+
+**Q3:** Compile for reuse `re.compile`. **Difficulty:** Medium
+
+**Q4:** Flags `re.I`, `re.M`. **Difficulty:** Medium
+
+**Q5:** Validate email—regex limited; use libraries. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Lookahead `(?=...)`. **Difficulty:** Hard
+
+**Q2:** ReDoS catastrophic backtracking. **Difficulty:** Hard
+
+**Q3:** `regex` third-party vs stdlib. **Difficulty:** Hard
+
+**Q4:** Multiline log parsing at scale. **Difficulty:** Hard
+
+**Q5:** When NOT to use regex (HTML parsing). **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import re
+pat = re.compile(r"(?P<level>ERROR|INFO): (?P<msg>.+)")
+for line in logs:
+    m = pat.search(line)
+    if m:
+        print(m.group("level"), m.group("msg"))
+```
+
+#### Real-time Scenarios
+
+- Log parsing, input validation, scraping structured IDs, redacting PII.
+
+#### Interview Traps
+
+- Greedy vs non-greedy; ReDoS; overusing regex for HTML/JSON.
+
+---
+
+## 22. Logging
+
+#### Concept Explanation
+
+The `logging` module provides hierarchical loggers, levels (DEBUG→CRITICAL), handlers (file, stream), and formatters. Prefer logging over `print` in production. Configure via `basicConfig` or dictConfig for libraries using `logger = logging.getLogger(__name__)`.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Get logger? **Answer:** `logging.getLogger(__name__)`. **Difficulty:** Easy
+
+**Q2:** Levels order? **Answer:** DEBUG, INFO, WARNING, ERROR, CRITICAL. **Difficulty:** Easy
+
+**Q3:** basicConfig role? **Answer:** One-time root setup. **Difficulty:** Easy
+
+**Q4:** log vs print? **Answer:** Levels, handlers, timestamps, production control. **Difficulty:** Easy
+
+**Q5:** `logger.info("msg %s", val)` lazy formatting. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Logger hierarchy propagation. **Difficulty:** Medium
+
+**Q2:** RotatingFileHandler. **Difficulty:** Medium
+
+**Q3:** Structured JSON logging. **Difficulty:** Medium
+
+**Q4:** Library vs app configuration rule. **Difficulty:** Medium
+
+**Q5:** Exception logging `exc_info=True`. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** dictConfig YAML in prod. **Difficulty:** Hard
+
+**Q2:** Correlation IDs in Filter. **Difficulty:** Hard
+
+**Q3:** Performance async handlers. **Difficulty:** Hard
+
+**Q4:** Sensitive data redaction filters. **Difficulty:** Hard
+
+**Q5:** Integration with OpenTelemetry. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger(__name__)
+log.info("user=%s action=login", user_id)
+```
+
+#### Real-time Scenarios
+
+- Microservice request tracing, batch job progress, audit trails.
+
+#### Interview Traps
+
+- Calling basicConfig in libraries; f-strings forcing eager formatting; root logger overuse.
+
+---
+
+## 23. JSON Handling
+
+#### Concept Explanation
+
+`json` module serializes Python objects to JSON strings and parses JSON to Python types. Mapping: object→dict, array→list, string→str, number→int/float, true/false→bool, null→None. Custom types need `default` encoder hook.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Load from string? **Answer:** `json.loads(s)`. **Difficulty:** Easy
+
+**Q2:** Dump to string? **Answer:** `json.dumps(obj)`. **Difficulty:** Easy
+
+**Q3:** Read file? **Answer:** `json.load(f)`. **Difficulty:** Easy
+
+**Q4:** Write file? **Answer:** `json.dump(obj, f)`. **Difficulty:** Easy
+
+**Q5:** Tuple serializable? **Answer:** No by default—convert to list. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `indent=2` pretty print. **Difficulty:** Medium
+
+**Q2:** `default=str` for datetime workaround. **Difficulty:** Medium
+
+**Q3:** `object_hook` for dict→custom class. **Difficulty:** Medium
+
+**Q4:** `ensure_ascii=False` for Unicode. **Difficulty:** Medium
+
+**Q5:** JSON vs Python `True`/`true`. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Decimal/datetime proper encoders. **Difficulty:** Hard
+
+**Q2:** Large JSON streaming `ijson`. **Difficulty:** Hard
+
+**Q3:** Schema validation with jsonschema. **Difficulty:** Hard
+
+**Q4:** Security—never `eval` JSON. **Difficulty:** Hard
+
+**Q5:** orjson performance note. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import json
+from datetime import datetime
+
+def default(o):
+    if isinstance(o, datetime):
+        return o.isoformat()
+    raise TypeError
+
+payload = json.dumps({"ts": datetime.now()}, default=default)
+```
+
+#### Real-time Scenarios
+
+- REST APIs, config files, message queues, webhook payloads.
+
+#### Interview Traps
+
+- Non-serializable types; float precision; confusing load/loads.
+
+---
+
+## 24. CSV Handling
+
+#### Concept Explanation
+
+`csv` module reads/writes tabular text with proper quoting/escaping. Use `reader`/`writer` for rows as lists; `DictReader`/`DictWriter` for header-mapped dicts. Always specify newline='' for file open on Windows.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Read CSV? **Answer:** `csv.reader(f)`. **Difficulty:** Easy
+
+**Q2:** Write row? **Answer:** `writer.writerow(row)`. **Difficulty:** Easy
+
+**Q3:** DictReader? **Answer:** Rows as dict keyed by header. **Difficulty:** Easy
+
+**Q4:** Windows newline? **Answer:** `open(..., newline='')`. **Difficulty:** Easy
+
+**Q5:** Delimiter change? **Answer:** `delimiter=';'`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Quoting `QUOTE_MINIMAL`. **Difficulty:** Medium
+
+**Q2:** Handle bad rows with try/except. **Difficulty:** Medium
+
+**Q3:** Large files—iterate don't load all. **Difficulty:** Medium
+
+**Q4:** utf-8-sig for Excel BOM. **Difficulty:** Medium
+
+**Q5:** Sniff dialect `csv.Sniffer`. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** pandas vs csv module tradeoffs. **Difficulty:** Hard
+
+**Q2:** Injection formula `=cmd` sanitization. **Difficulty:** Hard
+
+**Q3:** Streaming upload parsing. **Difficulty:** Hard
+
+**Q4:** Custom quoting for embedded newlines. **Difficulty:** Hard
+
+**Q5:** Parallel CSV chunk processing. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import csv
+with open("data.csv", newline="", encoding="utf-8") as f:
+    for row in csv.DictReader(f):
+        process(row["email"])
+```
+
+#### Real-time Scenarios
+
+- ETL imports, report exports, legacy system integrations.
+
+#### Interview Traps
+
+- Missing `newline=''`; loading huge CSV into memory; Excel formula injection.
+
+---
+
+## 25. XML Parsing
+
+#### Concept Explanation
+
+Options: **`xml.etree.ElementTree`** (stdlib, lightweight), **`xml.dom.minidom`**, **`lxml`** (fast, XPath). Prefer ElementTree for simple docs; validate with schemas for contracts. Beware **XXE**—disable external entities in untrusted input.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Parse string? **Answer:** `ET.fromstring(s)`. **Difficulty:** Easy
+
+**Q2:** Parse file? **Answer:** `ET.parse(path)`. **Difficulty:** Easy
+
+**Q3:** Find elements? **Answer:** `.find`, `.findall`, `.findtext`. **Difficulty:** Easy
+
+**Q4:** Tag attributes? **Answer:** `elem.attrib`. **Difficulty:** Easy
+
+**Q5:** Create element? **Answer:** `ET.Element('tag')`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Namespaces `{uri}tag` and `register_namespace`. **Difficulty:** Medium
+
+**Q2:** Iterparse for large XML streaming. **Difficulty:** Medium
+
+**Q3:** XPath limited in ElementTree; full in lxml. **Difficulty:** Medium
+
+**Q4:** Build tree with SubElement. **Difficulty:** Medium
+
+**Q5:** Pretty print `indent` (3.9+). **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** XXE security hardening. **Difficulty:** Hard
+
+**Q2:** XSD validation. **Difficulty:** Hard
+
+**Q3:** SOAP/XML-RPC legacy integration. **Difficulty:** Hard
+
+**Q4:** Performance lxml vs ElementTree. **Difficulty:** Hard
+
+**Q5:** Mixed content parsing complexity. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import xml.etree.ElementTree as ET
+root = ET.fromstring("<root><item id='1'>A</item></root>")
+for item in root.findall("item"):
+    print(item.attrib["id"], item.text)
+```
+
+#### Real-time Scenarios
+
+- SOAP APIs, RSS feeds, config exports from enterprise tools, SAML metadata.
+
+#### Interview Traps
+
+- Parsing untrusted XML without XXE protection; using regex for XML.
+
+---
+
+## 26. Pickle
+
+#### Concept Explanation
+
+`pickle` serializes Python objects to bytes for storage or IPC. **Not secure**—never unpickle untrusted data (arbitrary code execution). Use JSON/Protobuf for interoperability. Protocol versions affect compatibility and size.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Dump object? **Answer:** `pickle.dump(obj, f)`. **Difficulty:** Easy
+
+**Q2:** Load? **Answer:** `pickle.load(f)`. **Difficulty:** Easy
+
+**Q3:** Bytes API? **Answer:** `dumps`/`loads`. **Difficulty:** Easy
+
+**Q4:** Security? **Answer:** Never unpickle untrusted bytes. **Difficulty:** Easy
+
+**Q5:** JSON vs pickle? **Answer:** JSON interoperable; pickle Python-only. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Not all objects picklable (open files, lambdas sometimes). **Difficulty:** Medium
+
+**Q2:** `__getstate__`/`__setstate__` hooks. **Difficulty:** Medium
+
+**Q3:** Highest protocol `-1`. **Difficulty:** Medium
+
+**Q4:** multiprocessing uses pickle for IPC. **Difficulty:** Medium
+
+**Q5:** pickle vs shelve persistence. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Pickle RCE exploit demonstration awareness. **Difficulty:** Hard
+
+**Q2:** cloudpickle for more callables. **Difficulty:** Hard
+
+**Q3:** Version mismatch UnpicklingError. **Difficulty:** Hard
+
+**Q4:** Alternative joblib for numpy arrays. **Difficulty:** Hard
+
+**Q5:** Signed pickle still risky if key compromised. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import pickle
+blob = pickle.dumps({"a": [1, 2, 3]})
+obj = pickle.loads(blob)
+```
+
+#### Real-time Scenarios
+
+- ML model persistence (with caution), Celery task args in trusted env, caching Python objects locally.
+
+#### Interview Traps
+
+- Unpickling user uploads; expecting cross-language compatibility.
+
+---
+
+## 27. Collections Module
+
+#### Concept Explanation
+
+`collections` provides specialized containers: **Counter**, **defaultdict**, **OrderedDict** (dict ordered since 3.7), **deque**, **namedtuple**, **ChainMap**. Use when they simplify code vs plain dict/list.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Counter use? **Answer:** Frequency counting. **Difficulty:** Easy
+
+**Q2:** defaultdict? **Answer:** Default factory for missing keys. **Difficulty:** Easy
+
+**Q3:** deque? **Answer:** Fast append/pop both ends. **Difficulty:** Easy
+
+**Q4:** namedtuple? **Answer:** Tuple subclass with named fields. **Difficulty:** Easy
+
+**Q5:** ChainMap? **Answer:** Layered dict views for scopes. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Counter.most_common(n). **Difficulty:** Medium
+
+**Q2:** deque maxlen for rolling window. **Difficulty:** Medium
+
+**Q3:** defaultdict(list) grouping pattern. **Difficulty:** Medium
+
+**Q4:** namedtuple vs dataclass. **Difficulty:** Medium
+
+**Q5:** UserDict/UserList customization. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Counter arithmetic (+/-). **Difficulty:** Hard
+
+**Q2:** deque thread-safe append but not composite ops. **Difficulty:** Hard
+
+**Q3:** ChainMap for config overlays. **Difficulty:** Hard
+
+**Q4:** Mutable vs immutable namedtuple `_replace`. **Difficulty:** Hard
+
+**Q5:** OrderedDict move_to_end use cases post-3.7. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+from collections import Counter, defaultdict
+counts = Counter(words)
+groups = defaultdict(list)
+for u in users:
+    groups[u["dept"]].append(u)
+```
+
+#### Real-time Scenarios
+
+- Word frequency, grouping logs by service, rolling metrics window, config layering.
+
+#### Interview Traps
+
+- Using OrderedDict when plain dict suffices; Counter negative counts confusion.
+
+---
+
+
+## 28. OS Module
+
+#### Concept Explanation
+
+`os` provides portable OS interfaces: file paths, environment variables, process IDs, directory operations. Prefer **`pathlib.Path`** for path manipulation in modern code; `os.path` remains common in legacy codebases. `os.environ` maps environment variables.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** List directory? **Answer:** `os.listdir(path)` or `os.scandir`. **Difficulty:** Easy
+
+**Q2:** Current working directory? **Answer:** `os.getcwd()`, `os.chdir()`. **Difficulty:** Easy
+
+**Q3:** Environment variable? **Answer:** `os.environ.get("HOME")`. **Difficulty:** Easy
+
+**Q4:** Join paths? **Answer:** `os.path.join("a", "b")`. **Difficulty:** Easy
+
+**Q5:** Check file exists? **Answer:** `os.path.exists(p)`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `os.makedirs(..., exist_ok=True)`. **Difficulty:** Medium
+
+**Q2:** `os.walk` recursive traversal. **Difficulty:** Medium
+
+**Q3:** `os.rename` vs `shutil.move`. **Difficulty:** Medium
+
+**Q4:** `os.scandir` faster than listdir+stat. **Difficulty:** Medium
+
+**Q5:** `os.path.abspath`/`realpath`. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Cross-platform path separators. **Difficulty:** Hard
+
+**Q2:** File descriptors `os.open` low-level. **Difficulty:** Hard
+
+**Q3:** Process fork availability (Windows limits). **Difficulty:** Hard
+
+**Q4:** Atomic file replace patterns. **Difficulty:** Hard
+
+**Q5:** pathlib migration benefits. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import os
+for entry in os.scandir("."):
+    if entry.is_file() and entry.name.endswith(".py"):
+        print(entry.path)
+
+db_url = os.environ.get("DATABASE_URL", "sqlite:///local.db")
+```
+
+#### Real-time Scenarios
+
+- File organizers, deploy scripts, reading secrets from env, batch renames.
+
+#### Interview Traps
+
+- String concat paths instead of join; race conditions on exists+open.
+
+---
+
+## 29. Sys Module
+
+#### Concept Explanation
+
+`sys` exposes interpreter parameters: **argv**, **path**, **stdin/stdout/stderr**, recursion limit, platform info, exit via `sys.exit()`. Low-level companion to `os` focused on Python runtime.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Command-line args? **Answer:** `sys.argv`. **Difficulty:** Easy
+
+**Q2:** Exit script? **Answer:** `sys.exit(code)`. **Difficulty:** Easy
+
+**Q3:** Module search path? **Answer:** `sys.path`. **Difficulty:** Easy
+
+**Q4:** Stdout write? **Answer:** `sys.stdout.write`. **Difficulty:** Easy
+
+**Q5:** Python version? **Answer:** `sys.version_info`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `sys.getsizeof` shallow size. **Difficulty:** Medium
+
+**Q2:** `sys.stdin` pipe processing. **Difficulty:** Medium
+
+**Q3:** `sys.modules` cached imports. **Difficulty:** Medium
+
+**Q4:** `sys.setrecursionlimit`. **Difficulty:** Medium
+
+**Q5:** `sys.platform` checks. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Custom stdout encoding errors. **Difficulty:** Hard
+
+**Q2:** `sys._getframe` debugging (internal). **Difficulty:** Hard
+
+**Q3:** Hooks `sys.excepthook`. **Difficulty:** Hard
+
+**Q4:** Path manipulation at startup. **Difficulty:** Hard
+
+**Q5:** Asyncio loop policy on Windows. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import sys
+if len(sys.argv) < 2:
+    print("Usage: tool <file>")
+    sys.exit(2)
+for line in sys.stdin:
+    process(line)
+```
+
+#### Real-time Scenarios
+
+- CLI tools, piped log processing, version-gated features, graceful shutdown codes.
+
+#### Interview Traps
+
+- Modifying sys.path permanently; using exit() vs raising SystemExit nuances.
+
+---
+
+## 30. Argparse
+
+#### Concept Explanation
+
+`argparse` builds CLI interfaces with positional/optional arguments, types, defaults, choices, subcommands, and auto-generated `--help`. Standard library replacement for manual `sys.argv` parsing.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Create parser? **Answer:** `argparse.ArgumentParser()`. **Difficulty:** Easy
+
+**Q2:** Parse args? **Answer:** `parser.parse_args()`. **Difficulty:** Easy
+
+**Q3:** Optional flag? **Answer:** `parser.add_argument("--verbose", action="store_true")`. **Difficulty:** Easy
+
+**Q4:** Positional? **Answer:** `add_argument("filename")`. **Difficulty:** Easy
+
+**Q5:** Help auto? **Answer:** `-h/--help`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Type conversion `type=int`. **Difficulty:** Medium
+
+**Q2:** Choices restriction. **Difficulty:** Medium
+
+**Q3:** `nargs='+'` for lists. **Difficulty:** Medium
+
+**Q4:** Subparsers for git-style commands. **Difficulty:** Medium
+
+**Q5:** `dest` and defaults. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Mutually exclusive groups. **Difficulty:** Hard
+
+**Q2:** Custom Action classes. **Difficulty:** Hard
+
+**Q3:** From file config `parse_known_args`. **Difficulty:** Hard
+
+**Q4:** argparse vs click/typer. **Difficulty:** Hard
+
+**Q5:** Testing argparse via Namespace injection. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import argparse
+parser = argparse.ArgumentParser(description="Process files")
+parser.add_argument("input")
+parser.add_argument("-o", "--output", default="out.txt")
+parser.add_argument("-v", "--verbose", action="store_true")
+args = parser.parse_args()
+```
+
+#### Real-time Scenarios
+
+- DevOps CLIs, data pipeline runners, deployment tooling with subcommands.
+
+#### Interview Traps
+
+- Forgetting `required=True` on options; not handling `parse_known_args` for wrapper scripts.
+
+---
+
+## 31. Threading Basics
+
+#### Concept Explanation
+
+`threading` runs concurrent threads in one process sharing memory. **GIL** limits parallel CPU-bound Python bytecode execution but threads help **I/O-bound** tasks. Use `Thread`, locks (`Lock`, `RLock`), and `Queue` for coordination.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Create thread? **Answer:** `threading.Thread(target=fn, args=(...))`. **Difficulty:** Easy
+
+**Q2:** Start/join? **Answer:** `.start()`, `.join()`. **Difficulty:** Easy
+
+**Q3:** GIL effect? **Answer:** One thread executes Python bytecode at a time per process. **Difficulty:** Easy
+
+**Q4:** Shared memory risk? **Answer:** Race conditions on mutable shared data. **Difficulty:** Easy
+
+**Q5:** Lock purpose? **Answer:** Mutual exclusion. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `threading.Lock` vs `RLock`. **Difficulty:** Medium
+
+**Q2:** Daemon threads exit with main. **Difficulty:** Medium
+
+**Q3:** `Queue` producer-consumer. **Difficulty:** Medium
+
+**Q4:** I/O-bound good, CPU-bound poor for threads. **Difficulty:** Medium
+
+**Q5:** `ThreadPoolExecutor` from concurrent.futures. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Deadlock conditions and prevention. **Difficulty:** Hard
+
+**Q2:** GIL release during I/O/C extensions. **Difficulty:** Hard
+
+**Q3:** Thread-local data `threading.local()`. **Difficulty:** Hard
+
+**Q4:** Race on check-then-act—use lock. **Difficulty:** Hard
+
+**Q5:** asyncio vs threads for concurrent HTTP. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import threading
+from concurrent.futures import ThreadPoolExecutor
+
+def fetch(url):
+    return requests.get(url, timeout=10).status_code
+
+with ThreadPoolExecutor(max_workers=10) as pool:
+    results = list(pool.map(fetch, urls))
+```
+
+#### Real-time Scenarios
+
+- Parallel HTTP calls, background heartbeat threads, UI responsiveness patterns.
+
+#### Interview Traps
+
+- Expecting CPU speedup with threads in CPython; forgetting join; data races without locks.
+
+---
+
+## 32. Multiprocessing Basics
+
+#### Concept Explanation
+
+`multiprocessing` spawns separate processes with independent memory, bypassing GIL for **CPU-bound** parallelism. Uses `Process`, `Pool`, `Queue`, and `Manager`. Higher overhead than threads; requires picklable targets on Windows (spawn).
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Create process? **Answer:** `multiprocessing.Process(target=fn)`. **Difficulty:** Easy
+
+**Q2:** Why for CPU work? **Answer:** Separate GIL per process. **Difficulty:** Easy
+
+**Q3:** Pool map? **Answer:** `Pool(processes=4).map(fn, items)`. **Difficulty:** Easy
+
+**Q4:** `if __name__ == "__main__"` on Windows? **Answer:** Required for spawn start method. **Difficulty:** Easy
+
+**Q5:** Shared memory caveat? **Answer:** Default separate memory spaces. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `Queue` IPC between processes. **Difficulty:** Medium
+
+**Q2:** `Manager().dict()` shared proxy objects. **Difficulty:** Medium
+
+**Q3:** Pool vs Process manual management. **Difficulty:** Medium
+
+**Q4:** Picklable top-level functions only. **Difficulty:** Medium
+
+**Q5:** `cpu_count()` sizing workers. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** spawn vs fork start methods. **Difficulty:** Hard
+
+**Q2:** Shared memory `SharedMemory` (3.8+). **Difficulty:** Hard
+
+**Q3:** Pool deadlock on nested pools. **Difficulty:** Hard
+
+**Q4:** Logging in multiprocessing. **Difficulty:** Hard
+
+**Q5:** When asyncio/process pool hybrid wins. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+from multiprocessing import Pool, cpu_count
+
+def square(n):
+    return n * n
+
+if __name__ == "__main__":
+    with Pool(cpu_count()) as pool:
+        print(pool.map(square, range(10)))
+```
+
+#### Real-time Scenarios
+
+- Image batch processing, Monte Carlo simulations, parallel file crunching.
+
+#### Interview Traps
+
+- Missing `__main__` guard on Windows; sharing unsynced state; too many processes.
+
+---
+
+## 33. Subprocess Module
+
+#### Concept Explanation
+
+`subprocess` runs external commands, captures stdout/stderr, and manages return codes. Prefer `subprocess.run` over deprecated `os.system`. Use `shell=True` only when necessary—security risk with untrusted input.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Run command? **Answer:** `subprocess.run(["ls", "-l"], capture_output=True, text=True)`. **Difficulty:** Easy
+
+**Q2:** Return code? **Answer:** `result.returncode`. **Difficulty:** Easy
+
+**Q3:** Capture output? **Answer:** `capture_output=True` or `stdout=PIPE`. **Difficulty:** Easy
+
+**Q4:** Check errors? **Answer:** `check=True` raises CalledProcessError. **Difficulty:** Easy
+
+**Q5:** vs os.system? **Answer:** subprocess more control and safer patterns. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Timeout `timeout=30`. **Difficulty:** Medium
+
+**Q2:** Avoid shell=True with user input. **Difficulty:** Medium
+
+**Q3:** `Popen` streaming output. **Difficulty:** Medium
+
+**Q4:** Windows vs Unix command lists. **Difficulty:** Medium
+
+**Q5:** Environment override `env={}`. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Pipeline chaining stdout→stdin. **Difficulty:** Hard
+
+**Q2:** Async subprocess asyncio.create_subprocess_exec. **Difficulty:** Hard
+
+**Q3:** Security command injection examples. **Difficulty:** Hard
+
+**Q4:** Large output memory—stream to file. **Difficulty:** Hard
+
+**Q5:** Exit code interpretation cross-platform. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import subprocess
+result = subprocess.run(
+    ["git", "rev-parse", "HEAD"],
+    capture_output=True, text=True, check=True
+)
+commit = result.stdout.strip()
+```
+
+#### Real-time Scenarios
+
+- Git wrappers, ffmpeg transcoding, calling legacy CLI tools from Python orchestrators.
+
+#### Interview Traps
+
+- shell=True with interpolated user strings; deadlocks from unread PIPE buffers.
+
+---
+
+## 34. Unit Testing
+
+#### Concept Explanation
+
+`unittest` is stdlib xUnit framework: **TestCase** methods prefixed `test_`, **assert** methods, **setUp/tearDown**, **mock** via `unittest.mock`. Tests discoverable via `unittest.main()` or `python -m unittest discover`.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Base class? **Answer:** `unittest.TestCase`. **Difficulty:** Easy
+
+**Q2:** Assert equality? **Answer:** `self.assertEqual(a, b)`. **Difficulty:** Easy
+
+**Q3:** Run tests? **Answer:** `python -m unittest test_module.py`. **Difficulty:** Easy
+
+**Q4:** Test method prefix? **Answer:** `test_`. **Difficulty:** Easy
+
+**Q5:** Expect exception? **Answer:** `with self.assertRaises(ValueError):`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** `setUp`/`tearDown` fixtures. **Difficulty:** Medium
+
+**Q2:** `mock.patch` external API. **Difficulty:** Medium
+
+**Q3:** `subTest` for data-driven cases. **Difficulty:** Medium
+
+**Q4:** `TestCase.assertAlmostEqual` floats. **Difficulty:** Medium
+
+**Q5:** Organize tests mirror package structure. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Mock side_effect sequences. **Difficulty:** Hard
+
+**Q2:** Testing logging with assertLogs. **Difficulty:** Hard
+
+**Q3:** Integration vs unit boundaries. **Difficulty:** Hard
+
+**Q4:** Dependency injection for testability. **Difficulty:** Hard
+
+**Q5:** Coverage.py interpretation limits. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import unittest
+from unittest.mock import patch
+
+class TestAuth(unittest.TestCase):
+    @patch("myapp.requests.get")
+    def test_token_valid(self, mock_get):
+        mock_get.return_value.status_code = 200
+        self.assertTrue(validate_token("abc"))
+
+if __name__ == "__main__":
+    unittest.main()
+```
+
+#### Real-time Scenarios
+
+- CI pipelines gating merges, regression suites for business logic, mocking payment APIs.
+
+#### Interview Traps
+
+- Testing implementation not behavior; flaky tests with real network/time.
+
+---
+
+## 35. PyTest Introduction
+
+#### Concept Explanation
+
+**pytest** is a third-party test framework using plain `assert`, rich fixtures, parametrize, and plugins. Auto-discovers `test_*.py` and `*_test.py`. Fixtures via `@pytest.fixture`; parametrization via `@pytest.mark.parametrize`.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Run tests? **Answer:** `pytest` or `python -m pytest`. **Difficulty:** Easy
+
+**Q2:** Assert style? **Answer:** Plain `assert x == y`. **Difficulty:** Easy
+
+**Q3:** Fixture? **Answer:** `@pytest.fixture` setup/teardown via yield. **Difficulty:** Easy
+
+**Q4:** Parametrize? **Answer:** `@pytest.mark.parametrize("a,b,expected", [(1,2,3)])`. **Difficulty:** Easy
+
+**Q5:** vs unittest? **Answer:** Less boilerplate, powerful fixtures/plugins. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Fixture scopes function/class/module/session. **Difficulty:** Medium
+
+**Q2:** `conftest.py` shared fixtures. **Difficulty:** Medium
+
+**Q3:** `pytest.raises` context manager. **Difficulty:** Medium
+
+**Q4:** `monkeypatch` for env/attrs. **Difficulty:** Medium
+
+**Q5:** `-k` expression filter tests. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** Plugin ecosystem (pytest-cov, asyncio). **Difficulty:** Hard
+
+**Q2:** Factory fixtures pattern. **Difficulty:** Hard
+
+**Q3:** Hypothesis property-based integration. **Difficulty:** Hard
+
+**Q4:** Parallel pytest-xdist. **Difficulty:** Hard
+
+**Q5:** Custom markers and strict config. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+import pytest
+
+@pytest.fixture
+def db():
+    conn = create_test_db()
+    yield conn
+    conn.close()
+
+@pytest.mark.parametrize("email,valid", [
+    ("a@b.com", True),
+    ("bad", False),
+])
+def test_email(email, valid):
+    assert is_valid_email(email) == valid
+```
+
+#### Real-time Scenarios
+
+- Fast feedback local runs, parametrized validation rules, API contract tests with fixtures.
+
+#### Interview Traps
+
+- Shared mutable fixture state; over-parametrizing unreadable tests.
+
+---
+
+## 36. Debugging Techniques
+
+#### Concept Explanation
+
+Debugging spans **print/logging**, **`pdb`/`breakpoint()`**, **tracebacks**, **IDE debuggers**, **`logging` levels**, **post-mortem** `pdb.pm()`, **profilers** (`cProfile`), and **static analysis** (mypy, ruff). Reproduce minimally, bisect, inspect state, fix root cause.
+
+#### 5 Basic Questions and Answers
+
+**Q1:** Built-in breakpoint (3.7+)? **Answer:** `breakpoint()` enters pdb. **Difficulty:** Easy
+
+**Q2:** Read traceback? **Answer:** Bottom-up to exception type/message. **Difficulty:** Easy
+
+**Q3:** pdb continue/step? **Answer:** `c` continue, `n` next, `s` step into. **Difficulty:** Easy
+
+**Q4:** Print debugging alternative? **Answer:** Structured logging. **Difficulty:** Easy
+
+**Q5:** Inspect variables in pdb? **Answer:** `p var`, `pp obj`. **Difficulty:** Easy
+
+#### 5 Intermediate Questions and Answers
+
+**Q1:** Conditional breakpoint `break loc, condition`. **Difficulty:** Medium
+
+**Q2:** `python -m pdb script.py`. **Difficulty:** Medium
+
+**Q3:** `traceback.format_exc()` in handlers. **Difficulty:** Medium
+
+**Q4:** IDE watch/locals during debug. **Difficulty:** Medium
+
+**Q5:** reproduce with minimal example. **Difficulty:** Medium
+
+#### 5 Advanced Questions and Answers
+
+**Q1:** `cProfile` hot path analysis. **Difficulty:** Hard
+
+**Q2:** Heisenbugs in threaded code—log timestamps. **Difficulty:** Hard
+
+**Q3:** remote pdb / debug in containers. **Difficulty:** Hard
+
+**Q4:** `sys.settrace` custom tracing. **Difficulty:** Hard
+
+**Q5:** post-mortem on prod via Sentry/OpenTelemetry. **Difficulty:** Hard
+
+#### Coding Examples
+
+```python
+def process(items):
+    for i, item in enumerate(items):
+        if item is None:
+            breakpoint()  # inspect i, item, locals
+        transform(item)
+
+# Post-mortem after exception
+try:
+    risky()
+except Exception:
+    import pdb; pdb.post_mortem()
+```
+
+#### Real-time Scenarios
+
+- Production incident triage, flaky test investigation, performance regression hunts.
+
+#### Interview Traps
+
+- Leaving breakpoints in committed code; fixing symptoms not root cause; debugging without repro steps.
+
+---
+
+## Quick Reference Cheat Sheet
+
+| Topic | Key API / Pattern |
+|-------|-------------------|
+| Comprehensions | `[x for x in a if cond]`, `{k:v}`, `{x}` |
+| Generators | `yield`, `(x for x in a)` |
+| Decorators | `@wraps`, `@deco` → HOF |
+| Copy | `copy.copy` vs `copy.deepcopy` |
+| Functional | `map`, `filter`, `reduce`, `zip`, `enumerate` |
+| Concurrency | threads=I/O, processes=CPU, GIL awareness |
+| I/O formats | `json`, `csv`, `xml.etree`, `pickle` (trusted only) |
+| CLI / OS | `argparse`, `os.environ`, `sys.argv` |
+| Testing | `unittest.mock`, `pytest` fixtures |
+| Debug | `breakpoint()`, pdb, logging, cProfile |
+
+---
+
+*End of Level 2 Intermediate Interview Bank.*
