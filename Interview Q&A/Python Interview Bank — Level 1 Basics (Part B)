@@ -1,0 +1,3539 @@
+# Python Interview Bank — Level 1 Basics (Part B)
+
+> Covers: Dictionary Methods, Control Flow, Loops, Functions, Scope, Modules, Standard Library, Exceptions, Files, Virtual Environments, and PEP 8.
+
+---
+
+### Dictionary Methods
+
+#### Concept Explanation
+
+Python dictionaries are mutable, hash-table-based mappings of unique keys to values. Dictionary methods operate on keys, values, or key-value pairs. Common methods include `get()`, `keys()`, `values()`, `items()`, `update()`, `pop()`, `popitem()`, `setdefault()`, `clear()`, and `copy()`. Understanding mutability, key hashability, and iteration order (insertion-ordered since Python 3.7) is essential for interviews.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you safely retrieve a value from a dictionary when the key might not exist?**
+
+**Answer:** Use `dict.get(key, default)` instead of `dict[key]`.
+
+**Explanation:** Subscript access raises `KeyError` for missing keys. `get()` returns `None` or a custom default without raising an exception.
+
+**Example:**
+```python
+user = {"name": "Alice", "age": 30}
+print(user.get("email"))          # None
+print(user.get("email", "N/A"))   # N/A
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Mention that `get()` is preferred for optional fields; use `[]` only when a missing key is truly exceptional.
+
+---
+
+**Q2: What is the difference between `keys()`, `values()`, and `items()`?**
+
+**Answer:** `keys()` returns a view of keys; `values()` returns a view of values; `items()` returns a view of `(key, value)` tuples.
+
+**Explanation:** These are dynamic views that reflect dictionary changes. They are memory-efficient and iterable.
+
+**Example:**
+```python
+d = {"a": 1, "b": 2}
+for k, v in d.items():
+    print(k, v)
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Note that views are not lists; convert with `list(d.keys())` if a snapshot is needed.
+
+---
+
+**Q3: How do you add or update multiple key-value pairs at once?**
+
+**Answer:** Use `update()` or the merge operator `|=` (Python 3.9+).
+
+**Explanation:** `update()` accepts another dict or iterable of pairs. It overwrites existing keys.
+
+**Example:**
+```python
+d = {"a": 1}
+d.update({"b": 2, "a": 10})
+d |= {"c": 3}
+# d == {"a": 10, "b": 2, "c": 3}
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Know that `update()` modifies in place; `{**d1, **d2}` creates a new dict.
+
+---
+
+**Q4: What does `setdefault()` do?**
+
+**Answer:** It returns the value for a key; if the key is missing, it inserts the key with a given default value and returns that default.
+
+**Explanation:** Useful for initializing nested structures or counting without an explicit `if key not in d` check.
+
+**Example:**
+```python
+counts = {}
+for word in ["a", "b", "a"]:
+    counts.setdefault(word, 0)
+    counts[word] += 1
+# counts == {"a": 2, "b": 1}
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Contrast with `defaultdict` from `collections` for cleaner grouping logic.
+
+---
+
+**Q5: What is the difference between `pop()` and `popitem()`?**
+
+**Answer:** `pop(key)` removes and returns the value for a specific key; `popitem()` removes and returns the last inserted `(key, value)` pair (LIFO).
+
+**Explanation:** `pop()` requires the key (or a default in Python 3.9+ via `pop(key, default)`). `popitem()` on an empty dict raises `KeyError`.
+
+**Example:**
+```python
+d = {"x": 1, "y": 2}
+print(d.pop("x"))      # 1
+print(d.popitem())     # ("y", 2)
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Before Python 3.7, `popitem()` was arbitrary order; now it is insertion-ordered.
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What is the difference between `copy()` and `deepcopy()` for dictionaries?**
+
+**Answer:** `copy()` creates a shallow copy; nested mutable objects are shared. `deepcopy()` recursively copies nested structures.
+
+**Explanation:** Shallow copy duplicates top-level keys but references inner lists/dicts. Deep copy is independent at all levels.
+
+**Example:**
+```python
+import copy
+original = {"data": [1, 2]}
+shallow = original.copy()
+deep = copy.deepcopy(original)
+shallow["data"].append(3)
+print(original["data"])  # [1, 2, 3]
+print(deep["data"])      # [1, 2]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: Can dictionary keys be mutable objects?**
+
+**Answer:** No. Keys must be hashable (immutable types like str, int, tuple of hashables).
+
+**Explanation:** Dicts use hash tables; unhashable keys like lists or dicts raise `TypeError`.
+
+**Example:**
+```python
+# invalid: {[1, 2]: "value"}
+valid = {(1, 2): "value"}
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: How does dictionary comprehension work?**
+
+**Answer:** `{key_expr: value_expr for item in iterable if condition}` builds a dict in one expression.
+
+**Example:**
+```python
+words = ["apple", "bat", "cat"]
+lengths = {w: len(w) for w in words if len(w) > 3}
+# {"apple": 5}
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: What happens when you iterate over a dictionary directly?**
+
+**Answer:** `for x in d` iterates over keys, equivalent to `for x in d.keys()`.
+
+**Explanation:** To iterate values or pairs, use `.values()` or `.items()`.
+
+**Example:**
+```python
+d = {"a": 1, "b": 2}
+print(list(d))  # ["a", "b"]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: How do you merge two dictionaries without mutating either?**
+
+**Answer:** Use `{**d1, **d2}` or `d1 | d2` (Python 3.9+). Later keys overwrite earlier ones.
+
+**Example:**
+```python
+defaults = {"host": "localhost", "port": 8080}
+overrides = {"port": 443}
+config = defaults | overrides  # {"host": "localhost", "port": 443}
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: What is the time complexity of dictionary operations?**
+
+**Answer:** Average-case O(1) for get, set, delete, and membership test; worst-case O(n) under hash collisions.
+
+**Explanation:** Python dicts are highly optimized hash tables with dynamic resizing.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Explain why two equal dicts with different insertion orders compare equal but have the same iteration order only if built identically.**
+
+**Answer:** Equality compares key-value pairs, not order. Iteration order follows insertion order (3.7+), so two equal dicts built differently may iterate differently.
+
+**Example:**
+```python
+a = {"x": 1, "y": 2}
+b = {"y": 2, "x": 1}
+print(a == b)           # True
+print(list(a.keys()))   # ["x", "y"]
+print(list(b.keys()))   # ["y", "x"]
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: What is `dict.fromkeys()` and when is it useful?**
+
+**Answer:** Creates a dict from an iterable of keys with a single shared default value.
+
+**Example:**
+```python
+keys = ["a", "b", "c"]
+d = dict.fromkeys(keys, 0)  # {"a": 0, "b": 0, "c": 0}
+```
+
+**Caution:** Mutable defaults are shared across keys.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: How does the walrus operator help with dict operations?**
+
+**Answer:** `:=` assigns within expressions, useful when a computed value is needed twice.
+
+**Example:**
+```python
+data = {"user_id": 42, "score": 88}
+if (uid := data.get("user_id")) is not None:
+    print(f"Processing user {uid}")
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: What are `ChainMap`, `defaultdict`, and `Counter` and when prefer them over plain dicts?**
+
+**Answer:** `ChainMap` layers dicts for scoped lookup; `defaultdict` auto-creates missing keys; `Counter` counts hashable elements.
+
+**Example:**
+```python
+from collections import Counter
+Counter("banana")  # Counter({"b": 1, "a": 3, "n": 2})
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Assuming `dict.get(key)` raises `KeyError` (it returns `None`).
+- Using mutable objects as keys.
+- Confusing shallow vs deep copy with nested dicts.
+- Modifying a dict while iterating over it (use `list(d.items())` or build a new dict).
+- Believing dict order was random in modern Python (insertion-ordered since 3.7).
+
+#### Real-world Applications
+
+- Configuration management (`settings.update(env_overrides)`).
+- JSON API response parsing and transformation.
+- Caching/memoization keyed by function arguments.
+- Frequency counting and grouping with `Counter`/`defaultdict`.
+- Database row mapping (`cursor.description` → column dicts).
+
+#### Follow-up Questions Interviewers May Ask
+
+- How would you implement LRU cache using `OrderedDict` or modern dict?
+- Difference between `__getitem__` and `get` in custom classes?
+- How does Python dict resize internally?
+- Thread-safety of dict operations in CPython?
+- When would you use `TypedDict` or `dataclass` instead of a dict?
+
+---
+
+### If, Elif, Else
+
+#### Concept Explanation
+
+Conditional statements control program flow based on Boolean expressions. `if` evaluates a condition; `elif` (else-if) checks additional conditions; `else` runs when all prior conditions are false. Python uses indentation (not braces) for blocks. Conditions rely on truthiness: `False`, `None`, `0`, empty containers, and custom falsy objects evaluate to false.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the syntax of an if-else statement in Python?**
+
+**Answer:**
+```python
+if condition:
+    # block
+elif other_condition:
+    # block
+else:
+    # block
+```
+
+**Explanation:** Each block must be indented. Colons are required after each header.
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Emphasize indentation is syntactically significant (typically 4 spaces).
+
+---
+
+**Q2: What values are considered falsy in Python?**
+
+**Answer:** `False`, `None`, `0`, `0.0`, empty string `""`, empty list `[]`, empty dict `{}`, empty set `set()`, empty tuple `()`.
+
+**Example:**
+```python
+if []:
+    print("won't run")
+if "hello":
+    print("runs")
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Can you write a one-line conditional in Python?**
+
+**Answer:** Yes, using a ternary expression: `value_if_true if condition else value_if_false`.
+
+**Example:**
+```python
+status = "adult" if age >= 18 else "minor"
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What happens if you use `=` instead of `==` in an if condition?**
+
+**Answer:** In Python 3, `if x = 5` is a syntax error. Assignment is not an expression in `if` headers (unlike C).
+
+**Explanation:** Use `==` for comparison. Walrus `:=` assigns inside expressions: `if (n := len(data)) > 0:`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Do you need parentheses around conditions in Python?**
+
+**Answer:** No, but they help readability for complex logic.
+
+**Example:**
+```python
+if age >= 18 and country == "US":
+    register_voter()
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What is short-circuit evaluation for `and` and `or`?**
+
+**Answer:** `and` stops at the first falsy operand; `or` stops at the first truthy operand. Later operands may not be evaluated.
+
+**Example:**
+```python
+def side_effect():
+    print("called")
+    return True
+
+False and side_effect()  # side_effect never called
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: How does `if not x` differ from `if x is None`?**
+
+**Answer:** `not x` is true for any falsy value (0, "", []). `x is None` checks identity with `None` only.
+
+**Example:**
+```python
+value = 0
+if not value:       # True
+    pass
+if value is None:   # False
+    pass
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Can elif exist without else?**
+
+**Answer:** Yes. `if` and `elif` alone are valid; `else` is optional.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: How do you chain multiple comparisons?**
+
+**Answer:** Python allows `a < b < c`, equivalent to `a < b and b < c`.
+
+**Example:**
+```python
+if 0 < score <= 100:
+    print("valid score")
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is the difference between `is` and `==` in conditions?**
+
+**Answer:** `==` compares values; `is` compares object identity (same memory address).
+
+**Example:**
+```python
+a = [1, 2]
+b = [1, 2]
+print(a == b)  # True
+print(a is b)  # False
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: How does truthiness work for custom classes?**
+
+**Answer:** By default instances are truthy. Override `__bool__()` or `__len__()` to customize.
+
+**Example:**
+```python
+class Stack:
+    def __init__(self, items):
+        self.items = items
+    def __bool__(self):
+        return len(self.items) > 0
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: What is structural pattern matching (match-case) and how does it relate to if-elif?**
+
+**Answer:** Python 3.10+ `match/case` provides pattern matching beyond simple Boolean conditions.
+
+**Example:**
+```python
+match command:
+    case "start":
+        start_service()
+    case "stop":
+        stop_service()
+    case _:
+        print("unknown")
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: How do you avoid deeply nested if statements?**
+
+**Answer:** Use guard clauses (early returns), extract functions, lookup dicts, or polymorphism.
+
+**Example:**
+```python
+def process(user):
+    if not user:
+        return
+    if not user.is_active:
+        return
+    # main logic at low indentation
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: What is the `else` clause on a loop (for/while)?**
+
+**Answer:** Loop `else` runs when the loop completes without `break`.
+
+**Example:**
+```python
+for n in [2, 4, 6]:
+    if n % 2:
+        break
+else:
+    print("all even")
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: How does operator precedence affect complex if conditions?**
+
+**Answer:** `not` > `and` > `or`. Use parentheses for clarity.
+
+**Example:**
+```python
+if (a or b) and not c:
+    pass
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Using `is` to compare strings or integers (use `==`; `is` only safe for `None`, `True`, `False` in practice).
+- Treating empty string and `None` the same with `if not x`.
+- Forgetting colons after `if`/`elif`/`else`.
+- Relying on switch statements (no traditional switch until match-case in 3.10).
+
+#### Real-world Applications
+
+- Input validation and authorization checks.
+- Feature flags and environment-based configuration.
+- Error routing in API handlers.
+- Business rule engines (pricing tiers, discounts).
+- Graceful degradation in data pipelines.
+
+#### Follow-up Questions Interviewers May Ask
+
+- When would you refactor if-elif chains to a strategy pattern?
+- Explain guard clauses vs nested if.
+- How does `match` handle class patterns and destructuring?
+- Difference between `any()`/`all()` and manual if chains?
+
+---
+
+### FOR
+
+#### Concept Explanation
+
+The `for` loop iterates over elements of an iterable (list, tuple, string, dict, set, file, generator, range). Python's iteration protocol uses `__iter__()` and `__next__()`. `for` loops are preferred when the number of iterations is known or driven by a collection. `break` exits early; `continue` skips to the next iteration; `else` runs if no `break` occurred.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the basic syntax of a for loop?**
+
+**Answer:**
+```python
+for item in iterable:
+    process(item)
+```
+
+**Explanation:** `item` is a loop variable rebound on each iteration.
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Mention that the loop variable persists after the loop with its last value.
+
+---
+
+**Q2: How do you loop over a range of numbers?**
+
+**Answer:** Use `range(stop)`, `range(start, stop)`, or `range(start, stop, step)`.
+
+**Example:**
+```python
+for i in range(3):
+    print(i)  # 0, 1, 2
+for i in range(2, 10, 2):
+    print(i)  # 2, 4, 6, 8
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: How do you loop over a dictionary's keys, values, and pairs?**
+
+**Answer:**
+```python
+for key in d:              # keys
+for val in d.values():     # values
+for k, v in d.items():     # pairs
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What does `break` do inside a for loop?**
+
+**Answer:** It immediately exits the innermost loop.
+
+**Example:**
+```python
+for n in range(10):
+    if n == 5:
+        break
+# loop stops at n=5
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What does `continue` do?**
+
+**Answer:** Skips the rest of the current iteration and proceeds to the next item.
+
+**Example:**
+```python
+for n in range(5):
+    if n % 2 == 0:
+        continue
+    print(n)  # 1, 3
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What is `enumerate()` and why use it?**
+
+**Answer:** Adds an index counter to an iterable: `for i, val in enumerate(items, start=0)`.
+
+**Example:**
+```python
+for idx, fruit in enumerate(["apple", "banana"], start=1):
+    print(idx, fruit)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is `zip()`?**
+
+**Answer:** Aggregates multiple iterables element-wise into tuples.
+
+**Example:**
+```python
+names = ["Alice", "Bob"]
+scores = [90, 85]
+for name, score in zip(names, scores):
+    print(name, score)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: What is a list comprehension vs a for loop?**
+
+**Answer:** List comprehensions build lists concisely: `[expr for item in iterable if cond]`. Often faster and more readable for simple transforms.
+
+**Example:**
+```python
+squares = [x * x for x in range(5)]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Can you modify a list while iterating over it?**
+
+**Answer:** Avoid it—removing items shifts indices and causes skipped elements or errors. Iterate over a copy or build a new list.
+
+**Example:**
+```python
+items = [1, 2, 3, 4]
+items = [x for x in items if x % 2 == 0]  # safe filter
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is nested looping and what is its complexity?**
+
+**Answer:** A loop inside another loop; for sizes n and m, typical nested work is O(n × m).
+
+**Example:**
+```python
+for row in matrix:
+    for val in row:
+        print(val)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Explain the iteration protocol.**
+
+**Answer:** `iter(obj)` calls `obj.__iter__()` returning an iterator. Each `next()` calls `__next__()` until `StopIteration`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: What is the difference between `for x in iterable` and `while` with manual indexing?**
+
+**Answer:** `for` is cleaner, less error-prone, and works with any iterable. Index-based loops risk off-by-one errors and don't generalize to non-sequence iterables.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: How does `itertools.product` relate to nested for loops?**
+
+**Answer:** `product` generates Cartesian products lazily without deep nesting.
+
+**Example:**
+```python
+from itertools import product
+for a, b in product([1, 2], ["x", "y"]):
+    print(a, b)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: What is a generator expression vs list comprehension in loops?**
+
+**Answer:** `(x * 2 for x in range(10))` is lazy and memory-efficient; `[x * 2 for x in range(10)]` builds a full list.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Explain loop `else` with `break`.**
+
+**Answer:** `else` executes only if the loop was not terminated by `break`—useful for search patterns.
+
+**Example:**
+```python
+for item in items:
+    if item == target:
+        print("found")
+        break
+else:
+    print("not found")
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Modifying a list during iteration.
+- Assuming `range(5)` includes 5 (stop is exclusive).
+- Forgetting that `for k in d` iterates keys, not values.
+- Name shadowing loop variables used after the loop.
+- Using nested loops when `zip` or vectorized operations suffice.
+
+#### Real-world Applications
+
+- Processing CSV/JSON records row by row.
+- Batch API requests with rate limiting.
+- ETL pipelines transforming collections.
+- Rendering UI lists and paginated results.
+- Parallel fan-out with `concurrent.futures` over iterables.
+
+#### Follow-up Questions Interviewers May Ask
+
+- When would you use `map`/`filter` vs list comprehension?
+- How does `async for` differ from `for`?
+- Explain lazy iteration with generators in large datasets.
+- How do you break out of nested loops cleanly?
+
+---
+
+### While
+
+#### Concept Explanation
+
+A `while` loop repeats a block as long as a condition remains true. Unlike `for`, it is condition-driven rather than collection-driven. It is ideal when the number of iterations is unknown upfront (user input, polling, game loops). Care must be taken to ensure the condition eventually becomes false to avoid infinite loops.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the syntax of a while loop?**
+
+**Answer:**
+```python
+while condition:
+    # body
+```
+
+**Explanation:** The condition is checked before each iteration (pre-test loop).
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Always mention updating loop variables inside the body to ensure termination.
+
+---
+
+**Q2: How do you create an intentional infinite loop?**
+
+**Answer:** `while True:` with a `break` on exit condition.
+
+**Example:**
+```python
+while True:
+    cmd = input("> ")
+    if cmd == "quit":
+        break
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Can while loops use else, break, and continue?**
+
+**Answer:** Yes—same semantics as `for` loops.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What happens if the condition is always True and there is no break?**
+
+**Answer:** Infinite loop; program hangs until interrupted.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Write a while loop that counts from 1 to 5.**
+
+**Answer:**
+```python
+n = 1
+while n <= 5:
+    print(n)
+    n += 1
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: When should you prefer while over for?**
+
+**Answer:** When iteration count is unknown: reading until EOF, retry with backoff, waiting for a state change, interactive menus.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is an off-by-one error in while loops?**
+
+**Answer:** Incorrect boundary conditions causing one extra or one fewer iteration.
+
+**Example:**
+```python
+# prints 0..9 (10 times) — common pattern
+i = 0
+while i < 10:
+    i += 1
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: How do you emulate do-while (post-test) in Python?**
+
+**Answer:** Python has no do-while; use `while True` with break or a sentinel pattern.
+
+**Example:**
+```python
+while True:
+    data = fetch()
+    process(data)
+    if not should_continue():
+        break
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: How does `while` interact with exceptions?**
+
+**Answer:** Uncaught exceptions exit the loop. You can catch exceptions inside the loop for retry logic.
+
+**Example:**
+```python
+attempts = 3
+while attempts > 0:
+    try:
+        connect()
+        break
+    except ConnectionError:
+        attempts -= 1
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: Compare `while i < len(lst)` vs `for item in lst`.**
+
+**Answer:** Index-based while is useful when you need neighboring elements or conditional index jumps; `for` is idiomatic for simple traversal.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: How do you implement a state machine with while?**
+
+**Answer:** Use a state variable updated each iteration until a terminal state.
+
+**Example:**
+```python
+state = "INIT"
+while state != "DONE":
+    if state == "INIT":
+        state = "RUNNING"
+    elif state == "RUNNING":
+        state = "DONE"
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: What are risks of while loops in concurrent code?**
+
+**Answer:** Busy-waiting consumes CPU; prefer `threading.Event`, `asyncio`, or timeouts.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: How would you add exponential backoff in a while retry loop?**
+
+**Answer:** Increase sleep duration each failure.
+
+**Example:**
+```python
+import time
+delay = 1
+while not success:
+    try:
+        success = call_api()
+    except Exception:
+        time.sleep(delay)
+        delay = min(delay * 2, 60)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Explain the two-pointer technique with while.**
+
+**Answer:** Common in sorted arrays: move left/right pointers based on comparison.
+
+**Example:**
+```python
+left, right = 0, len(arr) - 1
+while left < right:
+    # adjust pointers
+    left += 1
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: When does a while loop's condition evaluation have side effects?**
+
+**Answer:** If the condition calls functions that mutate state—generally avoid; assign to variables first for clarity.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Forgetting to update the loop variable → infinite loop.
+- Using `while` when `for` is clearer and safer.
+- Busy-wait without sleep in production retry logic.
+- Condition checked only at top—body may never run (unlike do-while).
+
+#### Real-world Applications
+
+- Retry logic for network/database operations.
+- Game main loops and event polling.
+- Producer-consumer buffers until sentinel value.
+- Parsing streams token-by-token until delimiter.
+- Monitoring services until shutdown signal.
+
+#### Follow-up Questions Interviewers May Ask
+
+- How would you rewrite a while loop as a recursive function?
+- Compare event-driven loops vs while True polling.
+- How do you unit test infinite loops safely?
+
+---
+
+### Functions
+
+#### Concept Explanation
+
+Functions are reusable blocks of code defined with `def name(parameters):`. They can accept inputs (parameters), perform operations, and return outputs via `return`. Python functions are first-class objects—they can be assigned, passed as arguments, and returned from other functions. Docstrings document behavior. Functions support default values, arbitrary arguments, and type hints (Python 3.5+).
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you define and call a function in Python?**
+
+**Answer:**
+```python
+def greet(name):
+    return f"Hello, {name}"
+
+message = greet("Alice")
+```
+
+**Explanation:** `def` creates a function object; calling it executes the body.
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Mention that functions without `return` implicitly return `None`.
+
+---
+
+**Q2: What does `return` do?**
+
+**Answer:** Exits the function and sends a value back to the caller. Multiple values return as a tuple.
+
+**Example:**
+```python
+def stats(nums):
+    return min(nums), max(nums)
+
+lo, hi = stats([1, 5, 3])
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: What is a docstring?**
+
+**Answer:** A string literal as the first statement in a function, accessible via `help()` and `.__doc__`.
+
+**Example:**
+```python
+def add(a, b):
+    """Return the sum of a and b."""
+    return a + b
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: Can a function call itself?**
+
+**Answer:** Yes—recursion. Must have a base case to avoid infinite recursion (`RecursionError`).
+
+**Example:**
+```python
+def factorial(n):
+    return 1 if n <= 1 else n * factorial(n - 1)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is the difference between print and return?**
+
+**Answer:** `print` displays output to stdout; `return` passes a value to the caller for further use.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What are type hints and do they enforce types at runtime?**
+
+**Answer:** Annotations like `def f(x: int) -> str:` document expected types. By default they are not enforced unless using tools like `mypy` or `beartype`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is a pure function?**
+
+**Answer:** Same inputs always produce same outputs with no side effects (no I/O, no global mutation).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Explain `*args` at a high level.**
+
+**Answer:** Collects extra positional arguments into a tuple: `def f(*args):`.
+
+**Example:**
+```python
+def total(*args):
+    return sum(args)
+
+total(1, 2, 3)  # 6
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: What is function hoisting in Python?**
+
+**Answer:** Python has none—functions must be defined before they are called (at runtime when the definition line executes).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is a nested function?**
+
+**Answer:** A function defined inside another function's body, often used for encapsulation or closures.
+
+**Example:**
+```python
+def outer(x):
+    def inner(y):
+        return x + y
+    return inner
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: What is a closure?**
+
+**Answer:** A nested function that captures variables from its enclosing scope even after the outer function returns.
+
+**Example:**
+```python
+def multiplier(n):
+    def inner(x):
+        return x * n
+    return inner
+
+double = multiplier(2)
+double(5)  # 10
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Explain decorators at a conceptual level.**
+
+**Answer:** Decorators wrap functions to extend behavior: `@decorator` is syntactic sugar for `func = decorator(func)`.
+
+**Example:**
+```python
+def log(func):
+    def wrapper(*args, **kwargs):
+        print(f"Calling {func.__name__}")
+        return func(*args, **kwargs)
+    return wrapper
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: What is the difference between `@staticmethod` and `@classmethod`?**
+
+**Answer:** `staticmethod` needs no instance or class; `classmethod` receives the class as first arg (`cls`) and can serve as alternative constructors.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: How does Python pass arguments—by value or reference?**
+
+**Answer:** Pass-by-assignment (object reference). Immutable objects cannot be changed in place; mutable objects can be modified through the reference.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: What is `functools.lru_cache`?**
+
+**Answer:** Memoization decorator caching function results by arguments.
+
+**Example:**
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib(n):
+    return n if n < 2 else fib(n - 1) + fib(n - 2)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Confusing `print` with `return`.
+- Mutable default arguments (`def f(x=[])`).
+- Forgetting that function definitions execute at import/definition time, not call time.
+- Assuming type hints enforce runtime types.
+
+#### Real-world Applications
+
+- API endpoint handlers and service layer methods.
+- Utility libraries and shared business logic.
+- Data transformation pipelines.
+- Test fixtures and factory functions.
+- Decorators for logging, auth, and caching.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Implement a decorator with arguments.
+- Explain `functools.wraps` and why it matters.
+- When is recursion preferred over iteration?
+- How do generators differ from regular functions?
+
+---
+
+### Function Arguments
+
+#### Concept Explanation
+
+Python supports positional arguments, keyword arguments, default values, `*args` (variable positional), `**kwargs` (variable keyword), and keyword-only / positional-only parameters (Python 3.8+ with `/` and `*`). Argument order in a definition: positional-only, positional-or-keyword, `*`, keyword-only. Understanding unpacking with `*` and `**` is critical for interviews.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the difference between positional and keyword arguments?**
+
+**Answer:** Positional are matched by order; keyword by parameter name.
+
+**Example:**
+```python
+def connect(host, port):
+    pass
+
+connect("localhost", 8080)
+connect(port=443, host="api.example.com")
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: What are default parameter values?**
+
+**Answer:** Values used when an argument is omitted: `def f(x, y=10):`.
+
+**Explanation:** Defaults are evaluated once at function definition time.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: What does `*args` collect?**
+
+**Answer:** Extra positional arguments as a tuple.
+
+**Example:**
+```python
+def show(*args):
+    print(args)
+show(1, 2, 3)  # (1, 2, 3)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What does `**kwargs` collect?**
+
+**Answer:** Extra keyword arguments as a dict.
+
+**Example:**
+```python
+def show(**kwargs):
+    print(kwargs)
+show(a=1, b=2)  # {"a": 1, "b": 2}
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Can you pass a list as positional arguments?**
+
+**Answer:** Yes, with unpacking: `func(*my_list)`.
+
+**Example:**
+```python
+def add(a, b, c):
+    return a + b + c
+add(*[1, 2, 3])  # 6
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Why are mutable default arguments dangerous?**
+
+**Answer:** The same object is reused across calls.
+
+**Example:**
+```python
+def append_item(item, lst=[]):
+    lst.append(item)
+    return lst
+
+append_item(1)  # [1]
+append_item(2)  # [1, 2] — surprise!
+```
+
+**Fix:** Use `None` as default and create a new list inside.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is argument order when mixing types?**
+
+**Answer:** Positional first, then keyword. Positional cannot follow keyword.
+
+**Example:**
+```python
+# invalid: f(y=2, 1)
+f(1, y=2)  # valid
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Explain `*` as a separator in function signatures.**
+
+**Answer:** Parameters after bare `*` are keyword-only.
+
+**Example:**
+```python
+def create_user(name, *, role="user"):
+    pass
+create_user("Alice", role="admin")  # OK
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: What does `/` mean in a function signature (Python 3.8+)?**
+
+**Answer:** Parameters before `/` are positional-only.
+
+**Example:**
+```python
+def div(a, b, /):
+    return a / b
+div(10, 2)       # OK
+# div(a=10, b=2) # TypeError
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: How do you merge dicts into kwargs?**
+
+**Answer:** Use `**` unpacking: `func(**config_dict)`.
+
+**Example:**
+```python
+config = {"host": "localhost", "port": 5432}
+connect(**config)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Full parameter ordering in Python 3.8+?**
+
+**Answer:** `def f(pos_only, /, standard, *args, kw_only, **kwargs):`
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: What is `inspect.signature` used for?**
+
+**Answer:** Introspects parameter names, defaults, kinds—for frameworks, dependency injection, validation.
+
+**Example:**
+```python
+import inspect
+sig = inspect.signature(connect)
+print(sig.parameters)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Explain double dispatch and `*args/**kwargs` forwarding.**
+
+**Answer:** Wrapper functions preserve wrapped signatures using `*args, **kwargs`.
+
+**Example:**
+```python
+def wrapper(*args, **kwargs):
+    return original(*args, **kwargs)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: What happens with keyword-only args and inheritance?**
+
+**Answer:** Subclasses must maintain compatible signatures; changing keyword-only params can break callers.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Compare `functools.partial` vs default arguments.**
+
+**Answer:** `partial` creates a new callable with some arguments pre-filled at call-site, without modifying the original function definition.
+
+**Example:**
+```python
+from functools import partial
+power_of_2 = partial(pow, exp=2)
+power_of_2(5)  # 25
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Mutable default argument bug.
+- Wrong order: keyword before positional.
+- Confusing `*args` (tuple) with `**kwargs` (dict).
+- Unpacking wrong iterable type into function.
+
+#### Real-world Applications
+
+- Flask/FastAPI route handlers with `**kwargs` config.
+- Wrapper functions in middleware and decorators.
+- CLI tools accepting variable flags.
+- Factory functions with partial application.
+- API clients forwarding optional parameters.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Fix the mutable default argument anti-pattern.
+- Design a function signature for maximum flexibility and clarity.
+- How does `**kwargs` interact with typed dataclass configs?
+
+---
+
+### Lambda Functions
+
+#### Concept Explanation
+
+Lambda functions are anonymous, single-expression functions defined with `lambda parameters: expression`. They are limited to one expression (no statements). Commonly used for short callbacks in `sorted()`, `map()`, `filter()`, and pandas apply. For anything non-trivial, a regular `def` is preferred for readability.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the syntax of a lambda function?**
+
+**Answer:** `lambda args: expression`
+
+**Example:**
+```python
+square = lambda x: x * x
+print(square(4))  # 16
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: Can a lambda have multiple parameters?**
+
+**Answer:** Yes: `lambda x, y: x + y`
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Can lambdas contain print or if statements?**
+
+**Answer:** No statements—only a single expression. Use conditional expressions: `lambda x: "pos" if x > 0 else "non-pos"`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: How are lambdas used with sorted()?**
+
+**Answer:** As the `key` argument.
+
+**Example:**
+```python
+users = [{"name": "Bob", "age": 30}, {"name": "Alice", "age": 25}]
+sorted(users, key=lambda u: u["age"])
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Do lambdas have names?**
+
+**Answer:** They are anonymous but assigned variables reference them: `f = lambda x: x`. Use `f.__name__` → `"<lambda>"`.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Lambda vs def—when prefer each?**
+
+**Answer:** Lambda for tiny throwaway expressions; `def` for anything needing statements, docstrings, or debugging.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: Can lambdas be used with map and filter?**
+
+**Answer:** Yes, though list comprehensions are often clearer.
+
+**Example:**
+```python
+list(map(lambda x: x * 2, [1, 2, 3]))       # [2, 4, 6]
+list(filter(lambda x: x % 2 == 0, [1, 2, 3])) # [2]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: What is a late-binding closure trap with lambdas in loops?**
+
+**Answer:** Lambdas in loops capture variables by name, not value.
+
+**Example:**
+```python
+funcs = [lambda: i for i in range(3)]
+[f() for f in funcs]  # [2, 2, 2] not [0, 1, 2]
+```
+
+**Fix:** `lambda i=i: i`
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Can you use type hints with lambda?**
+
+**Answer:** Not inline in standard syntax; assign to a typed variable or use `def` instead.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: Are lambdas faster than def?**
+
+**Answer:** Negligible difference; choose based on readability.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Why don't lambdas support statements (PEP 3113 context)?**
+
+**Answer:** Designed as syntactic shortcut for simple expressions; statements would reduce clarity vs `def`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: How do lambdas interact with functools.reduce?**
+
+**Example:**
+```python
+from functools import reduce
+reduce(lambda acc, x: acc + x, [1, 2, 3], 0)  # 6
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Can you pickle a lambda?**
+
+**Answer:** Often no (especially if referencing local scope). Use `def` at module level for serializable callables.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Lambda in pandas—performance considerations?**
+
+**Answer:** Vectorized operations beat `df.apply(lambda ...)` for large data; lambdas invoke Python per row.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Implement a higher-order function using lambda.**
+
+**Example:**
+```python
+def compose(f, g):
+    return lambda x: f(g(x))
+
+double_then_inc = compose(lambda x: x + 1, lambda x: x * 2)
+double_then_inc(3)  # 7
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Late-binding loop lambda bug.
+- Overusing lambda where `def` is clearer.
+- Expecting multi-line logic in lambda.
+- Debugging difficulty (stack traces show `<lambda>`).
+
+#### Real-world Applications
+
+- Custom sort keys in reports and dashboards.
+- Quick transforms in data exploration.
+- Event handlers in GUI frameworks (sometimes).
+- Functional-style callbacks in JavaScript-inspired Python code.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Rewrite a lambda as a def and discuss trade-offs.
+- Explain closure variable binding in nested lambdas.
+- When would `operator.itemgetter` replace a lambda?
+
+---
+
+### Scope (Local, Global, Nonlocal)
+
+#### Concept Explanation
+
+Scope determines variable visibility. **LEGB rule:** Local → Enclosing → Global → Built-in. `local` variables exist inside a function. `global` refers to module-level names; declare with `global` to assign to them inside a function. `nonlocal` (Python 3+) refers to variables in the nearest enclosing function (not global); used to mutate enclosing scope without global pollution.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the LEGB rule?**
+
+**Answer:** Name lookup order: Local, Enclosing, Global, Built-in.
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Draw the nested function example to demonstrate Enclosing.
+
+---
+
+**Q2: What happens if you assign to a variable inside a function?**
+
+**Answer:** Python treats it as local unless declared `global` or `nonlocal`. Reading before assignment causes `UnboundLocalError`.
+
+**Example:**
+```python
+x = 10
+def f():
+    x = 5  # local x
+    print(x)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: What does the `global` keyword do?**
+
+**Answer:** Declares that assignments to a name refer to the module-level variable.
+
+**Example:**
+```python
+count = 0
+def increment():
+    global count
+    count += 1
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: Can you read a global variable without the global keyword?**
+
+**Answer:** Yes, reading is allowed; `global` is only required for assignment/rebinding.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is built-in scope?**
+
+**Answer:** Names preloaded in `builtins` module: `len`, `print`, `range`, etc.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What does `nonlocal` do?**
+
+**Answer:** Binds assignment to the nearest enclosing function scope (excluding globals).
+
+**Example:**
+```python
+def outer():
+    total = 0
+    def inner():
+        nonlocal total
+        total += 1
+        return total
+    return inner
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: Difference between `global` and `nonlocal`?**
+
+**Answer:** `global` targets module scope; `nonlocal` targets enclosing function scope. `nonlocal` cannot bind to globals.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: What is shadowing?**
+
+**Answer:** Inner scope variable hides outer same-named variable.
+
+**Example:**
+```python
+x = "global"
+def f():
+    x = "local"
+    print(x)  # local
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Are global variables bad practice?**
+
+**Answer:** Often yes—hard to test and reason about; prefer passing args, return values, classes, or dependency injection.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is `UnboundLocalError`?**
+
+**Answer:** Local variable referenced before assignment, often due to assignment later in the same function making Python treat the name as local throughout.
+
+**Example:**
+```python
+def f():
+    print(x)  # UnboundLocalError if x assigned below
+    x = 1
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: How do closures capture variables—by value or reference?**
+
+**Answer:** By reference (late binding). The variable is looked up when the inner function runs.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Explain scope in list comprehensions (Python 3).**
+
+**Answer:** Comprehension variables do not leak to outer scope in Python 3 (unlike Python 2).
+
+**Example:**
+```python
+[x * 2 for x in range(3)]
+# x is not accessible here in Python 3
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: How does `global` interact with nested functions?**
+
+**Answer:** `global` always refers to module level, skipping intermediate enclosing scopes.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Scope and class bodies?**
+
+**Answer:** Class body creates a local namespace for methods; `self.attr` accesses instance scope, not LEGB for attributes.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Thread-safety of global mutable state?**
+
+**Answer:** Shared globals require locks or atomic operations; prefer thread-local or immutable designs.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- `UnboundLocalError` from assignment anywhere in function.
+- Loop variable closure late binding in lambdas.
+- Assuming `global` modifies nested enclosing vars.
+- Using globals for configuration without thread safety.
+
+#### Real-world Applications
+
+- Closures for factory functions and decorators.
+- `nonlocal` in stateful nested helpers.
+- Module-level constants and singleton config (with care).
+- Context managers encapsulating resource scope.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Trace LEGB for a nested triple-function example.
+- Refactor global state into a class.
+- How does `nonlocal` differ from mutable object mutation without keyword?
+
+---
+
+### Modules
+
+#### Concept Explanation
+
+A module is a single Python file (`.py`) containing reusable code—functions, classes, variables. Modules enable code organization and reuse. Import with `import module`, `from module import name`, or `import module as alias`. Python searches `sys.path` for modules. The module body executes top-to-bottom on first import; subsequent imports use the cached `sys.modules` entry.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you import a module?**
+
+**Answer:**
+```python
+import math
+from math import sqrt
+import math as m
+```
+
+**Difficulty Level:** Basic
+
+**Interview Tips:** Prefer specific imports over `from module import *`.
+
+---
+
+**Q2: What is `__name__ == "__main__"`?**
+
+**Answer:** True when the file is run directly, not imported. Guards script-only code.
+
+**Example:**
+```python
+def main():
+    print("Running script")
+
+if __name__ == "__main__":
+    main()
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: What is the difference between `import math` and `from math import pi`?**
+
+**Answer:** First keeps namespace qualified (`math.pi`); second binds `pi` directly in current namespace.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: Where does Python look for modules?**
+
+**Answer:** Directories in `sys.path`: current directory, PYTHONPATH, standard library, site-packages.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Can you reload a module?**
+
+**Answer:** Yes with `importlib.reload(module)`—useful in REPL development, risky in production.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What happens when a module is imported twice?**
+
+**Answer:** Executed only once; cached in `sys.modules`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is `if __name__ == "__main__"` vs unit tests?**
+
+**Answer:** Entry point for scripts; tests typically use pytest/unittest importing the module instead.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Explain circular imports and mitigation.**
+
+**Answer:** Two modules import each other → partial initialization errors. Fix: restructure, lazy imports inside functions, or extract shared code to a third module.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: What are `__all__` in a module?**
+
+**Answer:** Declares public API for `from module import *` (discouraged but documents exports).
+
+**Example:**
+```python
+__all__ = ["connect", "disconnect"]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: Difference between module and script?**
+
+**Answer:** Same file—behavior depends on how it is executed (directly vs imported).
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: How does Python's import system work internally?**
+
+**Answer:** `import` triggers finder → loader → module object creation, registered in `sys.modules`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: What is a namespace package (PEP 420)?**
+
+**Answer:** Package spread across multiple directories without `__init__.py` (Python 3.3+ implicit namespace packages).
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Dynamic import with `importlib`.**
+
+**Example:**
+```python
+import importlib
+mod = importlib.import_module("json")
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Module-level side effects—why avoid?**
+
+**Answer:** Import triggers I/O, network, global mutation—slows imports and complicates testing.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: `typing.TYPE_CHECKING` pattern?**
+
+**Answer:** Import types only for static analysis, avoiding runtime circular imports.
+
+**Example:**
+```python
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from myapp.models import User
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Circular import errors at startup.
+- Side effects on import slowing apps.
+- `from module import *` polluting namespace.
+- Naming your file `math.py` shadowing stdlib.
+
+#### Real-world Applications
+
+- Splitting Flask/Django apps into routes, models, services modules.
+- Shared utility libraries across projects.
+- Plugin architectures with dynamic imports.
+- Configuration modules per environment.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Explain absolute vs relative imports.
+- How would you structure a medium-sized Python project?
+- What is `__init__.py` for?
+
+---
+
+### Packages
+
+#### Concept Explanation
+
+A package is a namespace containing multiple modules, represented as a directory with `__init__.py` (regular package) or as a namespace package (PEP 420). Packages organize related modules hierarchically (`package.submodule`). The `__init__.py` can initialize package-level exports, run setup code, or remain empty.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is a Python package?**
+
+**Answer:** A directory of modules (and sub-packages) used to organize code hierarchically.
+
+**Example structure:**
+```
+myapp/
+    __init__.py
+    models.py
+    utils/
+        __init__.py
+        helpers.py
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: How do you import from a package?**
+
+**Answer:**
+```python
+from myapp.utils.helpers import format_name
+import myapp.models
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: What is `__init__.py`?**
+
+**Answer:** Marks a directory as a package; executed on package import; can define `__all__` or package-level APIs.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What is a sub-package?**
+
+**Answer:** A package inside another package directory.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: Can a package be a single module file?**
+
+**Answer:** No—a package is directory-based (or namespace). A single `.py` file is a module, not a package.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Absolute vs relative imports?**
+
+**Answer:** Absolute: `from myapp.utils import helpers`. Relative: `from .helpers import foo` or `from ..models import User`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: When is `__init__.py` optional?**
+
+**Answer:** Namespace packages (PEP 420) omit it; regular packages traditionally include it (still recommended for explicit control).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: What does `from package import *` import?**
+
+**Answer:** Names listed in `__all__` if defined, else all public names (no leading `_`).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: How do you make a package installable?**
+
+**Answer:** Use `pyproject.toml`/`setup.py`, define package metadata, `pip install .`
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is `__path__` on a package?**
+
+**Answer:** List of directories contributing to the package—relevant for namespace packages and dynamic submodules.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Explain src layout vs flat layout.**
+
+**Answer:** `src/myapp/` keeps development code separate from project root, preventing accidental imports from cwd during tests.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Plugin discovery via entry points (`pyproject.toml`).**
+
+**Answer:** Packages register plugins discoverable at runtime without hard imports.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Lazy loading submodules in `__init__.py`.**
+
+**Answer:** Defer heavy imports until accessed to speed startup.
+
+**Example:**
+```python
+def __getattr__(name):
+    if name == "heavy":
+        from .heavy import Heavy
+        return Heavy
+    raise AttributeError(name)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Monorepo with multiple packages.**
+
+**Answer:** Use workspace tools (Poetry, uv) with interdependent packages and shared versioning strategy.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Security of arbitrary package imports?**
+
+**Answer:** Never import untrusted modules dynamically; validate plugin paths and use allowlists.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Relative imports failing when running file as script.
+- Missing `__init__.py` confusion across Python versions.
+- Package name shadowing PyPI names.
+- Importing from wrong working directory.
+
+#### Real-world Applications
+
+- Django apps as packages.
+- Internal company libraries published to private PyPI.
+- Microservice shared `common` package.
+- ML projects with `data`, `models`, `training` sub-packages.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Design package structure for a REST API project.
+- Difference between distribution, package, and module?
+- How does pip resolve package dependencies?
+
+---
+
+### Math Module
+
+#### Concept Explanation
+
+The `math` module provides mathematical functions and constants for real floating-point numbers: `sqrt`, `ceil`, `floor`, `pow`, trigonometry, logarithms, `pi`, `e`, etc. It operates on scalars. For array math, use `numpy`. Most functions raise `ValueError` or `OverflowError` for invalid domains.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you import and use sqrt from math?**
+
+**Answer:**
+```python
+import math
+print(math.sqrt(16))  # 4.0
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: What constants does math provide?**
+
+**Answer:** `math.pi`, `math.e`, `math.tau`, `math.inf`, `math.nan`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Difference between `math.pow` and `**`?**
+
+**Answer:** `math.pow(x, y)` always returns float; `**` follows operand types (`2 ** 3` → int 8).
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What do ceil and floor do?**
+
+**Answer:** `ceil(x)` smallest integer ≥ x; `floor(x)` largest integer ≤ x (return floats).
+
+**Example:**
+```python
+import math
+math.ceil(3.2)   # 4
+math.floor(3.9)  # 3
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is math.fabs?**
+
+**Answer:** Absolute value returning float: `math.fabs(-3)` → `3.0`.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: math vs numpy for calculations?**
+
+**Answer:** `math` for scalar stdlib work; `numpy` for vectorized array operations and performance.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is hypot and why use it?**
+
+**Answer:** `math.hypot(x, y)` computes √(x²+y²) with better numerical stability than manual formula.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Handling special floats with math?**
+
+**Answer:** `math.isnan()`, `math.isinf()`, `math.isfinite()` detect special values.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Radians vs degrees in trig functions?**
+
+**Answer:** `sin`, `cos`, `tan` expect radians; use `math.radians()` and `math.degrees()`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is factorial in math module?**
+
+**Answer:** `math.factorial(n)` for n ≥ 0; raises `ValueError` for negatives/non-integers.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Why use math.isclose instead of == for floats?**
+
+**Answer:** Floating-point imprecision; `math.isclose(a, b, rel_tol=..., abs_tol=...)` compares with tolerance.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: comb and perm (Python 3.8+)?**
+
+**Answer:** `math.comb(n, k)` combinations; `math.perm(n, k)` permutations—prefer over manual factorial formulas.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: ldexp and frexp for IEEE manipulation?**
+
+**Answer:** Decompose floats into mantissa and exponent—used in numerical libraries.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Gamma and error functions availability?**
+
+**Answer:** `math.gamma`, `math.erf` available in stdlib for statistical/numerical work without scipy.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Performance of math vs operator module?**
+
+**Answer:** Both wrap C implementations; choose based on API clarity, not micro-optimization.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Using degrees in trig functions without conversion.
+- Float equality checks without tolerance.
+- Using math on lists (need map or numpy).
+- `sqrt(-1)` raises ValueError (use `cmath` for complex).
+
+#### Real-world Applications
+
+- Financial interest and amortization calculations.
+- Game physics (angles, distances with hypot).
+- Pagination offset calculations with ceil.
+- Statistical formulas in pure Python pipelines.
+- GIS distance approximations.
+
+#### Follow-up Questions Interviewers May Ask
+
+- When would you reach for `decimal` or `cmath` instead?
+- Explain floating-point representation briefly.
+- Implement Haversine distance using math.
+
+---
+
+### Random Module
+
+#### Concept Explanation
+
+The `random` module provides pseudo-random number generation for integers, floats, and sequences. It uses the Mersenne Twister (not cryptographically secure). Functions include `random()`, `randint()`, `choice()`, `choices()`, `shuffle()`, `sample()`, and `seed()`. For security, use `secrets` module instead.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you generate a random float between 0 and 1?**
+
+**Answer:** `import random; random.random()`
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: How do you pick a random integer inclusive?**
+
+**Answer:** `random.randint(1, 10)` includes both endpoints.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: How do you choose a random item from a list?**
+
+**Answer:** `random.choice(items)`
+
+**Example:**
+```python
+import random
+color = random.choice(["red", "green", "blue"])
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What does random.shuffle do?**
+
+**Answer:** Shuffles a list in place; returns `None`.
+
+**Example:**
+```python
+cards = [1, 2, 3, 4]
+random.shuffle(cards)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is random.seed used for?**
+
+**Answer:** Initializes the PRNG for reproducible sequences—useful in testing and simulations.
+
+**Example:**
+```python
+random.seed(42)
+print(random.randint(1, 100))  # same each run with seed 42
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Difference between choice and choices?**
+
+**Answer:** `choice` picks one item; `choices` picks k items with replacement (can repeat).
+
+**Example:**
+```python
+random.choices(["A", "B"], k=5)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: What is random.sample?**
+
+**Answer:** Picks k unique items without replacement.
+
+**Example:**
+```python
+random.sample(range(100), 5)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Is random cryptographically secure?**
+
+**Answer:** No. Use `secrets` module for tokens, passwords, security-sensitive randomness.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: random.uniform vs random.random?**
+
+**Answer:** `uniform(a, b)` returns float in [a, b]; `random()` in [0.0, 1.0).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: Can you shuffle immutable sequences?**
+
+**Answer:** No—`shuffle` requires mutable sequence. Use `sample` to get a shuffled copy: `random.sample(seq, k=len(seq))`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Explain pseudo-random vs true random.**
+
+**Answer:** PRNG is deterministic given seed; hardware RNG (via OS) provides entropy for crypto.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Using Random class instances for isolated generators?**
+
+**Answer:** `rng = random.Random(42)` separate from global state—better for parallel reproducibility.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Weighted random selection?**
+
+**Answer:** `random.choices(population, weights=..., k=1)`
+
+**Example:**
+```python
+random.choices(["A", "B"], weights=[90, 10], k=1)
+```
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: random vs numpy.random?**
+
+**Answer:** NumPy offers vectorized distributions and performance for large simulations.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Pitfalls of seeding in multi-threaded apps?**
+
+**Answer:** Shared global RNG state can race; use per-thread `Random` instances or numpy Generator.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Using `random` for security tokens.
+- Forgetting `shuffle` is in-place.
+- Confusing `sample` (no replacement) with `choices` (with replacement).
+- `randint` inclusive on both ends vs `range` exclusive stop.
+
+#### Real-world Applications
+
+- A/B test group assignment.
+- Monte Carlo simulations.
+- Game loot tables and procedural generation.
+- Random sampling for QA and load testing.
+- Shuffling training data (with controlled seed).
+
+#### Follow-up Questions Interviewers May Ask
+
+- When use `secrets.token_urlsafe`?
+- How would you implement weighted lottery fairly?
+- Explain reproducibility in ML train/test splits.
+
+---
+
+### DateTime Module
+
+#### Concept Explanation
+
+The `datetime` module provides classes for dates, times, datetimes, timedeltas, and timezone-aware arithmetic. Key classes: `date`, `time`, `datetime`, `timedelta`, `timezone`. Use `strftime` for formatting and `strptime` for parsing. Prefer timezone-aware datetimes (`datetime.now(timezone.utc)`) over naive ones in production. For complex zones, use `zoneinfo` (Python 3.9+) or `pytz`.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you get the current date and time?**
+
+**Answer:**
+```python
+from datetime import datetime
+now = datetime.now()
+today = now.date()
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: How do you format a datetime as a string?**
+
+**Answer:** `dt.strftime("%Y-%m-%d %H:%M:%S")`
+
+**Example:**
+```python
+from datetime import datetime
+dt = datetime(2026, 7, 24, 10, 30)
+print(dt.strftime("%Y-%m-%d"))  # 2026-07-24
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: How do you parse a date string?**
+
+**Answer:** `datetime.strptime(string, format)`
+
+**Example:**
+```python
+datetime.strptime("2026-07-24", "%Y-%m-%d")
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What is timedelta?**
+
+**Answer:** Represents duration between two dates/times; supports addition/subtraction.
+
+**Example:**
+```python
+from datetime import timedelta, date
+deadline = date.today() + timedelta(days=7)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: How do you extract year, month, day from datetime?**
+
+**Answer:** Access attributes: `dt.year`, `dt.month`, `dt.day`, `dt.hour`.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Naive vs aware datetime?**
+
+**Answer:** Naive has no timezone info; aware has `tzinfo`. Compare only like kinds; convert for cross-zone logic.
+
+**Example:**
+```python
+from datetime import datetime, timezone
+aware = datetime.now(timezone.utc)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: How do you calculate difference between two datetimes?**
+
+**Answer:** Subtraction yields `timedelta`: `delta = end - start; delta.total_seconds()`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: What is ISO 8601 formatting?**
+
+**Answer:** `datetime.isoformat()` produces standard strings; `fromisoformat()` parses many ISO variants (3.7+).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Using zoneinfo for timezones (3.9+)?**
+
+**Answer:**
+```python
+from zoneinfo import ZoneInfo
+from datetime import datetime
+dt = datetime.now(ZoneInfo("America/New_York"))
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: date vs datetime—when use each?**
+
+**Answer:** `date` for calendar days (birthdays, due dates); `datetime` when time-of-day matters (logs, events).
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: DST transition pitfalls?**
+
+**Answer:** Ambiguous and non-existent local times during DST shifts—use aware datetimes and `zoneinfo`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Why not use datetime.utcnow()?**
+
+**Answer:** Returns naive UTC datetime (deprecated Python 3.12+). Prefer `datetime.now(timezone.utc)`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Sorting and comparing mixed naive/aware datetimes?**
+
+**Answer:** Raises TypeError—normalize all to UTC aware first.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Performance of datetime vs epoch timestamps?**
+
+**Answer:** Epoch ints/floats faster for storage and math; datetime better for human readability—convert at boundaries.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: relativedelta from dateutil vs timedelta?**
+
+**Answer:** `relativedelta` handles calendar-aware increments (e.g., end of month, +1 month) beyond fixed seconds.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Using naive datetimes in multi-timezone apps.
+- `datetime.utcnow()` deprecation confusion.
+- Off-by-one with date boundaries and UTC conversion.
+- Parsing locale-specific formats without explicit format string.
+
+#### Real-world Applications
+
+- Log timestamps and audit trails.
+- SLA deadline calculations.
+- Scheduling cron jobs and reminders.
+- Billing cycle and subscription renewals.
+- API response serialization (ISO 8601).
+
+#### Follow-up Questions Interviewers May Ask
+
+- Convert local time to UTC and back safely.
+- How do you handle "every 1st of month" scheduling?
+- Compare datetime with Pendulum/Arrow libraries.
+
+---
+
+### Exception Handling
+
+#### Concept Explanation
+
+Exceptions handle runtime errors gracefully using `try`, `except`, `else`, and `finally`. Python raises exceptions for errors (`ValueError`, `TypeError`, `KeyError`, etc.). Catch specific exceptions rather than bare `except`. Custom exceptions inherit from `Exception`. `raise` re-raises or throws new exceptions. `finally` always runs for cleanup. Context managers (`with`) often replace manual try/finally.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is the basic try-except syntax?**
+
+**Answer:**
+```python
+try:
+    result = 10 / 0
+except ZeroDivisionError:
+    print("Cannot divide by zero")
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: What is the purpose of finally?**
+
+**Answer:** Executes cleanup code regardless of exception—closing files, releasing locks.
+
+**Example:**
+```python
+try:
+    f = open("data.txt")
+    process(f)
+finally:
+    f.close()
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: How do you raise an exception?**
+
+**Answer:** `raise ValueError("Invalid input")`
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: What does except Exception catch?**
+
+**Answer:** Nearly all built-in exceptions except `BaseException` subclasses like `KeyboardInterrupt`, `SystemExit`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is else in try-except?**
+
+**Answer:** Runs if no exception occurred in the try block.
+
+**Example:**
+```python
+try:
+    data = load()
+except IOError:
+    handle()
+else:
+    process(data)
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Why avoid bare except?**
+
+**Answer:** `except:` catches everything including `KeyboardInterrupt`, hiding bugs and preventing clean shutdown.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: How do you catch multiple exceptions?**
+
+**Answer:**
+```python
+except (ValueError, TypeError) as e:
+    log(e)
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: How do you create custom exceptions?**
+
+**Answer:**
+```python
+class ValidationError(Exception):
+    pass
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Exception chaining with raise from?**
+
+**Answer:** Preserves original cause for debugging.
+
+**Example:**
+```python
+try:
+    parse(data)
+except JSONDecodeError as exc:
+    raise ValueError("Bad payload") from exc
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: try/except vs EAFP vs LBYL?**
+
+**Answer:** EAFP (Easier to Ask Forgiveness than Permission): try and handle. LBYL (Look Before You Leap): check conditions first. Pythonic code often prefers EAFP.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Exception hierarchy and catching base classes?**
+
+**Answer:** `LookupError` catches `KeyError` and `IndexError`; catching broad bases can mask specific bugs.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Context manager exception handling (`__exit__`)?**
+
+**Answer:** Returning True from `__exit__` suppresses exception; `with` statement handles setup/teardown.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Retry patterns with exponential backoff.**
+
+**Answer:** Catch transient errors, retry with limits, log final failure.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Exception groups (Python 3.11+)?**
+
+**Answer:** `except*` handles multiple exceptions from concurrent tasks.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: When to use assertions vs exceptions?**
+
+**Answer:** Assertions for developer invariants (`-O` strips them); exceptions for runtime user/data errors.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Bare `except:` or overly broad catches.
+- Swallowing exceptions without logging.
+- Using exceptions for normal control flow excessively.
+- Forgetting to close resources (use `with`).
+
+#### Real-world Applications
+
+- API error responses mapped from exception types.
+- Database transaction rollback on failure.
+- Input validation with meaningful error messages.
+- Resilient microservice calls with retries.
+- File/network I/O cleanup in finally or context managers.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Design an exception hierarchy for a web app.
+- Explain `else` and `finally` execution order with examples.
+- How does `with` relate to exception handling?
+
+---
+
+### File Handling
+
+#### Concept Explanation
+
+File handling reads and writes data using built-in `open()` and file objects. Modes: `'r'` read, `'w'` write (truncate), `'a'` append, `'x'` exclusive create, `'b'` binary, `'t'` text, `'+'` read/write. Always close files or use `with open(...) as f:` for automatic cleanup. Text files handle encoding (default UTF-8 in Python 3). Modules like `pathlib`, `json`, and `csv` build on file I/O.
+
+#### 5 Basic Questions and Answers
+
+**Q1: How do you read an entire text file?**
+
+**Answer:**
+```python
+with open("data.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: How do you write to a file?**
+
+**Answer:**
+```python
+with open("out.txt", "w", encoding="utf-8") as f:
+    f.write("Hello\n")
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Why use with statement?**
+
+**Answer:** Ensures file is closed even if an exception occurs—implements context manager protocol.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: How do you read a file line by line?**
+
+**Answer:**
+```python
+with open("log.txt") as f:
+    for line in f:
+        print(line.strip())
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: What is the difference between 'r' and 'rb'?**
+
+**Answer:** `'r'` text mode (str, encoding); `'rb'` binary mode (bytes)—required for images, PDFs, etc.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: What is pathlib and why prefer it?**
+
+**Answer:** Object-oriented paths cross-platform.
+
+**Example:**
+```python
+from pathlib import Path
+text = Path("data.txt").read_text(encoding="utf-8")
+Path("out.txt").write_text("content", encoding="utf-8")
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: How do you append without overwriting?**
+
+**Answer:** Open with mode `'a'`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Handling FileNotFoundError?**
+
+**Answer:** Catch exception or check `Path.exists()` before read—EAFP vs LBYL.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Reading CSV and JSON files?**
+
+**Answer:**
+```python
+import json, csv
+data = json.load(open("config.json"))
+rows = list(csv.DictReader(open("users.csv")))
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: What is encoding and UnicodeDecodeError?**
+
+**Answer:** Text files decode bytes to str; wrong encoding causes errors—specify `encoding="utf-8"` or detect with care.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Large file processing without loading all into memory?**
+
+**Answer:** Iterate line by line or use chunked reads: `f.read(8192)`.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Atomic file writes?**
+
+**Answer:** Write to temp file, then `os.replace(temp, target)` to avoid partial writes on crash.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: File locking for concurrent access?**
+
+**Answer:** Use OS-specific locks or libraries; databases preferred for concurrent writes.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Memory-mapped files with mmap?**
+
+**Answer:** Efficient random access to large files by mapping to memory.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: Context manager for multiple files?**
+
+**Answer:** `with open(a) as f1, open(b) as f2:` or `contextlib.ExitStack`.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Forgetting to specify encoding on Windows.
+- Using `'w'` and accidentally truncating files.
+- Not using `with` → resource leaks.
+- Reading huge files with `.read()` causing OOM.
+
+#### Real-world Applications
+
+- Config and environment file loading.
+- Log aggregation and parsing.
+- ETL ingestion of CSV/JSON exports.
+- Report generation and file uploads/downloads.
+- Caching computed results to disk.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Implement safe atomic write function.
+- Compare pathlib vs os.path.
+- How do you watch a directory for file changes?
+
+---
+
+### Python Virtual Environment
+
+#### Concept Explanation
+
+A virtual environment is an isolated Python installation with its own interpreter, site-packages, and scripts. It prevents dependency conflicts between projects. Create with `python -m venv .venv`, activate per OS, install packages with `pip`. Modern tools include `virtualenv`, `conda`, `poetry`, and `uv`. Never commit venv to git—use `requirements.txt` or `pyproject.toml`.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is a virtual environment?**
+
+**Answer:** An isolated Python environment with project-specific packages separate from system Python.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: How do you create a venv?**
+
+**Answer:**
+```bash
+python -m venv .venv
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: How do you activate venv on Windows vs Linux/Mac?**
+
+**Answer:**
+```bash
+# Windows (PowerShell)
+.venv\Scripts\Activate.ps1
+
+# Linux/Mac
+source .venv/bin/activate
+```
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: How do you install packages inside a venv?**
+
+**Answer:** Activate venv, then `pip install requests`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: How do you deactivate a venv?**
+
+**Answer:** Run `deactivate` in the shell.
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Why use venv instead of system Python?**
+
+**Answer:** Avoid version conflicts, reproduce deployments, protect system packages.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: requirements.txt workflow?**
+
+**Answer:**
+```bash
+pip freeze > requirements.txt
+pip install -r requirements.txt
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: venv vs virtualenv vs conda?**
+
+**Answer:** `venv` is stdlib; `virtualenv` faster/more features; `conda` manages non-Python deps and data science stacks.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: What is `--system-site-packages`?**
+
+**Answer:** venv flag to inherit system site-packages (usually avoid for isolation).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: How do you specify Python version for venv?**
+
+**Answer:** Use the desired interpreter: `python3.11 -m venv .venv` or `py -3.11 -m venv .venv` on Windows.
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Poetry/uv vs pip+venv?**
+
+**Answer:** Modern tools lock dependencies, resolve conflicts, and manage virtualenvs automatically with reproducible builds.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Docker vs venv for deployment?**
+
+**Answer:** Docker isolates OS-level dependencies; venv isolates Python packages—often combined.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: PEP 582 __pypackages__ (optional)?**
+
+**Answer:** Alternative local package store without traditional venv activation—niche adoption.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Reproducible builds with lock files?**
+
+**Answer:** Pin exact versions (`pip-tools`, Poetry lock, uv lock) including hashes for supply chain security.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: CI/CD venv best practices?**
+
+**Answer:** Cache dependencies, use same Python version as prod, run `pip install -r requirements.txt` in fresh env each build.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Installing packages globally without venv.
+- Committing `.venv` to version control.
+- Wrong Python interpreter when creating venv.
+- Forgetting to activate before pip install.
+
+#### Real-world Applications
+
+- Every professional Python project setup.
+- CI pipelines with isolated test environments.
+- Microservices with different dependency sets.
+- Teaching/training without breaking system Python.
+- Reproducing production bugs locally.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Explain difference between venv, pipenv, poetry, conda.
+- How do you handle dev vs prod dependencies?
+- What goes in `.gitignore` for Python projects?
+
+---
+
+### PEP8 Standards
+
+#### Concept Explanation
+
+PEP 8 is Python's official style guide for readable, consistent code. It covers indentation (4 spaces), line length (79/99 convention, often 88 with Black), naming (`snake_case` functions/variables, `PascalCase` classes, `UPPER_CASE` constants), imports, whitespace, comments, and docstrings. Linters (`flake8`, `ruff`) and formatters (`black`, `autopep8`) automate compliance. PEP 8 is guidelines—not all rules are mandatory if breaking them improves readability.
+
+#### 5 Basic Questions and Answers
+
+**Q1: What is PEP 8?**
+
+**Answer:** Python Enhancement Proposal 8—the official style guide for Python code formatting and conventions.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q2: What indentation does PEP 8 recommend?**
+
+**Answer:** 4 spaces per indentation level; no tabs (or tabs only if project consistently converts).
+
+**Difficulty Level:** Basic
+
+---
+
+**Q3: Naming conventions in PEP 8?**
+
+**Answer:** Functions/variables: `snake_case`; Classes: `PascalCase`; Constants: `UPPER_SNAKE_CASE`; modules: `lowercase`.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q4: Recommended max line length?**
+
+**Answer:** 79 characters for code (docstrings/comments 72); many teams use 88–100 with formatters like Black.
+
+**Difficulty Level:** Basic
+
+---
+
+**Q5: How should imports be ordered?**
+
+**Answer:** Standard library, blank line, third-party, blank line, local application—alphabetical within groups.
+
+**Example:**
+```python
+import os
+import sys
+
+import requests
+
+from myapp.utils import helper
+```
+
+**Difficulty Level:** Basic
+
+---
+
+#### 5 Intermediate Questions and Answers
+
+**Q1: Spaces around operators?**
+
+**Answer:** `a = 1`, `x + y`, but no space around `=` in keyword args: `func(arg=value)`.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q2: When can you violate PEP 8?**
+
+**Answer:** When following it reduces readability (PEP 8 itself says so)—document reason in team guidelines.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q3: Tools to enforce PEP 8?**
+
+**Answer:** `flake8`, `ruff` (lint); `black`, `autopep8` (format); `isort` (import sorting).
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q4: Docstring conventions (PEP 257)?**
+
+**Answer:** Triple quotes; summarize in first line; Google/NumPy/Sphinx styles for parameters.
+
+**Difficulty Level:** Intermediate
+
+---
+
+**Q5: Trailing commas in multi-line structures?**
+
+**Answer:** Recommended—cleaner diffs and formatter compatibility.
+
+**Example:**
+```python
+items = [
+    "apple",
+    "banana",
+]
+```
+
+**Difficulty Level:** Intermediate
+
+---
+
+#### 5 Advanced Questions and Answers
+
+**Q1: Type hints and PEP 8 (PEP 484)?**
+
+**Answer:** Annotations add readability; tools like mypy enforce separately from PEP 8 layout.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q2: Ruff vs flake8 ecosystem?**
+
+**Answer:** Ruff is fast, combines many rules (PEP8, pyflakes, isort)—modern CI choice.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q3: Pre-commit hooks for style enforcement?**
+
+**Answer:** Run black/ruff before commits to prevent style drift.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q4: Public API naming and leading underscores?**
+
+**Answer:** `_single` internal use; `__double` name mangling in classes; `__all__` defines public exports.
+
+**Difficulty Level:** Advanced
+
+---
+
+**Q5: PEP 8 in legacy codebases—migration strategy?**
+
+**Answer:** Adopt formatter incrementally, enforce on changed lines only (`--diff`), avoid massive style-only PRs without team agreement.
+
+**Difficulty Level:** Advanced
+
+---
+
+#### Common Interview Traps
+
+- Treating PEP 8 as absolute law in every edge case.
+- Mixing tabs and spaces.
+- Wrong naming for classes vs functions.
+- Unsorted or star imports violating import guidelines.
+
+#### Real-world Applications
+
+- Code review standards across teams.
+- CI lint gates blocking merges.
+- Open-source contribution requirements.
+- Onboarding consistency in large codebases.
+- Pairing with formatters for zero bike-shedding.
+
+#### Follow-up Questions Interviewers May Ask
+
+- Configure pre-commit with black and ruff.
+- Difference between PEP 8, PEP 257, and PEP 484?
+- How would you handle a legacy repo with inconsistent style?
+
+---
+
+*End of Level 1 Basics — Part B*
