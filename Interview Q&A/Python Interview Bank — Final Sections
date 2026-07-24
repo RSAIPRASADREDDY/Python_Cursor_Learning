@@ -1,0 +1,5647 @@
+# Python Interview Bank — Final Sections
+
+**Comprehensive interview prep: FAQs, coding problems, scenario questions, specialized topics, cheat sheets, roadmaps, and senior/architect-level deep dives.**
+
+Companion to the concept-based guide in `Python_Interview_Questions_and_Answers.md`.
+
+---
+
+## Table of Contents
+
+1. [Top 100 Most Frequently Asked Python Interview Questions](#1-top-100-most-frequently-asked-python-interview-questions)
+2. [Top 50 Python Coding Questions with Solutions](#2-top-50-python-coding-questions-with-solutions)
+3. [Top 30 Scenario-Based Python Questions](#3-top-30-scenario-based-python-questions)
+4. [Top 20 Python Performance Optimization Questions](#4-top-20-python-performance-optimization-questions)
+5. [Top 20 Python Multi-threading Questions](#5-top-20-python-multi-threading-questions)
+6. [Top 20 Python API Development Questions](#6-top-20-python-api-development-questions)
+7. [Top 20 Python FastAPI Questions](#7-top-20-python-fastapi-questions)
+8. [Top 20 Python Data Engineering Questions](#8-top-20-python-data-engineering-questions)
+9. [Top 20 Python Automation Questions](#9-top-20-python-automation-questions)
+10. [Python Cheat Sheet Summary](#10-python-cheat-sheet-summary)
+11. [Beginner to Advanced Learning Roadmap](#11-beginner-to-advanced-learning-roadmap)
+12. [Common Python Interview Mistakes](#12-common-python-interview-mistakes)
+13. [FAANG-Level Python Questions](#13-faang-level-python-questions)
+14. [Senior Python Developer Interview Questions](#14-senior-python-developer-interview-questions)
+15. [Python Architect Interview Questions](#15-python-architect-interview-questions)
+
+---
+
+# 1. Top 100 Most Frequently Asked Python Interview Questions
+
+---
+
+### 1. What is Python?
+
+**Question:** What is Python and why is it popular?
+
+**Answer:** Python is a high-level, interpreted, dynamically typed programming language known for readability, a vast standard library, and strong ecosystem (web, data, ML, automation).
+
+**Explanation:** Python uses indentation for blocks, supports multiple paradigms (procedural, OOP, functional), and runs on CPython (reference implementation) plus PyPy, Jython, etc.
+
+**Example:** `print("Hello, World!")`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Mention use cases you know (APIs, scripting, data pipelines) and that Python trades raw speed for developer productivity.
+
+---
+
+### 2. Difference between list and tuple?
+
+**Question:** What is the difference between a list and a tuple?
+
+**Answer:** Lists are mutable, use `[]`, and are typically used for homogeneous or changing collections. Tuples are immutable, use `()`, and are hashable when all elements are hashable.
+
+**Explanation:** Immutability makes tuples safer as dict keys and function return bundles; lists support in-place methods like `append`.
+
+**Example:**
+```python
+lst = [1, 2]; lst.append(3)   # OK
+t = (1, 2)                    # t[0] = 5  # TypeError
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Say "mutability" first, then hashability and performance (slightly smaller/faster for fixed data).
+
+---
+
+### 3. What is PEP 8?
+
+**Question:** What is PEP 8?
+
+**Answer:** PEP 8 is Python's official style guide covering naming, indentation (4 spaces), line length, imports, and whitespace conventions.
+
+**Explanation:** Consistent style improves readability and code review efficiency; tools like `black`, `ruff`, and `flake8` enforce it.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Mention `snake_case` for functions/variables, `PascalCase` for classes, and `UPPER_SNAKE` for constants.
+
+---
+
+### 4. Mutable vs immutable types?
+
+**Question:** Which built-in types are mutable and which are immutable?
+
+**Answer:** Immutable: `int`, `float`, `str`, `tuple`, `frozenset`, `bytes`. Mutable: `list`, `dict`, `set`, `bytearray`.
+
+**Explanation:** "Changing" an immutable object creates a new object; mutable objects can be modified in place.
+
+**Example:**
+```python
+s = "hi"; id(s) != id(s + "!")  # new str object
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Connect to default argument pitfalls and thread safety.
+
+---
+
+### 5. What is `==` vs `is`?
+
+**Question:** Difference between `==` and `is`?
+
+**Answer:** `==` compares **values** (calls `__eq__`). `is` compares **object identity** (same memory address).
+
+**Explanation:** Use `is` only for singletons like `None`, `True`, `False`; small integers may be interned but don't rely on `is` for equality.
+
+**Example:**
+```python
+a = [1, 2]; b = [1, 2]
+a == b   # True
+a is b   # False
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Always say `if x is None:` not `if x == None:`.
+
+---
+
+### 6. What is dynamic typing?
+
+**Question:** What does it mean that Python is dynamically typed?
+
+**Answer:** Variable names are not bound to a fixed type at declaration; the type is determined at runtime by the assigned object.
+
+**Explanation:** You can rebind `x` from `int` to `str` without explicit type declarations (optional static hints via type hints).
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Contrast with Java/C# static typing; mention `mypy` for optional static checking.
+
+---
+
+### 7. What are type hints?
+
+**Question:** What are Python type hints?
+
+**Answer:** Optional annotations (`def f(x: int) -> str:`) documenting expected types; checked by tools like `mypy`, not enforced at runtime by default.
+
+**Explanation:** Improve IDE support, documentation, and catch bugs early in CI.
+
+**Example:**
+```python
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+```
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Type hints don't change runtime behavior unless you use a validator like Pydantic.
+
+---
+
+### 8. How does `//` differ from `/`?
+
+**Question:** Difference between `/` and `//`?
+
+**Answer:** `/` is true division (always float in Python 3). `//` is floor division (largest integer ≤ result).
+
+**Example:** `7 / 2` → `3.5`; `7 // 2` → `3`; `-7 // 2` → `-4`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Mention `-7 // 2` floor behavior toward negative infinity.
+
+---
+
+### 9. What is a dictionary?
+
+**Question:** What is a Python dictionary?
+
+**Answer:** A mutable mapping of hashable keys to arbitrary values, implemented as a hash table (insertion-ordered since 3.7).
+
+**Example:**
+```python
+user = {"id": 1, "name": "Ada"}
+user["email"] = "ada@example.com"
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Average O(1) lookup; keys must be hashable (no mutable lists as keys).
+
+---
+
+### 10. What is a set?
+
+**Question:** What is a set in Python?
+
+**Answer:** An unordered collection of unique hashable elements supporting union, intersection, difference.
+
+**Example:** `{1, 2, 3} & {2, 3, 4}` → `{2, 3}`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Use sets for deduplication and membership tests O(1) average.
+
+---
+
+### 11. List comprehension?
+
+**Question:** What is a list comprehension?
+
+**Answer:** Concise syntax to build lists: `[expr for item in iterable if condition]`.
+
+**Example:** `[x**2 for x in range(10) if x % 2 == 0]`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Prefer over manual loops for simple transforms; don't nest deeply (readability).
+
+---
+
+### 12. What is `*args` and `**kwargs`?
+
+**Question:** Explain `*args` and `**kwargs`.
+
+**Answer:** `*args` collects extra positional arguments as a tuple; `**kwargs` collects extra keyword arguments as a dict.
+
+**Example:**
+```python
+def log(msg, *args, **kwargs):
+    print(msg, args, kwargs)
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Used in decorators, wrappers, and forwarding calls (`func(*args, **kwargs)`).
+
+---
+
+### 13. Default argument gotcha?
+
+**Question:** Why is `def f(x, lst=[])` dangerous?
+
+**Answer:** Default mutable objects are created once at function definition time and shared across calls.
+
+**Example:**
+```python
+def bad(x, lst=[]):
+    lst.append(x); return lst
+bad(1); bad(2)  # [1, 2] both times — same list!
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Fix with `lst=None` and `lst = lst or []` or `lst = [] if lst is None else lst`.
+
+---
+
+### 14. What is `lambda`?
+
+**Question:** What is a lambda function?
+
+**Answer:** Anonymous one-expression function: `lambda x: x * 2`. Limited to a single expression, no statements.
+
+**Explanation:** Useful for short callbacks; prefer named `def` for anything non-trivial.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Lambdas can't contain assignments (until walrus in expressions); not suitable for multi-line logic.
+
+---
+
+### 15. `map`, `filter`, `reduce`?
+
+**Question:** Explain `map`, `filter`, and `reduce`.
+
+**Answer:** `map(fn, iter)` applies fn to each item; `filter(pred, iter)` keeps truthy results; `functools.reduce` folds iterable to single value.
+
+**Example:**
+```python
+from functools import reduce
+sum_sq = reduce(lambda a, b: a + b, map(lambda x: x**2, [1,2,3]))
+```
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** In Py3, map/filter return iterators — wrap in `list()` if you need a list.
+
+---
+
+### 16. What is slicing?
+
+**Question:** How does slicing work in Python?
+
+**Answer:** `seq[start:stop:step]` — start inclusive, stop exclusive, step optional; supports negative indices.
+
+**Example:** `"hello"[::-1]` → `"olleh"`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Slicing creates shallow copies for lists; `[:]` copies top-level only.
+
+---
+
+### 17. Shallow vs deep copy?
+
+**Question:** Difference between shallow and deep copy?
+
+**Answer:** Shallow copy duplicates container but shares nested objects. Deep copy recursively copies nested objects.
+
+**Example:**
+```python
+import copy
+a = [[1], [2]]
+b = copy.copy(a)      # shallow
+c = copy.deepcopy(a)  # deep
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `list.copy()`, `copy.copy()`, `copy.deepcopy()` — know when nested mutation matters.
+
+---
+
+### 18. What is `enumerate`?
+
+**Question:** What does `enumerate` do?
+
+**Answer:** Returns `(index, value)` pairs while iterating, avoiding manual counter variables.
+
+**Example:** `for i, v in enumerate(["a","b"], start=1): ...`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Prefer over `range(len(x))` patterns.
+
+---
+
+### 19. What is `zip`?
+
+**Question:** What does `zip` do?
+
+**Answer:** Aggregates iterables element-wise into tuples; stops at shortest iterable.
+
+**Example:** `list(zip([1,2], ["a","b"]))` → `[(1,"a"), (2,"b")]`
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** `zip(*rows)` transposes; use `itertools.zip_longest` for unequal lengths.
+
+---
+
+### 20. Exception handling basics?
+
+**Question:** How does try/except/finally work?
+
+**Answer:** `try` runs code; `except` catches matching exceptions; `else` runs if no exception; `finally` always runs (cleanup).
+
+**Example:**
+```python
+try:
+    f = open("x.txt")
+except FileNotFoundError:
+    print("missing")
+finally:
+    pass  # close resources — prefer `with`
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Catch specific exceptions; avoid bare `except:`; use `raise` to re-raise.
+
+---
+
+### 21. Custom exceptions?
+
+**Question:** How do you create custom exceptions?
+
+**Answer:** Subclass `Exception` (or a more specific base): `class ValidationError(Exception): pass`
+
+**Explanation:** Add attributes/messages in `__init__`; organize domain errors in a hierarchy.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Don't inherit from `BaseException` except for system-exiting errors.
+
+---
+
+### 22. What is `with` statement?
+
+**Question:** What is the `with` statement?
+
+**Answer:** Context manager protocol: `__enter__`/`__exit__` ensures setup/teardown (files, locks, DB connections).
+
+**Example:**
+```python
+with open("data.txt") as f:
+    data = f.read()
+# file auto-closed
+```
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Implement via class or `@contextmanager` decorator from `contextlib`.
+
+---
+
+### 23. What is OOP in Python?
+
+**Question:** Explain OOP in Python.
+
+**Answer:** Classes define blueprints; instances hold state; methods define behavior. Supports inheritance, encapsulation, polymorphism; everything is an object.
+
+**Example:**
+```python
+class Dog:
+    def speak(self): return "woof"
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Mention `self`, instance vs class attributes, and dunder methods.
+
+---
+
+### 24. `__init__` vs `__new__`?
+
+**Question:** Difference between `__new__` and `__init__`?
+
+**Answer:** `__new__` creates the instance (classmethod, runs first); `__init__` initializes the instance (sets attributes).
+
+**Explanation:** Override `__new__` for immutable types, singletons, or metaclass patterns.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Rare in most interviews unless discussing metaclasses or `str` subclasses.
+
+---
+
+### 25. Inheritance and MRO?
+
+**Question:** What is Method Resolution Order (MRO)?
+
+**Answer:** Order Python searches base classes for attributes/methods; computed via C3 linearization, viewable as `ClassName.__mro__`.
+
+**Explanation:** Enables predictable multiple inheritance; `super()` follows MRO.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Draw diamond inheritance diagram; mention `super()` is not just "parent class".
+
+---
+
+### 26. `@staticmethod` vs `@classmethod`?
+
+**Question:** Difference between staticmethod and classmethod?
+
+**Answer:** `@staticmethod` — no implicit first arg. `@classmethod` — receives class as first arg (`cls`), used for factories/alternate constructors.
+
+**Example:**
+```python
+class User:
+    @classmethod
+    def from_dict(cls, d): return cls(**d)
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Classmethods respect inheritance; staticmethods don't receive cls/self.
+
+---
+
+### 27. What are dunder methods?
+
+**Question:** What are magic/dunder methods?
+
+**Answer:** Special methods like `__str__`, `__repr__`, `__len__`, `__eq__`, `__add__` customize object behavior for built-ins and operators.
+
+**Example:**
+```python
+class Point:
+    def __repr__(self): return f"Point({self.x})"
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `__repr__` for developers, `__str__` for users; implement `__eq__` with consistent `__hash__` if used in sets/dicts.
+
+---
+
+### 28. What is encapsulation?
+
+**Question:** How does Python support encapsulation?
+
+**Answer:** Convention-based: single `_` prefix = internal; double `__` triggers name mangling (`_ClassName__attr`). No true private members.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Use `@property` for controlled access instead of getter/setter boilerplate.
+
+---
+
+### 29. What is `@property`?
+
+**Question:** What is the property decorator?
+
+**Answer:** Exposes method as attribute with optional getter/setter/deleter via `@x.setter`.
+
+**Example:**
+```python
+class Circle:
+    @property
+    def radius(self): return self._r
+    @radius.setter
+    def radius(self, v):
+        if v < 0: raise ValueError
+        self._r = v
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cleaner than Java-style getters; enables validation on assignment.
+
+---
+
+### 30. Abstract base classes?
+
+**Question:** What are Abstract Base Classes (ABC)?
+
+**Answer:** Classes in `abc` module defining interfaces via `@abstractmethod` that subclasses must implement.
+
+**Example:**
+```python
+from abc import ABC, abstractmethod
+class Repo(ABC):
+    @abstractmethod
+    def get(self, id): ...
+```
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Prefer ABCs or Protocols for duck typing with static checks.
+
+---
+
+### 31. What is a decorator?
+
+**Question:** What is a decorator in Python?
+
+**Answer:** A callable that wraps another function/class to extend behavior without modifying its source; syntactic sugar for `func = deco(func)`.
+
+**Example:**
+```python
+def timer(fn):
+    def wrapper(*a, **k):
+        import time; t=time.time(); r=fn(*a,**k); print(time.time()-t); return r
+    return wrapper
+```
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Mention `@functools.wraps` to preserve metadata; parameterized decorators need extra nesting.
+
+---
+
+### 32. What is a generator?
+
+**Question:** What is a generator?
+
+**Answer:** Function with `yield` that produces values lazily, pausing state between yields; returns a generator iterator.
+
+**Example:**
+```python
+def count_up(n):
+    for i in range(n):
+        yield i
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Memory-efficient for large/streaming data; one-shot (exhaust once).
+
+---
+
+### 33. Generator expression vs list comp?
+
+**Question:** Generator expression vs list comprehension?
+
+**Answer:** `(x**2 for x in range(10))` yields lazily; `[x**2 for x in range(10)]` builds full list in memory.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Use gen exp inside `sum()`, `max()`, pipelines; list comp when you need indexing/reuse.
+
+---
+
+### 34. What is an iterator?
+
+**Question:** What is the iterator protocol?
+
+**Answer:** Object with `__iter__` returning self and `__next__` raising `StopIteration` when done.
+
+**Explanation:** `iter(obj)` calls `obj.__iter__()` or `obj.__getitem__` fallback; for-loops use iterators internally.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Distinguish iterable (can produce iterator) vs iterator (consumes items).
+
+---
+
+### 35. What is `yield from`?
+
+**Question:** What does `yield from` do?
+
+**Answer:** Delegates to sub-generator, flattening nested generators and forwarding send/throw.
+
+**Example:**
+```python
+def chain(*iters):
+    for it in iters:
+        yield from it
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Used in coroutine delegation before async/await prominence.
+
+---
+
+### 36. What is GIL?
+
+**Question:** What is the Global Interpreter Lock (GIL)?
+
+**Answer:** A mutex in CPython allowing only one thread to execute Python bytecode at a time per process.
+
+**Explanation:** Simplifies memory management but limits CPU-bound parallelism with threads; use multiprocessing or native extensions for parallel CPU work.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** I/O-bound threads still help; PyPy/Jython differ; don't blame GIL for all slowness.
+
+---
+
+### 37. Threading vs multiprocessing?
+
+**Question:** When use threading vs multiprocessing?
+
+**Answer:** Threading for I/O-bound concurrency (network, disk). Multiprocessing for CPU-bound parallelism (separate processes, separate GIL).
+
+**Example:** Web scraper → threads; image processing → multiprocessing/`ProcessPoolExecutor`.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Mention `concurrent.futures` as high-level API.
+
+---
+
+### 38. What is `asyncio`?
+
+**Question:** What is asyncio?
+
+**Answer:** Library for cooperative concurrency using async/await and an event loop; ideal for many concurrent I/O operations.
+
+**Example:**
+```python
+async def fetch(url): ...
+await asyncio.gather(fetch(u1), fetch(u2))
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Not faster CPU; avoids thread overhead for high-concurrency I/O; needs async-compatible libraries.
+
+---
+
+### 39. What is a closure?
+
+**Question:** What is a closure?
+
+**Answer:** Inner function capturing variables from enclosing scope even after outer function returns.
+
+**Example:**
+```python
+def make_adder(n):
+    def add(x): return x + n
+    return add
+add5 = make_adder(5); add5(3)  # 8
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Late-binding loop variable trap in closures — use default args to capture.
+
+---
+
+### 40. What is `__name__ == "__main__"`?
+
+**Question:** Why use `if __name__ == "__main__":`?
+
+**Answer:** Runs block only when script is executed directly, not when imported as module.
+
+**Explanation:** Enables reusable modules plus executable entry point for CLI/tests.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Standard pattern for `main()` function and argparse entry.
+
+---
+
+### 41. How do imports work?
+
+**Question:** How does Python import system work?
+
+**Answer:** Searches `sys.path`, loads module once (cached in `sys.modules`), executes top-level code, binds name in namespace.
+
+**Explanation:** Package = directory with `__init__.py` (3.3+ namespace packages differ); relative imports use dots.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Circular imports — refactor shared code, lazy imports, or TYPE_CHECKING guards.
+
+---
+
+### 42. What is `__slots__`?
+
+**Question:** What is `__slots__`?
+
+**Answer:** Declares fixed attributes per instance, reducing memory and blocking arbitrary attribute assignment.
+
+**Example:**
+```python
+class Point:
+    __slots__ = ("x", "y")
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Trade flexibility for memory; affects weakrefs and multiple inheritance.
+
+---
+
+### 43. Memory management in Python?
+
+**Question:** How does Python manage memory?
+
+**Answer:** Reference counting primary; cyclic garbage collector for cycles; objects live on heap; allocator pools small objects.
+
+**Explanation:** `del` decrements refs; GC runs generational collection for cycles involving containers.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Mention `gc` module, weakref, and that CPython doesn't compact memory like JVM.
+
+---
+
+### 44. What is `pickle`?
+
+**Question:** What is pickle and when avoid it?
+
+**Answer:** Serializes Python objects to bytes; convenient but insecure (arbitrary code execution) and not cross-language.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer JSON/MessagePack for APIs; never unpickle untrusted data.
+
+---
+
+### 45. JSON in Python?
+
+**Question:** How handle JSON?
+
+**Answer:** `json.loads`/`json.dumps` for str↔Python types; `None`→`null`; tuples become lists; use `default` for custom types.
+
+**Example:**
+```python
+import json
+json.dumps({"a": 1}, indent=2)
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** datetime needs custom encoder; large files use `ijson` streaming.
+
+---
+
+### 46. Virtual environments?
+
+**Question:** Why use virtual environments?
+
+**Answer:** Isolate project dependencies per project, avoiding global site-packages conflicts.
+
+**Tools:** `venv`, `virtualenv`, `poetry`, `conda`, `pipenv`.
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Always activate venv in CI; pin versions in requirements/pyproject.toml.
+
+---
+
+### 47. `pip` vs `poetry`?
+
+**Question:** pip vs poetry?
+
+**Answer:** `pip` installs packages; `poetry` manages deps, lockfile, builds, and publishes with pyproject.toml.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Mention reproducible builds via lock files.
+
+---
+
+### 48. What is pytest?
+
+**Question:** Why pytest over unittest?
+
+**Answer:** Simpler assertions, fixtures, parametrization, rich plugin ecosystem, less boilerplate.
+
+**Example:**
+```python
+@pytest.mark.parametrize("n,exp", [(2,4),(3,9)])
+def test_sq(n, exp): assert n**2 == exp
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Discuss fixtures scope, conftest.py, mocking with `unittest.mock`.
+
+---
+
+### 49. Mocking in tests?
+
+**Question:** How mock external dependencies?
+
+**Answer:** `unittest.mock.patch` replaces objects during test; `Mock`/`MagicMock` simulate behavior.
+
+**Example:**
+```python
+@patch("mymod.requests.get")
+def test_api(mock_get):
+    mock_get.return_value.json.return_value = {"ok": True}
+```
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Patch where used, not where defined; verify call counts/args.
+
+---
+
+### 50. Logging best practices?
+
+**Question:** logging vs print?
+
+**Answer:** `logging` provides levels, handlers, formatters, rotation; configurable without code changes.
+
+**Example:**
+```python
+import logging
+log = logging.getLogger(__name__)
+log.info("started", extra={"user_id": 1})
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Use module-level loggers; structured logging in production (JSON).
+
+---
+
+### 51. What is a namespace?
+
+**Question:** What is a namespace in Python?
+
+**Answer:** Mapping from names to objects: local, enclosing, global, built-in (LEGB rule for lookup).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Explain LEGB when discussing closures and `global`/`nonlocal`.
+
+---
+
+### 52. `global` vs `nonlocal`?
+
+**Question:** Difference between global and nonlocal?
+
+**Answer:** `global` binds name in module scope; `nonlocal` binds in nearest enclosing (non-global) scope.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer returning values over mutating globals.
+
+---
+
+### 53. Walrus operator `:=`?
+
+**Question:** What is the walrus operator?
+
+**Answer:** Assignment expression allowing assign-and-use in expressions (Python 3.8+).
+
+**Example:** `if (n := len(data)) > 10: print(n)`
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Improves readability in while/read loops; don't overuse in complex expressions.
+
+---
+
+### 54. f-strings?
+
+**Question:** Why prefer f-strings?
+
+**Answer:** Fast, readable string interpolation with `{expr}` and format specifiers `{v:.2f}`.
+
+**Example:** `f"{name=}"`  # debug syntax shows name=value
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Evaluated at runtime; can't use backslash in expression part pre-3.12.
+
+---
+
+### 55. String immutability implications?
+
+**Question:** Why are strings immutable?
+
+**Answer:** Hashability (dict keys), thread safety, interning optimizations; concatenation creates new objects.
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Use `''.join(parts)` for many concatenations O(n) vs O(n²).
+
+---
+
+### 56. Regex in Python?
+
+**Question:** How use regular expressions?
+
+**Answer:** `re` module: `re.search`, `re.match`, `re.findall`, `re.sub`; compile patterns for reuse.
+
+**Example:** `re.findall(r"\d+", "a1b22")` → `['1','22']`
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer `str` methods when sufficient; raw strings `r"\d"`.
+
+---
+
+### 57. Dataclasses?
+
+**Question:** What are dataclasses?
+
+**Answer:** `@dataclass` auto-generates `__init__`, `__repr__`, comparisons from typed fields (3.7+).
+
+**Example:**
+```python
+from dataclasses import dataclass
+@dataclass(frozen=True)
+class User:
+    id: int; name: str
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Alternative to boilerplate classes; `frozen=True` for immutability; Pydantic adds validation.
+
+---
+
+### 58. Named tuples?
+
+**Question:** collections.namedtuple vs dataclass?
+
+**Answer:** namedtuple — lightweight immutable tuple subclass with named fields; dataclass — more flexible, mutable option.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Python 3.6+ also has `typing.NamedTuple` for typed immutable records.
+
+---
+
+### 59. What is `*` unpacking?
+
+**Question:** Explain `*` and `**` unpacking?
+
+**Answer:** `*` unpacks iterables into positional args or collection literals; `**` unpacks mappings into keyword args/dicts.
+
+**Example:** `[*a, *b]`, `func(**config)`, `{**defaults, **overrides}`
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** PEP 448 extended unpacking in literals.
+
+---
+
+### 60. Sorting with `key`?
+
+**Question:** How sort complex objects?
+
+**Answer:** `sorted(items, key=lambda x: x.score, reverse=True)` — stable sort Timsort O(n log n).
+
+**Example:** `sorted(words, key=str.lower)`
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** `list.sort()` in-place; `sorted()` returns new list.
+
+---
+
+### 61. Binary search in Python?
+
+**Question:** Is there built-in binary search?
+
+**Answer:** `bisect` module for sorted lists: `bisect_left`, `bisect_right`, `insort`.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Use for maintaining sorted sequences; not for unsorted data.
+
+---
+
+### 62. Collections module highlights?
+
+**Question:** Useful collections types?
+
+**Answer:** `Counter`, `defaultdict`, `deque`, `OrderedDict` (less needed since dict ordered), `ChainMap`.
+
+**Example:**
+```python
+from collections import Counter
+Counter("banana")  # Counter({'a': 3, 'n': 2, 'b': 1})
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `deque` O(1) append/pop both ends; `defaultdict(list)` for grouping.
+
+---
+
+### 63. itertools overview?
+
+**Question:** Key itertools functions?
+
+**Answer:** `chain`, `islice`, `groupby`, `product`, `permutations`, `combinations`, `cycle`, `repeat`.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Memory-efficient iteration; `groupby` requires sorted input for full groups.
+
+---
+
+### 64. functools highlights?
+
+**Question:** Key functools tools?
+
+**Answer:** `lru_cache`, `partial`, `reduce`, `wraps`, `cached_property`.
+
+**Example:**
+```python
+@functools.lru_cache(maxsize=128)
+def fib(n): ...
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `lru_cache` for pure functions; watch unhashable args.
+
+---
+
+### 65. Context managers beyond files?
+
+**Question:** Other context manager uses?
+
+**Answer:** DB transactions, locks (`threading.Lock`), temporary directories (`tempfile`), suppressing errors (`contextlib.suppress`).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `@contextmanager` yields once; code before yield = enter, after = exit.
+
+---
+
+### 66. What is duck typing?
+
+**Question:** What is duck typing?
+
+**Answer:** Type compatibility by behavior (methods/attributes) not inheritance: "if it walks like a duck..."
+
+**Explanation:** Python uses EAFP (Easier to Ask Forgiveness) over LBYL (Look Before You Leap).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Mention `typing.Protocol` for structural subtyping.
+
+---
+
+### 67. EAFP vs LBYL?
+
+**Question:** EAFP vs LBYL?
+
+**Answer:** EAFP: try/except (`d[key]`). LBYL: check first (`if key in d`). Python culture favors EAFP for clarity and race avoidance.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Exception handling has cost — don't use for normal control flow in hot paths.
+
+---
+
+### 68. What is `__call__`?
+
+**Question:** What makes an object callable?
+
+**Answer:** Implementing `__call__` lets instances behave like functions — used in decorators, functors.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** `callable(obj)` checks this.
+
+---
+
+### 69. Metaclasses?
+
+**Question:** What is a metaclass?
+
+**Answer:** Class of a class; default is `type`. Controls class creation — rarely needed; frameworks use for ORMs, validation.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** "If unsure, you don't need one" — prefer class decorators or `__init_subclass__`.
+
+---
+
+### 70. Descriptors?
+
+**Question:** What is a descriptor?
+
+**Answer:** Object with `__get__`, `__set__`, or `__delete__` — mechanism behind properties, methods, staticmethods.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Data descriptor (has `__set__`) overrides instance dict; non-data doesn't.
+
+---
+
+### 71. List vs NumPy array?
+
+**Question:** Python list vs NumPy array?
+
+**Answer:** Lists hold arbitrary Python objects; NumPy arrays homogeneous typed, contiguous, vectorized C-speed ops.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** NumPy for numerical compute; lists for heterogeneous collections.
+
+---
+
+### 72. pandas basics?
+
+**Question:** What is pandas DataFrame?
+
+**Answer:** 2D labeled table (columns + index) with alignment, grouping, missing data handling, I/O for CSV/Parquet/SQL.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Know `groupby`, `merge`, vectorization vs `apply`; avoid row-wise Python loops.
+
+---
+
+### 73. SQL from Python?
+
+**Question:** How connect Python to databases?
+
+**Answer:** DB-API drivers (`psycopg2`, `sqlite3`) or ORMs (`SQLAlchemy`, Django ORM). Use parameterized queries.
+
+**Example:**
+```python
+cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Never f-string SQL — SQL injection risk.
+
+---
+
+### 74. REST API basics?
+
+**Question:** What is a REST API?
+
+**Answer:** Architectural style using HTTP methods on resources identified by URLs; stateless; common formats JSON.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Know status codes 200, 201, 400, 401, 404, 500.
+
+---
+
+### 75. Flask vs FastAPI?
+
+**Question:** Flask vs FastAPI?
+
+**Answer:** Flask — mature, minimal, sync-first, huge extensions. FastAPI — modern, async-native, automatic OpenAPI, Pydantic validation.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Match framework to team, async needs, and performance requirements.
+
+---
+
+### 76. What is ORM?
+
+**Question:** What is an ORM?
+
+**Answer:** Object-Relational Mapper maps Python classes to DB tables, abstracting SQL with trade-offs (convenience vs control).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** N+1 query problem — use eager loading (`selectinload`).
+
+---
+
+### 77. Environment variables?
+
+**Question:** How manage secrets/config?
+
+**Answer:** Environment variables via `os.environ` or `python-dotenv`; never commit secrets; use vaults in production.
+
+**Example:** `DATABASE_URL = os.getenv("DATABASE_URL")`
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** 12-factor app config principle.
+
+---
+
+### 78. Docker with Python?
+
+**Question:** Why containerize Python apps?
+
+**Answer:** Reproducible runtime, isolated deps, consistent deploys; multi-stage builds reduce image size.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Use slim base images; `.dockerignore`; non-root user.
+
+---
+
+### 79. CI/CD for Python?
+
+**Question:** Typical Python CI pipeline?
+
+**Answer:** Lint (ruff/flake8) → type check (mypy) → test (pytest) → build artifact → deploy.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cache pip/poetry deps; matrix test multiple Python versions.
+
+---
+
+### 80. What is WSGI/ASGI?
+
+**Question:** WSGI vs ASGI?
+
+**Answer:** WSGI — sync web server interface (Flask/Django). ASGI — async-capable (FastAPI, websockets, long-lived connections).
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Uvicorn/Gunicorn as servers; understand worker model.
+
+---
+
+### 81. Caching strategies?
+
+**Question:** Caching patterns in Python apps?
+
+**Answer:** In-process (`functools.lru_cache`), distributed (Redis), HTTP cache headers, memoization with TTL.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Cache invalidation is hard — define TTL and key design.
+
+---
+
+### 82. Rate limiting?
+
+**Question:** How implement rate limiting?
+
+**Answer:** Token bucket/leaky bucket in Redis, middleware (FastAPI slowapi), API gateway level limits.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Return 429 with Retry-After header.
+
+---
+
+### 83. Idempotency in APIs?
+
+**Question:** What is idempotency?
+
+**Answer:** Repeated identical requests have same effect as one — critical for retries (PUT, DELETE; POST needs idempotency keys).
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Payment/order APIs must handle duplicate submissions.
+
+---
+
+### 84. Pagination patterns?
+
+**Question:** API pagination approaches?
+
+**Answer:** Offset/limit (simple, slow at scale), cursor-based (stable for feeds), keyset pagination.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cursor pagination avoids skipped/duplicate rows on live data.
+
+---
+
+### 85. Web scraping ethics?
+
+**Question:** Scraping considerations?
+
+**Answer:** Respect robots.txt, rate limits, ToS; use `requests`/`httpx` + `BeautifulSoup`/`lxml`; async for scale.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer official APIs when available.
+
+---
+
+### 86. File formats?
+
+**Question:** Common data file handling?
+
+**Answer:** CSV (`csv`/`pandas`), JSON (`json`), Parquet (`pyarrow`), Excel (`openpyxl`), YAML (`pyyaml`).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Parquet for analytics — columnar, compressed.
+
+---
+
+### 87. Celery / task queues?
+
+**Question:** Background jobs in Python?
+
+**Answer:** Celery/RQ/Dramatiq offload long tasks to workers via Redis/RabbitMQ; retries, scheduling, visibility.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Idempotent tasks; dead letter queues; monitor worker health.
+
+---
+
+### 88. Design patterns in Python?
+
+**Question:** Common patterns?
+
+**Answer:** Singleton (module-level), Factory, Strategy (functions first), Observer (signals), Dependency Injection.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Python favors simplicity — functions/modules often beat Gang-of-Four ceremony.
+
+---
+
+### 89. SOLID in Python?
+
+**Question:** Apply SOLID principles?
+
+**Answer:** Single responsibility, Open/closed (extend via composition), Liskov substitution, Interface segregation (Protocols), Dependency inversion (inject deps).
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Give concrete refactor example from god-class to services.
+
+---
+
+### 90. Big-O for Python structures?
+
+**Question:** Time complexity of common ops?
+
+**Answer:** list append O(1) amortized, insert O(n), dict get/set O(1) avg, set ops O(n) or O(1) per lookup, sort O(n log n).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `in` on list is O(n); on set/dict O(1) avg.
+
+---
+
+### 91. Python 2 vs 3?
+
+**Question:** Key Python 3 changes?
+
+**Answer:** print function, unicode str, `/` true division, iterators everywhere, no `xrange` (use `range`).
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Python 2 EOL 2020 — all modern work is Python 3.
+
+---
+
+### 92. `__repr__` vs `__str__`?
+
+**Question:** repr vs str?
+
+**Answer:** `__repr__` unambiguous for developers (ideally eval-able); `__str__` human-readable. `print` uses str; REPL uses repr.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Implement both; fallback str uses repr if missing.
+
+---
+
+### 93. Truthiness?
+
+**Question:** What is falsy in Python?
+
+**Answer:** `False`, `None`, `0`, `0.0`, empty `""`, `[]`, `{}`, `()`, `set()`, custom objects with `__bool__`/`__len__` returning 0/False.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** `if items:` cleaner than `if len(items) > 0:`
+
+---
+
+### 94. `isinstance` vs `type`?
+
+**Question:** isinstance vs type()?
+
+**Answer:** `isinstance(obj, cls)` respects inheritance; `type(obj) is cls` exact match only.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer isinstance; supports tuple of types.
+
+---
+
+### 95. Monkey patching?
+
+**Question:** What is monkey patching?
+
+**Answer:** Runtime modification of classes/modules — useful in tests, risky in production.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Prefer dependency injection over patching core libs.
+
+---
+
+### 96. `__dict__` and `vars()`?
+
+**Question:** What is instance `__dict__`?
+
+**Answer:** Namespace storing instance attributes (unless slots); `vars(obj)` returns it.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Class attributes vs instance attributes — mutable class attrs shared.
+
+---
+
+### 97. Weak references?
+
+**Question:** What is `weakref`?
+
+**Answer:** References that don't increase refcount — useful for caches without preventing GC.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** `WeakValueDictionary` for memoization caches.
+
+---
+
+### 98. Structural pattern matching?
+
+**Question:** Python 3.10+ match/case?
+
+**Answer:** Pattern matching on structure: literals, sequences, mappings, classes with guards.
+
+**Example:**
+```python
+match point:
+    case (0, 0): print("origin")
+    case (x, y): print(x, y)
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Not a drop-in switch — powerful for parsers/AST handling.
+
+---
+
+### 99. Security basics?
+
+**Question:** Python security concerns?
+
+**Answer:** SQL injection, pickle deserialization, eval/exec, path traversal, SSRF, dependency vulnerabilities (pip-audit, Snyk).
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Principle of least privilege; validate all external input.
+
+---
+
+### 100. How stay current?
+
+**Question:** How do you keep Python skills current?
+
+**Answer:** PEPs, release notes, Real Python/docs, open source, conferences (PyCon), typing/async ecosystem evolution.
+
+**Difficulty Level:** All levels
+
+**Interview Tips:** Mention a recent feature you learned (3.11 speed, 3.12 improvements, typing enhancements).
+
+---
+
+# 2. Top 50 Python Coding Questions with Solutions
+
+---
+
+### 1. Reverse a String
+
+**Problem:** Reverse a string without using `[::-1]` in the interview follow-up.
+
+```python
+def reverse_string(s: str) -> str:
+    chars = list(s)
+    left, right = 0, len(chars) - 1
+    while left < right:
+        chars[left], chars[right] = chars[right], chars[left]
+        left += 1
+        right -= 1
+    return "".join(chars)
+```
+
+**Explanation:** Two-pointer in-place swap on characters — O(n) time, O(n) space for char list.
+
+---
+
+### 2. Check Palindrome
+
+**Problem:** Return True if string is palindrome (ignore case/non-alnum).
+
+```python
+def is_palindrome(s: str) -> bool:
+    cleaned = [c.lower() for c in s if c.isalnum()]
+    return cleaned == cleaned[::-1]
+```
+
+**Explanation:** Filter then compare to reverse; two-pointer alternative saves memory.
+
+---
+
+### 3. FizzBuzz
+
+**Problem:** Print 1..n; multiples of 3 → Fizz, 5 → Buzz, both → FizzBuzz.
+
+```python
+def fizzbuzz(n: int) -> list[str]:
+    out = []
+    for i in range(1, n + 1):
+        word = ""
+        if i % 3 == 0: word += "Fizz"
+        if i % 5 == 0: word += "Buzz"
+        out.append(word or str(i))
+    return out
+```
+
+**Explanation:** Classic loop/modulo; discuss extensibility for arbitrary rules.
+
+---
+
+### 4. Two Sum
+
+**Problem:** Find indices of two numbers adding to target.
+
+```python
+def two_sum(nums: list[int], target: int) -> tuple[int, int]:
+    seen = {}
+    for i, v in enumerate(nums):
+        need = target - v
+        if need in seen:
+            return seen[need], i
+        seen[v] = i
+    raise ValueError("no solution")
+```
+
+**Explanation:** Hash map one-pass O(n) vs brute O(n²).
+
+---
+
+### 5. Remove Duplicates from List
+
+**Problem:** Remove duplicates preserving order.
+
+```python
+def dedupe(items: list) -> list:
+    seen = set()
+    out = []
+    for x in items:
+        if x not in seen:
+            seen.add(x)
+            out.append(x)
+    return out
+```
+
+**Explanation:** Set membership O(1); dict.fromkeys(items) also works in 3.7+ ordered.
+
+---
+
+### 6. Count Word Frequency
+
+**Problem:** Count word frequencies in a sentence.
+
+```python
+from collections import Counter
+
+def word_freq(text: str) -> dict[str, int]:
+    words = text.lower().split()
+    return dict(Counter(words))
+```
+
+**Explanation:** Counter is canonical; manual dict increment shows fundamentals.
+
+---
+
+### 7. Find Maximum in List
+
+**Problem:** Return max without built-in max().
+
+```python
+def find_max(nums: list[int]) -> int:
+    if not nums:
+        raise ValueError("empty")
+    m = nums[0]
+    for v in nums[1:]:
+        if v > m:
+            m = v
+    return m
+```
+
+**Explanation:** Single pass O(n); discuss empty input handling.
+
+---
+
+### 8. Fibonacci (Iterative)
+
+**Problem:** Return nth Fibonacci number (0-indexed: 0,1,1,2,3...).
+
+```python
+def fib(n: int) -> int:
+    if n < 0:
+        raise ValueError
+    a, b = 0, 1
+    for _ in range(n):
+        a, b = b, a + b
+    return a
+```
+
+**Explanation:** O(n) time O(1) space; mention `@lru_cache` recursive for small n.
+
+---
+
+### 9. Factorial
+
+**Problem:** Compute n! iteratively and recursively.
+
+```python
+def factorial(n: int) -> int:
+    if n < 0:
+        raise ValueError
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+```
+
+**Explanation:** Watch recursion limit for large n; use iterative in production.
+
+---
+
+### 10. Prime Check
+
+**Problem:** Return whether n is prime.
+
+```python
+def is_prime(n: int) -> bool:
+    if n < 2:
+        return False
+    if n % 2 == 0:
+        return n == 2
+    d = 3
+    while d * d <= n:
+        if n % d == 0:
+            return False
+        d += 2
+    return True
+```
+
+**Explanation:** Trial division up to √n; sieve for many queries.
+
+---
+
+### 11. Anagram Check
+
+**Problem:** Check if two strings are anagrams.
+
+```python
+def are_anagrams(a: str, b: str) -> bool:
+    return sorted(a.lower()) == sorted(b.lower())
+```
+
+**Explanation:** Counter comparison O(n) without sorting O(n log n).
+
+---
+
+### 12. Merge Two Sorted Lists
+
+**Problem:** Merge two sorted lists into one sorted list.
+
+```python
+def merge_sorted(a: list[int], b: list[int]) -> list[int]:
+    i = j = 0
+    out = []
+    while i < len(a) and j < len(b):
+        if a[i] <= b[j]:
+            out.append(a[i]); i += 1
+        else:
+            out.append(b[j]); j += 1
+    out.extend(a[i:]); out.extend(b[j:])
+    return out
+```
+
+**Explanation:** Two-pointer merge like merge sort — O(n+m).
+
+---
+
+### 13. Binary Search
+
+**Problem:** Find index of target in sorted array or -1.
+
+```python
+def binary_search(nums: list[int], target: int) -> int:
+    lo, hi = 0, len(nums) - 1
+    while lo <= hi:
+        mid = (lo + hi) // 2
+        if nums[mid] == target:
+            return mid
+        if nums[mid] < target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1
+```
+
+**Explanation:** O(log n); beware integer overflow in other languages (not Python).
+
+---
+
+### 14. Valid Parentheses
+
+**Problem:** Check balanced brackets `()[]{}`.
+
+```python
+def is_valid(s: str) -> bool:
+    stack = []
+    pairs = {")": "(", "]": "[", "}": "{"}
+    for ch in s:
+        if ch in "([{":
+            stack.append(ch)
+        elif ch in ")]}":
+            if not stack or stack.pop() != pairs[ch]:
+                return False
+    return not stack
+```
+
+**Explanation:** Stack classic; O(n) time.
+
+---
+
+### 15. Reverse Linked List
+
+**Problem:** Reverse singly linked list in-place.
+
+```python
+class Node:
+    def __init__(self, val, next=None):
+        self.val = val; self.next = next
+
+def reverse_list(head: Node | None) -> Node | None:
+    prev = None
+    while head:
+        nxt = head.next
+        head.next = prev
+        prev = head
+        head = nxt
+    return prev
+```
+
+**Explanation:** Iterative three-pointer; recursive variant possible.
+
+---
+
+### 16. Find Missing Number
+
+**Problem:** Array 0..n with one missing — find it.
+
+```python
+def missing_number(nums: list[int]) -> int:
+    n = len(nums)
+    expected = n * (n + 1) // 2
+    return expected - sum(nums)
+```
+
+**Explanation:** Sum formula or XOR all indices/values.
+
+---
+
+### 17. Flatten Nested List
+
+**Problem:** Flatten arbitrarily nested list.
+
+```python
+def flatten(nested: list) -> list:
+    out = []
+    for item in nested:
+        if isinstance(item, list):
+            out.extend(flatten(item))
+        else:
+            out.append(item)
+    return out
+```
+
+**Explanation:** Recursive DFS; iterative with stack also common.
+
+---
+
+### 18. Group Anagrams
+
+**Problem:** Group strings that are anagrams.
+
+```python
+from collections import defaultdict
+
+def group_anagrams(words: list[str]) -> list[list[str]]:
+    groups = defaultdict(list)
+    for w in words:
+        key = tuple(sorted(w))
+        groups[key].append(w)
+    return list(groups.values())
+```
+
+**Explanation:** Key by sorted chars or char count tuple.
+
+---
+
+### 19. Top K Frequent Elements
+
+**Problem:** Return k most frequent integers.
+
+```python
+from collections import Counter
+import heapq
+
+def top_k_frequent(nums: list[int], k: int) -> list[int]:
+    return [x for x, _ in Counter(nums).most_common(k)]
+```
+
+**Explanation:** Counter + heapq.nlargest for large k discussion.
+
+---
+
+### 20. Rotate Array
+
+**Problem:** Rotate array right by k steps.
+
+```python
+def rotate(nums: list[int], k: int) -> list[int]:
+    k %= len(nums)
+    return nums[-k:] + nums[:-k]
+```
+
+**Explanation:** Slicing O(n); in-place triple-reverse algorithm for O(1) extra space.
+
+---
+
+### 21. Longest Substring Without Repeating
+
+**Problem:** Length of longest substring without duplicate chars.
+
+```python
+def length_of_longest_substring(s: str) -> int:
+    last = {}
+    start = best = 0
+    for i, ch in enumerate(s):
+        if ch in last and last[ch] >= start:
+            start = last[ch] + 1
+        last[ch] = i
+        best = max(best, i - start + 1)
+    return best
+```
+
+**Explanation:** Sliding window with hash map — O(n).
+
+---
+
+### 22. Merge Intervals
+
+**Problem:** Merge overlapping intervals.
+
+```python
+def merge_intervals(intervals: list[list[int]]) -> list[list[int]]:
+    if not intervals:
+        return []
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+```
+
+**Explanation:** Sort then linear merge.
+
+---
+
+### 23. Valid Binary Search Tree
+
+**Problem:** Check if binary tree is valid BST.
+
+```python
+def is_bst(root, lo=float("-inf"), hi=float("inf")) -> bool:
+    if root is None:
+        return True
+    if not (lo < root.val < hi):
+        return False
+    return is_bst(root.left, lo, root.val) and is_bst(root.right, root.val, hi)
+```
+
+**Explanation:** Pass valid range down; inorder traversal alternative.
+
+---
+
+### 24. Level Order Traversal (BFS)
+
+**Problem:** Return BFS levels of binary tree.
+
+```python
+from collections import deque
+
+def level_order(root) -> list[list[int]]:
+    if not root:
+        return []
+    q = deque([root])
+    levels = []
+    while q:
+        level = []
+        for _ in range(len(q)):
+            node = q.popleft()
+            level.append(node.val)
+            if node.left: q.append(node.left)
+            if node.right: q.append(node.right)
+        levels.append(level)
+    return levels
+```
+
+**Explanation:** Queue BFS; track level size for layering.
+
+---
+
+### 25. DFS Graph Traversal
+
+**Problem:** Return DFS order from adjacency list.
+
+```python
+def dfs(graph: dict[int, list[int]], start: int) -> list[int]:
+    seen, order = set(), []
+    def visit(u):
+        if u in seen:
+            return
+        seen.add(u)
+        order.append(u)
+        for v in graph.get(u, []):
+            visit(v)
+    visit(start)
+    return order
+```
+
+**Explanation:** Recursive DFS; iterative with stack for deep graphs.
+
+---
+
+### 26. Detect Cycle in Linked List
+
+**Problem:** Detect if linked list has cycle (Floyd).
+
+```python
+def has_cycle(head) -> bool:
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False
+```
+
+**Explanation:** Tortoise-hare O(n) time O(1) space.
+
+---
+
+### 27. LRU Cache (Conceptual)
+
+**Problem:** Implement LRU cache get/put O(1).
+
+```python
+from collections import OrderedDict
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.cap = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key: int) -> int:
+        if key not in self.cache:
+            return -1
+        self.cache.move_to_end(key)
+        return self.cache[key]
+
+    def put(self, key: int, value: int) -> None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) > self.cap:
+            self.cache.popitem(last=False)
+```
+
+**Explanation:** OrderedDict simplifies; interview may require doubly linked list + dict.
+
+---
+
+### 28. Implement Stack Using Queues
+
+**Problem:** Stack using two queues.
+
+```python
+from collections import deque
+
+class Stack:
+    def __init__(self):
+        self.q = deque()
+
+    def push(self, x):
+        self.q.append(x)
+        for _ in range(len(self.q) - 1):
+            self.q.append(self.q.popleft())
+
+    def pop(self):
+        return self.q.popleft()
+```
+
+**Explanation:** Rotate on push so front is top.
+
+---
+
+### 29. Min Stack
+
+**Problem:** Stack supporting push, pop, top, getMin in O(1).
+
+```python
+class MinStack:
+    def __init__(self):
+        self.stack = []
+        self.mins = []
+
+    def push(self, x):
+        self.stack.append(x)
+        self.mins.append(x if not self.mins else min(x, self.mins[-1]))
+
+    def pop(self):
+        self.stack.pop(); self.mins.pop()
+
+    def top(self):
+        return self.stack[-1]
+
+    def get_min(self):
+        return self.mins[-1]
+```
+
+**Explanation:** Auxiliary min stack tracks current minimum.
+
+---
+
+### 30. CSV Parser (Simple)
+
+**Problem:** Parse CSV line handling quoted commas.
+
+```python
+def parse_csv_line(line: str) -> list[str]:
+    import csv
+    from io import StringIO
+    return next(csv.reader(StringIO(line)))
+```
+
+**Explanation:** Use stdlib csv module; manual state machine if required.
+
+---
+
+### 31. Read File Line Count
+
+**Problem:** Count lines in large file memory-efficiently.
+
+```python
+def count_lines(path: str) -> int:
+    count = 0
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            count += chunk.count(b"\n")
+    return count
+```
+
+**Explanation:** Binary chunks for speed; text mode line iteration simpler.
+
+---
+
+### 32. Decorator: Retry
+
+**Problem:** Retry function on exception.
+
+```python
+import time
+from functools import wraps
+
+def retry(times=3, delay=1):
+    def deco(fn):
+        @wraps(fn)
+        def wrapper(*a, **k):
+            last = None
+            for _ in range(times):
+                try:
+                    return fn(*a, **k)
+                except Exception as e:
+                    last = e
+                    time.sleep(delay)
+            raise last
+        return wrapper
+    return deco
+```
+
+**Explanation:** Exponential backoff extension common in production.
+
+---
+
+### 33. Singleton via Module
+
+**Problem:** Implement singleton pattern.
+
+```python
+# settings.py — module IS the singleton
+class _Settings:
+    debug = False
+settings = _Settings()
+```
+
+**Explanation:** Python modules are natural singletons; class + `__new__` alternative.
+
+---
+
+### 34. Rate Limiter (Token Bucket Simple)
+
+**Problem:** Allow max N calls per second.
+
+```python
+import time
+
+class RateLimiter:
+    def __init__(self, rate: float):
+        self.rate = rate
+        self.last = 0.0
+
+    def allow(self) -> bool:
+        now = time.monotonic()
+        if now - self.last >= 1 / self.rate:
+            self.last = now
+            return True
+        return False
+```
+
+**Explanation:** Production uses Redis sliding window; discuss thread safety.
+
+---
+
+### 35. Parse Log File for Errors
+
+**Problem:** Return lines containing ERROR from log.
+
+```python
+def error_lines(path: str) -> list[str]:
+    with open(path, encoding="utf-8", errors="replace") as f:
+        return [line.rstrip("\n") for line in f if "ERROR" in line]
+```
+
+**Explanation:** Generator `(line for line in f if ...)` for memory efficiency.
+
+---
+
+### 36. JSON Config Loader with Defaults
+
+**Problem:** Load JSON config merging defaults.
+
+```python
+import json
+
+def load_config(path: str) -> dict:
+    defaults = {"host": "localhost", "port": 8080}
+    with open(path, encoding="utf-8") as f:
+        data = json.load(f)
+    return {**defaults, **data}
+```
+
+**Explanation:** Shallow merge; nested merge needs deep merge utility.
+
+---
+
+### 37. Chunk Iterable
+
+**Problem:** Split iterable into fixed-size chunks.
+
+```python
+def chunked(iterable, size: int):
+    it = iter(iterable)
+    while True:
+        batch = []
+        try:
+            for _ in range(size):
+                batch.append(next(it))
+        except StopIteration:
+            if batch:
+                yield batch
+            break
+        yield batch
+```
+
+**Explanation:** `itertools.batched` in Python 3.12+.
+
+---
+
+### 38. Memoized Fibonacci
+
+**Problem:** Fibonacci with caching.
+
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fib(n: int) -> int:
+    if n < 2:
+        return n
+    return fib(n - 1) + fib(n - 2)
+```
+
+**Explanation:** O(n) calls with cache; iterative still preferred for huge n.
+
+---
+
+### 39. Producer-Consumer with Queue
+
+**Problem:** Thread-safe producer/consumer.
+
+```python
+import threading
+from queue import Queue
+
+def worker(q: Queue):
+    while True:
+        item = q.get()
+        if item is None:
+            break
+        print("got", item)
+        q.task_done()
+
+q = Queue()
+t = threading.Thread(target=worker, args=(q,))
+t.start()
+for i in range(5):
+    q.put(i)
+q.put(None)
+t.join()
+```
+
+**Explanation:** `queue.Queue` is thread-safe; use `join()` for completion.
+
+---
+
+### 40. Async Fetch URLs
+
+**Problem:** Fetch multiple URLs concurrently.
+
+```python
+import asyncio
+import httpx
+
+async def fetch_all(urls: list[str]) -> list[int]:
+    async with httpx.AsyncClient() as client:
+        tasks = [client.get(u) for u in urls]
+        responses = await asyncio.gather(*tasks)
+        return [r.status_code for r in responses]
+```
+
+**Explanation:** asyncio.gather for concurrency; handle exceptions with return_exceptions=True.
+
+---
+
+### 41. SQLAlchemy-style Repository (Mock)
+
+**Problem:** Simple in-memory CRUD repository.
+
+```python
+class UserRepo:
+    def __init__(self):
+        self._store = {}
+
+    def create(self, user_id: int, data: dict) -> dict:
+        self._store[user_id] = data
+        return data
+
+    def get(self, user_id: int) -> dict | None:
+        return self._store.get(user_id)
+```
+
+**Explanation:** Demonstrates separation of persistence from service layer.
+
+---
+
+### 42. Validate Email (Basic)
+
+**Problem:** Basic email format validation.
+
+```python
+import re
+
+EMAIL_RE = re.compile(r"^[\w.+-]+@[\w-]+\.[\w.-]+$")
+
+def is_valid_email(email: str) -> bool:
+    return bool(EMAIL_RE.match(email))
+```
+
+**Explanation:** Production uses `email-validator` library; discuss false positives.
+
+---
+
+### 43. Deep Merge Dicts
+
+**Problem:** Recursively merge two dicts.
+
+```python
+def deep_merge(a: dict, b: dict) -> dict:
+    out = dict(a)
+    for k, v in b.items():
+        if k in out and isinstance(out[k], dict) and isinstance(v, dict):
+            out[k] = deep_merge(out[k], v)
+        else:
+            out[k] = v
+    return out
+```
+
+**Explanation:** Watch list merge policy — concat vs replace.
+
+---
+
+### 44. Find Duplicates in Array
+
+**Problem:** Find all duplicates in 1..n array (some appear twice).
+
+```python
+def find_duplicates(nums: list[int]) -> list[int]:
+    seen = set()
+    dups = set()
+    for x in nums:
+        if x in seen:
+            dups.add(x)
+        seen.add(x)
+    return sorted(dups)
+```
+
+**Explanation:** Floyd cycle / index marking for O(1) space variants.
+
+---
+
+### 45. Implement str.join manually
+
+**Problem:** Join strings with delimiter without str.join.
+
+```python
+def join(delimiter: str, parts: list[str]) -> str:
+    if not parts:
+        return ""
+    result = parts[0]
+    for p in parts[1:]:
+        result += delimiter + p
+    return result
+```
+
+**Explanation:** Discuss O(n²) vs join's O(n) total length optimization.
+
+---
+
+### 46. Matrix Transpose
+
+**Problem:** Transpose m×n matrix.
+
+```python
+def transpose(matrix: list[list[int]]) -> list[list[int]]:
+    return [list(row) for row in zip(*matrix)]
+```
+
+**Explanation:** zip(*) unpacks rows to columns elegantly.
+
+---
+
+### 47. Pascal's Triangle
+
+**Problem:** Generate first n rows of Pascal's triangle.
+
+```python
+def pascal(n: int) -> list[list[int]]:
+    rows = [[1]]
+    for _ in range(1, n):
+        prev = rows[-1]
+        rows.append([1] + [a + b for a, b in zip(prev, prev[1:])] + [1])
+    return rows
+```
+
+**Explanation:** Each entry sum of two above neighbors.
+
+---
+
+### 48. Coin Change (Min Coins)
+
+**Problem:** Minimum coins to make amount (classic DP).
+
+```python
+def coin_change(coins: list[int], amount: int) -> int:
+    dp = [float("inf")] * (amount + 1)
+    dp[0] = 0
+    for a in range(1, amount + 1):
+        for c in coins:
+            if c <= a:
+                dp[a] = min(dp[a], dp[a - c] + 1)
+    return dp[amount] if dp[amount] != float("inf") else -1
+```
+
+**Explanation:** Bottom-up DP O(amount × coins).
+
+---
+
+### 49. Quick Sort
+
+**Problem:** Implement quicksort.
+
+```python
+def quicksort(arr: list[int]) -> list[int]:
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr) // 2]
+    left = [x for x in arr if x < pivot]
+    mid = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quicksort(left) + mid + quicksort(right)
+```
+
+**Explanation:** In-place partition variant expected for follow-up; O(n log n) average.
+
+---
+
+### 50. Design URL Shortener (Core Logic)
+
+**Problem:** Encode id to short code and decode back.
+
+```python
+ALPHABET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+def encode(num: int) -> str:
+    if num == 0:
+        return ALPHABET[0]
+    chars = []
+    base = len(ALPHABET)
+    while num:
+        num, rem = divmod(num, base)
+        chars.append(ALPHABET[rem])
+    return "".join(reversed(chars))
+
+def decode(code: str) -> int:
+    base = len(ALPHABET)
+    num = 0
+    for ch in code:
+        num = num * base + ALPHABET.index(ch)
+    return num
+```
+
+**Explanation:** Base62 bijection; discuss collision handling and DB id allocation in system design follow-up.
+
+---
+
+# 3. Top 30 Scenario-Based Python Questions
+
+---
+
+### 1. Production script fails only on Linux
+
+**Question:** Your Python script works on Windows but fails on Linux with `PermissionError`. What do you check?
+
+**Answer:** File permissions, shebang/execute bit, path separators, line endings (CRLF vs LF), case-sensitive filesystem, and environment variables.
+
+**Explanation:** Linux is case-sensitive (`File.txt` ≠ `file.txt`); scripts need `chmod +x` and correct shebang `#!/usr/bin/env python3`.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Mention `pathlib` for cross-platform paths and testing in CI on target OS.
+
+---
+
+### 2. API suddenly returns 500s after deploy
+
+**Question:** After deploying a Python API, error rate spikes. Your debugging approach?
+
+**Answer:** Roll back or canary; check logs/traces (request ID correlation); compare config/secrets; verify DB migrations; reproduce in staging; inspect recent dependency changes.
+
+**Explanation:** Structured logging and health checks (`/health`, `/ready`) isolate failing dependency vs app logic.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Describe a systematic timeline: metrics → logs → diff → hypothesis → fix.
+
+---
+
+### 3. Memory usage grows unbounded
+
+**Question:** Long-running Python worker memory keeps growing. How investigate?
+
+**Answer:** Profile with `tracemalloc`, `memory_profiler`, heap dumps; check unbounded caches, global lists, circular refs, C extensions; verify generators vs materialized lists.
+
+**Explanation:** Common causes: caching without TTL, loading entire files/result sets, ORM identity map growth, leaked connections.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Mention weakref caches and periodic worker restart as mitigation while fixing root cause.
+
+---
+
+### 4. CSV import crashes mid-file
+
+**Question:** Importing 2GB CSV fails halfway. Design resilient import.
+
+**Answer:** Stream row-by-row (`csv.reader` or pandas `chunksize`); batch commits; checkpoint offset; validate rows; dead-letter bad rows; idempotent upserts.
+
+**Example:**
+```python
+for chunk in pd.read_csv("big.csv", chunksize=10_000):
+    process(chunk)
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Discuss transactions per batch vs whole file.
+
+---
+
+### 5. Duplicate API submissions
+
+**Question:** Users double-click Pay and get charged twice. Fix in Python backend?
+
+**Answer:** Idempotency keys on client; server stores key→result; database unique constraint on order reference; disable button UX secondary.
+
+**Explanation:** `INSERT ... ON CONFLICT DO NOTHING` or Redis `SETNX` for dedup window.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** At-least-once delivery from queues requires idempotent consumers.
+
+---
+
+### 6. Slow pandas pipeline
+
+**Question:** pandas ETL takes 6 hours. Optimization steps?
+
+**Answer:** Profile bottlenecks; use vectorization; correct dtypes (`category`, downcast numerics); avoid `apply` Python loops; filter early; Parquet not CSV; consider Polars/Dask/spark for scale.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Quantify before/after; know when to leave pandas.
+
+---
+
+### 7. Choose threading for web scraper
+
+**Question:** Scrape 10,000 URLs — threads, processes, or asyncio?
+
+**Answer:** I/O-bound → asyncio or thread pool; respect rate limits; connection pooling; if CPU parsing heavy consider multiprocessing for parse step.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Mention robots.txt, retries with backoff, and circuit breakers.
+
+---
+
+### 8. Secret leaked in Git
+
+**Question:** Developer committed AWS key to repo. Response?
+
+**Answer:** Rotate/revoke immediately; remove from history (BFG/git filter-repo); scan with git-secrets; use env vars/secrets manager; never rely on delete commit alone.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prevention: pre-commit hooks, `.env` in `.gitignore`.
+
+---
+
+### 9. Timezone bugs in reporting
+
+**Question:** Reports show wrong dates for global users. Fix?
+
+**Answer:** Store UTC in DB (`datetime.timezone.utc`); convert at display; use `zoneinfo` (3.9+); never naive datetimes for events; test DST transitions.
+
+**Example:**
+```python
+from datetime import datetime, timezone
+now = datetime.now(timezone.utc)
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `pytz` legacy vs stdlib `zoneinfo`.
+
+---
+
+### 10. Database N+1 in Django/FastAPI app
+
+**Question:** List endpoint makes 500 SQL queries for 100 users. Fix?
+
+**Answer:** Eager loading (`selectinload`, `joinedload` in SQLAlchemy; `prefetch_related` in Django); batch fetch related data; API response shaping.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Enable SQL logging to prove fix; mention DataLoader pattern at GraphQL scale.
+
+---
+
+### 11. Graceful shutdown of worker
+
+**Question:** Deploy kills Celery worker mid-task. Design graceful shutdown.
+
+**Answer:** Handle SIGTERM; stop accepting new tasks; finish in-flight with timeout; ack after success; visibility timeout for retries; idempotent tasks.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Kubernetes preStop hook + drain period.
+
+---
+
+### 12. Config differs dev/staging/prod
+
+**Question:** How manage environment-specific config cleanly?
+
+**Answer:** Environment variables + pydantic-settings; separate secrets in vault; no branching on `if env == prod` scattered — central Settings class.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** 12-factor config; fail fast if required vars missing.
+
+---
+
+### 13. Legacy Python 2 library needed
+
+**Question:** Must integrate unmaintained Py2-only library. Options?
+
+**Answer:** Subprocess isolation, rewrite/port, find alternative, run in separate Py2 container (last resort), use `python-modernize` if source available.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Risk assessment and boundary API between services.
+
+---
+
+### 14. Unit tests flaky on CI
+
+**Question:** Tests pass locally, fail randomly on CI. Causes?
+
+**Answer:** Time dependencies, race conditions, shared mutable state, order-dependent tests, network calls, fixed seeds missing, timezone differences.
+
+**Explanation:** Mock time (`freezegun`), isolate DB per test, `--random-order`, retry is band-aid.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Fix root cause not `@pytest.mark.flaky` permanently.
+
+---
+
+### 15. Logging PII compliance
+
+**Question:** Logs accidentally contain emails/SSN. Prevention?
+
+**Answer:** Structured logging with redaction filter; allowlist fields; sample debug only; retention policies; GDPR delete workflows.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Mention regex redaction vs not logging sensitive fields at source.
+
+---
+
+### 16. Microservice communication failure
+
+**Question:** Service A calls B; B is slow. Prevent cascade failure?
+
+**Answer:** Timeouts, retries with jitter, circuit breaker, bulkheads, fallbacks, async messaging, load shedding.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Libraries: tenacity, pybreaker; observability with distributed tracing.
+
+---
+
+### 17. Large file upload to API
+
+**Question:** Users upload 500MB files. Design FastAPI endpoint.
+
+**Answer:** Streaming upload to object storage (S3 multipart); size limits; virus scan async; don't load into RAM; presigned URLs for direct client→S3 upload preferred.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Reverse proxy body size limits (nginx).
+
+---
+
+### 18. Data pipeline backfill
+
+**Question:** Bug fixed — need reprocess last 30 days data. Approach?
+
+**Answer:** Idempotent pipeline stages; partition by date; replay from raw layer; feature flags; monitor lag; parallelize by partition.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Medallion architecture: bronze/silver/gold layers.
+
+---
+
+### 19. Monolith vs microservices
+
+**Question:** When split Python monolith?
+
+**Answer:** When independent scaling, team boundaries, deploy cadence, or failure isolation justify operational cost — not prematurely.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Strangler fig pattern; extract highest-churn domain first.
+
+---
+
+### 20. Authentication token expiry
+
+**Question:** JWT access token expires mid-session. UX and backend design?
+
+**Answer:** Short access token + refresh token rotation; secure httpOnly cookie for refresh; revoke list for logout; handle 401 with silent refresh on client.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Discuss token storage XSS vs CSRF trade-offs.
+
+---
+
+### 21. Scheduled job missed run
+
+**Question:** Cron job didn't run during DST change / server reboot. Fix?
+
+**Answer:** Use reliable scheduler (Celery beat, Airflow, systemd timers); catch-up policy; idempotent job design; alert on missed SLA; UTC scheduling.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** "Run at 2am UTC" avoids DST issues.
+
+---
+
+### 22. Parsing messy real-world JSON
+
+**Question:** External API returns inconsistent JSON (missing fields, type changes). Handle?
+
+**Answer:** Pydantic models with Optional, validators, schema versioning; defensive parsing; contract tests; alert on schema drift.
+
+**Example:**
+```python
+class User(BaseModel):
+    name: str
+    age: int | None = None
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Never assume stable third-party schemas.
+
+---
+
+### 23. Feature flag rollout
+
+**Question:** Roll out new Python billing logic to 5% users safely.
+
+**Answer:** Feature flag service; deterministic hash on user_id; metrics comparison; instant kill switch; shadow mode/dry-run first.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Discuss observability: error rate, revenue impact dashboards.
+
+---
+
+### 24. Package dependency conflict
+
+**Question:** pip install fails — package A needs requests<2.29, B needs requests>=2.31. Resolve?
+
+**Answer:** Check if versions compatible with upgrades; pin in lockfile; virtualenv isolation; contact maintainers; vendor fork last resort; poetry/pip-tools resolver.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Explain dependency resolution vs npm; use `pip install --dry-run` or `poetry update`.
+
+---
+
+### 25. On-call incident: disk full
+
+**Question:** Server disk 100% full — Python app crashing. Steps?
+
+**Answer:** Free space urgently (rotate logs, tmp cleanup); find large files (`du`); fix log rotation; move to centralized logging; alert at 80%.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `logging.handlers.RotatingFileHandler` or log to stdout for containers.
+
+---
+
+### 26. Multi-tenant data isolation
+
+**Question:** SaaS app — ensure tenant A never sees tenant B data.
+
+**Answer:** tenant_id on every row + query filter middleware; row-level security in Postgres; separate schemas/DBs for high isolation; test with penetration cases.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Never trust client-sent tenant_id without auth binding.
+
+---
+
+### 27. Cold start on serverless Python
+
+**Question:** Lambda/Cloud Function cold starts too slow. Optimize?
+
+**Answer:** Slim dependencies; lazy imports; provisioned concurrency; avoid heavy pandas/numpy if possible; container image optimization; init outside handler.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Measure init vs invoke duration separately.
+
+---
+
+### 28. Code review catches security issue
+
+**Question:** Junior dev uses `eval(user_input)` for calculator. Your feedback?
+
+**Answer:** Reject — use `ast.literal_eval` for literals only or parse with operator whitelist; explain RCE risk; suggest safe math parser.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Security culture: never eval/exec on user input.
+
+---
+
+### 29. Migrating SQLite to PostgreSQL
+
+**Question:** App outgrows SQLite. Migration plan?
+
+**Answer:** Abstract DB layer (SQLAlchemy); dual-write or maintenance window; schema migration tool (Alembic); data validation; rollback plan; connection pooling (pgbouncer).
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** SQLite-specific types and concurrency limits drive migration.
+
+---
+
+### 30. Explain technical decision to non-technical PM
+
+**Question:** PM asks why rewriting parser takes 3 weeks. Respond?
+
+**Answer:** Plain language: current parser breaks on edge cases causing support tickets; rewrite adds tests, handles formats X/Y, reduces bugs 80%; break into milestones with demoable increments.
+
+**Difficulty Level:** Soft skills / Senior
+
+**Interview Tips:** Senior interviews assess communication — trade jargon for outcomes and risk.
+
+---
+
+# 4. Top 20 Python Performance Optimization Questions
+
+---
+
+### 1. Why is my Python code slow?
+
+**Question:** How do you diagnose slow Python code?
+
+**Answer:** Profile first (`cProfile`, `py-spy`, `scalene`); identify hot paths; don't optimize prematurely.
+
+**Explanation:** Most time is usually in few functions — algorithm choice beats micro-optimizations.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Say "measure, then optimize" — interviewers want profiling discipline.
+
+---
+
+### 2. Big-O vs constant factors?
+
+**Question:** When does Big-O not tell the whole story?
+
+**Answer:** Constant factors, cache locality, interpreter overhead, C extensions — O(n) Python loop may lose to O(n log n) sorted C routine for small n.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Mention moving inner loop to NumPy/Cython/numba.
+
+---
+
+### 3. List comprehension vs loop?
+
+**Question:** Are list comprehensions faster than for loops?
+
+**Answer:** Often slightly faster (optimized bytecode, no append method lookup) but readability matters more for small lists.
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Generator expressions save memory on large data.
+
+---
+
+### 4. String concatenation performance?
+
+**Question:** Best way to build large strings?
+
+**Answer:** `''.join(parts)` — O(total length); repeated `+=` in loop is O(n²) due to immutability.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** `io.StringIO` for incremental building in some cases.
+
+---
+
+### 5. When use NumPy?
+
+**Question:** When should you use NumPy over pure Python lists?
+
+**Answer:** Numerical vector/matrix ops on homogeneous numeric data — leverages SIMD/C loops.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Broadcasting rules; avoid Python loops over rows.
+
+---
+
+### 6. What is vectorization?
+
+**Question:** Define vectorization in data processing.
+
+**Answer:** Applying operations to entire arrays/columns at once without Python-level element loops.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** pandas `.str` accessors, NumPy ufuncs examples.
+
+---
+
+### 7. `__slots__` for performance?
+
+**Question:** When does `__slots__` help?
+
+**Answer:** Many instances with fixed attributes — reduces per-object `__dict__` memory ~40%+.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Trade-off: no dynamic attributes.
+
+---
+
+### 8. Cython / Numba role?
+
+**Question:** Cython vs Numba?
+
+**Answer:** Cython — compile Python-like code to C extension. Numba — JIT compile numeric functions with `@njit`. Both for hot numeric loops.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Numba easier for numpy-heavy; Cython for custom C integration.
+
+---
+
+### 9. Multiprocessing for CPU speedup?
+
+**Question:** How get true parallelism for CPU work?
+
+**Answer:** `multiprocessing` or `ProcessPoolExecutor` — separate processes bypass GIL.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** IPC/pickling overhead — chunk work large enough.
+
+---
+
+### 10. I/O-bound optimization?
+
+**Question:** Optimize I/O-bound Python service?
+
+**Answer:** Async I/O, connection pooling, batch requests, caching, CDN, reduce round trips, compress payloads.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Profile wait time vs CPU time.
+
+---
+
+### 11. Database query optimization?
+
+**Question:** Python app DB slow — what check?
+
+**Answer:** EXPLAIN ANALYZE; indexes; N+1 queries; pagination; select only needed columns; connection pool sizing.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** ORM `.all()` loading millions of rows is common mistake.
+
+---
+
+### 12. Caching layers?
+
+**Question:** Where to cache in Python web app?
+
+**Answer:** Function (`lru_cache`), application (Redis), HTTP (ETag/Cache-Control), CDN for static.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cache invalidation strategy mandatory discussion.
+
+---
+
+### 13. Lazy evaluation benefits?
+
+**Question:** How generators improve performance?
+
+**Answer:** Defer computation; pipeline data without materializing full dataset in memory.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `itertools`, generator pipelines in ETL.
+
+---
+
+### 14. JSON vs MessagePack vs Protobuf?
+
+**Question:** Serialization performance trade-offs?
+
+**Answer:** JSON human-readable slowest/largest; MessagePack compact binary; Protobuf schema-based fastest for RPC at scale.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** orjson/ujson for fast JSON in Python.
+
+---
+
+### 15. Global Interpreter Lock impact?
+
+**Question:** GIL and performance?
+
+**Answer:** Prevents parallel bytecode execution in threads — CPU-bound threading doesn't scale cores; multiprocessing or native code does.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** I/O releases GIL — threads still useful.
+
+---
+
+### 16. Memory fragmentation?
+
+**Question:** Python process RSS high but few objects?
+
+**Answer:** Allocator doesn't return memory to OS easily; long-lived process; use worker recycling; `malloc_trim` Linux hack rare.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** tracemalloc vs RSS — different metrics.
+
+---
+
+### 17. Algorithm choice example?
+
+**Question:** Example where algorithm change dominates?
+
+**Answer:** Lookup in list O(n) → set/dict O(1); nested loops O(n²) → sort + two-pointer O(n log n).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Always analyze problem size constraints.
+
+---
+
+### 18. PyPy when?
+
+**Question:** When use PyPy over CPython?
+
+**Answer:** Pure Python CPU-heavy long-running processes — JIT speedups; check C extension compatibility.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Not all packages support PyPy.
+
+---
+
+### 19. Batch vs streaming?
+
+**Question:** Process 10M records — load all or stream?
+
+**Answer:** Stream/batch chunks to bound memory; parallelize batches; checkpoint progress.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** pandas chunksize, sqlalchemy yield_per.
+
+---
+
+### 20. Production profiling safely?
+
+**Question:** Profile production without killing performance?
+
+**Answer:** Sampling profilers (`py-spy`), low overhead tracing, continuous profiling (Pyroscope), feature-flagged debug endpoints off by default.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Never enable deterministic profilers at 100% traffic.
+
+---
+
+# 5. Top 20 Python Multi-threading Questions
+
+---
+
+### 1. What is a thread?
+
+**Question:** What is a thread in Python?
+
+**Answer:** Lightweight unit of execution within a process sharing memory space; `threading` module wraps OS threads.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Contrast with process isolation.
+
+---
+
+### 2. GIL and threads?
+
+**Question:** How does GIL affect threading?
+
+**Answer:** Only one thread executes Python bytecode at a time per interpreter — limits CPU parallelism for pure Python.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** I/O and C extensions may release GIL.
+
+---
+
+### 3. When are threads useful in Python?
+
+**Question:** When should you use threads?
+
+**Answer:** I/O-bound: HTTP, DB, file reads, sockets — threads wait on I/O while others run.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Give concrete scraper or API aggregator example.
+
+---
+
+### 4. Thread vs Process?
+
+**Question:** threading vs multiprocessing?
+
+**Answer:** Threads share memory (race risk), lower overhead; processes isolated, higher overhead, true CPU parallelism.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Pick based on bound type (I/O vs CPU).
+
+---
+
+### 5. Race condition?
+
+**Question:** What is a race condition?
+
+**Answer:** Outcome depends on thread scheduling order — e.g., two threads increment shared counter lose updates.
+
+**Example:**
+```python
+# unsafe: count += 1 without lock
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Fix with Lock or atomic structures.
+
+---
+
+### 6. threading.Lock?
+
+**Question:** How use Lock?
+
+**Answer:**
+```python
+lock = threading.Lock()
+with lock:
+    shared_resource += 1
+```
+
+**Explanation:** Mutex ensures mutual exclusion; always use context manager.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Deadlock risk with multiple locks — acquire ordering.
+
+---
+
+### 7. RLock vs Lock?
+
+**Question:** Difference between Lock and RLock?
+
+**Answer:** RLock (reentrant) same thread can acquire multiple times; Lock cannot re-acquire by same thread.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** RLock for recursive methods needing same lock.
+
+---
+
+### 8. Semaphore and BoundedSemaphore?
+
+**Question:** What is a Semaphore?
+
+**Answer:** Counter allowing N threads into critical section — useful for connection pool limiting.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** BoundedSemaphore prevents release overflow bugs.
+
+---
+
+### 9. Event object?
+
+**Question:** threading.Event use case?
+
+**Answer:** Signal between threads — one waits `event.wait()`, other `event.set()` when ready.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Graceful shutdown flags common pattern.
+
+---
+
+### 10. Condition variable?
+
+**Question:** What is Condition?
+
+**Answer:** Wait for predicate with `wait()`/`notify()` — producer signals consumer when queue non-empty.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Prefer `queue.Queue` built on Condition internally.
+
+---
+
+### 11. queue.Queue thread-safe?
+
+**Question:** Why use queue.Queue?
+
+**Answer:** Thread-safe FIFO with blocking get/put — avoids manual lock + list management.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `task_done()` / `join()` for completion tracking.
+
+---
+
+### 12. ThreadPoolExecutor?
+
+**Question:** concurrent.futures ThreadPoolExecutor?
+
+**Answer:** High-level pool: `executor.submit(fn, arg)` or `map`; collects futures.
+
+**Example:**
+```python
+from concurrent.futures import ThreadPoolExecutor
+with ThreadPoolExecutor(max_workers=10) as ex:
+    results = list(ex.map(fetch, urls))
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Choose max_workers based on I/O latency not CPU count.
+
+---
+
+### 13. Daemon threads?
+
+**Question:** What is a daemon thread?
+
+**Answer:** Background thread — doesn't block program exit when only daemons remain.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Don't daemonize tasks needing clean shutdown.
+
+---
+
+### 14. Thread-local storage?
+
+**Question:** threading.local() purpose?
+
+**Answer:** Per-thread data (e.g., DB connection) without cross-thread sharing.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Context vars (`contextvars`) for async too.
+
+---
+
+### 15. Deadlock?
+
+**Question:** What causes deadlock?
+
+**Answer:** Circular wait for locks — Thread A holds L1 waits L2, B holds L2 waits L1.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Timeout locks, lock ordering, reduce lock scope.
+
+---
+
+### 16. asyncio vs threading?
+
+**Question:** asyncio vs threads for concurrency?
+
+**Answer:** asyncio — single-thread cooperative, lower memory, needs async libs. Threads — blocking code OK, OS-scheduled, GIL limits CPU.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Can combine: asyncio loop in thread, or `asyncio.to_thread`.
+
+---
+
+### 17. Is Python dict thread-safe?
+
+**Question:** Are dict operations thread-safe?
+
+**Answer:** Individual ops atomic in CPython but compound read-modify-write is NOT — use locks for `d[k] = d.get(k,0)+1`.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** `queue` or `multiprocessing.Manager` for shared structures across processes.
+
+---
+
+### 18. Thread safety with logging?
+
+**Question:** Is logging module thread-safe?
+
+**Answer:** Yes — logging handlers use locks internally; safe to log from multiple threads.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Configure handlers once at startup.
+
+---
+
+### 19. Starting many threads anti-pattern?
+
+**Question:** Anti-pattern: thread per request?
+
+**Answer:** Thousands of threads cause context switch overhead — use pool or async with bounded concurrency.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Little's Law relating concurrency, latency, throughput.
+
+---
+
+### 20. Testing threaded code?
+
+**Question:** How test for race conditions?
+
+**Answer:** Stress tests, ThreadSanitizer not for Python; inject barriers/sleeps; use locks in test to force interleavings; run CI many times.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Design for thread safety — immutable data structures best.
+
+---
+
+# 6. Top 20 Python API Development Questions
+
+---
+
+### 1. REST principles?
+
+**Question:** Key REST principles?
+
+**Answer:** Resources (nouns), HTTP verbs, statelessness, uniform interface, cacheable responses, layered system.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** REST is architectural style not protocol.
+
+---
+
+### 2. HTTP methods mapping?
+
+**Question:** Map CRUD to HTTP methods?
+
+**Answer:** POST create, GET read, PUT/PATCH update, DELETE delete; GET safe/idempotent.
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** PATCH for partial update.
+
+---
+
+### 3. Status codes to know?
+
+**Question:** Essential HTTP status codes?
+
+**Answer:** 200 OK, 201 Created, 204 No Content, 400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 409 Conflict, 422 Unprocessable, 429 Too Many Requests, 500 Internal Error.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Use precise codes — not 200 with error body.
+
+---
+
+### 4. Idempotent methods?
+
+**Question:** Which HTTP methods are idempotent?
+
+**Answer:** GET, PUT, DELETE idempotent; POST not; PATCH usually not.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Retries safe on idempotent endpoints.
+
+---
+
+### 5. JSON API design?
+
+**Question:** JSON response best practices?
+
+**Answer:** Consistent envelope or plain resource; ISO8601 dates UTC; snake_case vs camelCase pick one; include error structure `{code, message, details}`.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Version in URL (`/v1/`) or header.
+
+---
+
+### 6. Authentication vs Authorization?
+
+**Question:** AuthN vs AuthZ?
+
+**Answer:** Authentication — who you are (login, JWT). Authorization — what you can do (roles, permissions).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** OAuth2 for delegated access; API keys for service-to-service.
+
+---
+
+### 7. JWT structure?
+
+**Question:** What is JWT?
+
+**Answer:** Header.Payload.Signature base64url — signed claims; verify signature; check exp, iss, aud.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** JWT stateless but hard to revoke — short TTL + refresh.
+
+---
+
+### 8. Input validation?
+
+**Question:** Where validate API input?
+
+**Answer:** At boundary — Pydantic/Marshmallow schemas; reject bad input before business logic; return 422 with field errors.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Never trust client; validate types, ranges, enums.
+
+---
+
+### 9. Pagination?
+
+**Question:** Standard pagination query params?
+
+**Answer:** `?page=2&limit=20` or `?cursor=abc&limit=20`; include total or next_cursor in response metadata.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cursor preferred for large/live datasets.
+
+---
+
+### 10. Filtering and sorting?
+
+**Question:** Query param conventions?
+
+**Answer:** `?status=active&sort=-created_at`; whitelist allowed filters to prevent abuse.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Index DB columns used in filters.
+
+---
+
+### 11. CORS?
+
+**Question:** What is CORS?
+
+**Answer:** Browser security — server sends `Access-Control-Allow-Origin` for cross-origin XHR; preflight OPTIONS for non-simple requests.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** CORS is browser-only; server-to-server unaffected.
+
+---
+
+### 12. Rate limiting implementation?
+
+**Question:** Implement API rate limiting?
+
+**Answer:** Middleware counting requests per API key/IP in Redis; return 429 + Retry-After.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Different tiers for authenticated users.
+
+---
+
+### 13. API versioning strategies?
+
+**Question:** How version APIs?
+
+**Answer:** URL path `/v2/`, header `Accept: application/vnd.api+json; version=2`, or query param (least preferred).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Deprecation policy and sunset headers.
+
+---
+
+### 14. OpenAPI/Swagger?
+
+**Question:** Purpose of OpenAPI?
+
+**Answer:** Machine-readable API spec — auto docs, client generation, contract testing.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** FastAPI generates OpenAPI automatically.
+
+---
+
+### 15. Error handling middleware?
+
+**Question:** Centralized error handling?
+
+**Answer:** Register exception handlers mapping domain errors to HTTP responses; log stack traces server-side only.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Don't leak internal details in 500 responses.
+
+---
+
+### 16. HATEOAS?
+
+**Question:** What is HATEOAS?
+
+**Answer:** Responses include hypermedia links to related actions/resources — full REST maturity level 3; rarely fully implemented.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Mention pragmatic REST vs dogmatic.
+
+---
+
+### 17. Content negotiation?
+
+**Question:** Accept header usage?
+
+**Answer:** Client specifies desired format `Accept: application/json`; server 406 if unsupported.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** JSON default for modern APIs.
+
+---
+
+### 18. Webhooks design?
+
+**Question:** Design outbound webhooks?
+
+**Answer:** Sign payloads (HMAC), retry with backoff, idempotent delivery IDs, document schema, verify endpoint ownership.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Receiver returns 2xx quickly; process async.
+
+---
+
+### 19. API testing strategy?
+
+**Question:** Test Python API how?
+
+**Answer:** pytest + TestClient (FastAPI/Flask); unit test services; integration test DB; contract tests; load test critical paths.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Factory fixtures for test data; transactional rollback per test.
+
+---
+
+### 20. Flask blueprint structure?
+
+**Question:** Organize large Flask API?
+
+**Answer:** Blueprints per domain, app factory pattern, config classes, separate models/schemas/services/routes layers.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Avoid circular imports with app factory.
+
+---
+
+# 7. Top 20 Python FastAPI Questions
+
+---
+
+### 1. Why FastAPI?
+
+**Question:** Why choose FastAPI?
+
+**Answer:** High performance (Starlette/uvicorn), automatic OpenAPI docs, Pydantic validation, native async, great DX.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Compare to Flask/Django REST for context not fanboyism.
+
+---
+
+### 2. Minimal FastAPI app?
+
+**Question:** Hello World FastAPI?
+
+**Answer:**
+```python
+from fastapi import FastAPI
+app = FastAPI()
+
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Run with `uvicorn main:app --reload`.
+
+---
+
+### 3. Path vs query parameters?
+
+**Question:** Path vs query params in FastAPI?
+
+**Answer:** Path `{item_id}` in route; query `?q=search` as function params with defaults.
+
+**Example:**
+```python
+@app.get("/items/{item_id}")
+async def get_item(item_id: int, q: str | None = None): ...
+```
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Type hints drive validation automatically.
+
+---
+
+### 4. Request body with Pydantic?
+
+**Question:** Validate POST body?
+
+**Answer:**
+```python
+from pydantic import BaseModel
+
+class ItemCreate(BaseModel):
+    name: str
+    price: float
+
+@app.post("/items")
+async def create(item: ItemCreate): ...
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Pydantic v2 uses model_validator/field_validator.
+
+---
+
+### 5. Dependency Injection?
+
+**Question:** FastAPI Depends() purpose?
+
+**Answer:** Reusable dependencies — DB sessions, auth, settings injected into routes; testable overrides.
+
+**Example:**
+```python
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
+@app.get("/users")
+def list_users(db=Depends(get_db)): ...
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Depends tree supports sub-dependencies.
+
+---
+
+### 6. async def vs def?
+
+**Question:** When async route vs sync?
+
+**Answer:** `async def` for awaitable I/O; sync `def` runs in threadpool — don't block event loop with sync I/O in async def.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** CPU work → background tasks or workers.
+
+---
+
+### 7. Background tasks?
+
+**Question:** FastAPI BackgroundTasks?
+
+**Answer:** Run after response sent — emails, logging; not durable — use Celery for critical jobs.
+
+**Example:**
+```python
+from fastapi import BackgroundTasks
+
+@app.post("/signup")
+async def signup(bg: BackgroundTasks):
+    bg.add_task(send_email, "welcome")
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** BackgroundTasks ≠ job queue.
+
+---
+
+### 8. OAuth2 with Password flow?
+
+**Question:** FastAPI security basics?
+
+**Answer:** `OAuth2PasswordBearer` dependency extracts token; verify JWT; `HTTPException(401)` if invalid.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Production uses OAuth2/OIDC providers not password flow alone.
+
+---
+
+### 9. Response model?
+
+**Question:** response_model purpose?
+
+**Answer:** Filters/validates output; hides internal fields; generates OpenAPI response schema.
+
+**Example:** `@app.get("/user", response_model=UserPublic)`
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `response_model_exclude_unset` for PATCH patterns.
+
+---
+
+### 10. Status code control?
+
+**Question:** Return 201 Created?
+
+**Answer:** `@app.post("/", status_code=201)` or `JSONResponse(status_code=201, ...)`.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Set `Location` header on create.
+
+---
+
+### 11. Exception handlers?
+
+**Question:** Custom exception handling?
+
+**Answer:**
+```python
+@app.exception_handler(ValueError)
+async def value_error_handler(request, exc):
+    return JSONResponse(status_code=400, content={"detail": str(exc)})
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Domain exceptions → HTTP mapping layer.
+
+---
+
+### 12. Middleware?
+
+**Question:** Add middleware in FastAPI?
+
+**Answer:** `@app.middleware("http")` or `app.add_middleware(CORSMiddleware, ...)` for CORS, timing, request ID.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Order matters — last added runs first on request.
+
+---
+
+### 13. File upload?
+
+**Question:** Upload file endpoint?
+
+**Answer:**
+```python
+from fastapi import UploadFile, File
+
+@app.post("/upload")
+async def upload(file: UploadFile = File(...)):
+    content = await file.read()
+    return {"filename": file.filename, "size": len(content)}
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Stream to disk/S3 for large files.
+
+---
+
+### 14. WebSockets?
+
+**Question:** WebSocket support?
+
+**Answer:**
+```python
+@app.websocket("/ws")
+async def websocket_endpoint(ws: WebSocket):
+    await ws.accept()
+    await ws.send_text("hello")
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Starlette WebSocket API; connection manager pattern.
+
+---
+
+### 15. Testing FastAPI?
+
+**Question:** Test with TestClient?
+
+**Answer:**
+```python
+from fastapi.testclient import TestClient
+client = TestClient(app)
+def test_health():
+    assert client.get("/health").status_code == 200
+```
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Override Depends for mock DB in tests.
+
+---
+
+### 16. Lifespan events?
+
+**Question:** Startup/shutdown in modern FastAPI?
+
+**Answer:** Lifespan context manager replaces `@app.on_event("startup")`:
+
+```python
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # startup
+    yield
+    # shutdown
+
+app = FastAPI(lifespan=lifespan)
+```
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Close pools, flush metrics on shutdown.
+
+---
+
+### 17. APIRouter?
+
+**Question:** Modular routes?
+
+**Answer:** `router = APIRouter(prefix="/users", tags=["users"])` included with `app.include_router(router)`.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Mirrors Flask blueprints.
+
+---
+
+### 18. Performance tips?
+
+**Question:** FastAPI performance tuning?
+
+**Answer:** Multiple uvicorn workers, uvloop, orjson, avoid sync blocking, connection pooling, cache, CDN static.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** `--workers` = CPU cores for CPU-bound sync; async may need fewer.
+
+---
+
+### 19. Pydantic Settings?
+
+**Question:** Config management?
+
+**Answer:** `pydantic-settings` BaseSettings loads from env — type-safe configuration.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `.env` file for local dev only.
+
+---
+
+### 20. Deploy FastAPI production?
+
+**Question:** Production deployment stack?
+
+**Answer:** Uvicorn/Gunicorn+UvicornWorker behind nginx/ALB; Docker; health checks; structured logging; secrets from env; HTTPS termination at proxy.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Never `uvicorn --reload` in prod.
+
+---
+
+# 8. Top 20 Python Data Engineering Questions
+
+---
+
+### 1. ETL vs ELT?
+
+**Question:** ETL vs ELT?
+
+**Answer:** ETL transforms before load into warehouse; ELT loads raw then transforms in warehouse (BigQuery/Snowflake SQL).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Cloud warehouses favor ELT + dbt.
+
+---
+
+### 2. Idempotent pipelines?
+
+**Question:** Why idempotent data pipelines?
+
+**Answer:** Safe replays/backfills — same input run twice yields same output without duplicates.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Upsert keys, partition overwrite strategies.
+
+---
+
+### 3. Apache Airflow role?
+
+**Question:** What is Airflow?
+
+**Answer:** Workflow orchestrator — DAGs of tasks with scheduling, retries, dependencies, monitoring.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Airflow orchestrates; doesn't replace Spark/pandas processing.
+
+---
+
+### 4. pandas vs Spark?
+
+**Question:** pandas vs PySpark?
+
+**Answer:** pandas — single-machine in-memory up to ~few GB with tricks. Spark — distributed, lazy, big data cluster.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Pandas API on Spark (pandas UDF) bridge.
+
+---
+
+### 5. Parquet advantages?
+
+**Question:** Why Parquet over CSV?
+
+**Answer:** Columnar, compressed, schema embedded, predicate pushdown — faster analytics queries.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Snappy/Zstd compression choice.
+
+---
+
+### 6. Data quality checks?
+
+**Question:** Enforce data quality in pipelines?
+
+**Answer:** Great Expectations, dbt tests, null/unique/range checks, row counts, schema contracts, alerting on failure.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Fail pipeline vs quarantine bad records policy.
+
+---
+
+### 7. Slowly Changing Dimensions?
+
+**Question:** Explain SCD Type 2?
+
+**Answer:** Track history — new row with version when attribute changes; effective dates, current flag.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** dbt snapshots implement SCD2.
+
+---
+
+### 8. Partitioning data?
+
+**Question:** Why partition datasets?
+
+**Answer:** Query pruning by date/region — read only relevant partitions; parallel processing.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Avoid too many small files problem.
+
+---
+
+### 9. Exactly-once semantics?
+
+**Question:** Exactly-once in streaming?
+
+**Answer:** Hard — usually at-least-once + idempotent sinks or transactional writes (Kafka offsets + DB txn).
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Discuss trade-offs honestly.
+
+---
+
+### 10. Lambda vs Kappa architecture?
+
+**Question:** Lambda vs Kappa?
+
+**Answer:** Lambda — batch + speed layer merge. Kappa — stream-only, reprocess from log for batch corrections.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Kappa simpler if stream replay feasible.
+
+---
+
+### 11. CDC?
+
+**Question:** Change Data Capture?
+
+**Answer:** Capture DB inserts/updates/deletes (Debezium, WAL) for real-time downstream sync.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Ordering and schema evolution challenges.
+
+---
+
+### 12. Data lake vs warehouse?
+
+**Question:** Lake vs warehouse?
+
+**Answer:** Lake — raw object storage (S3) flexible schema; Warehouse — structured optimized SQL analytics (Snowflake, Redshift).
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Lakehouse (Delta/Iceberg) hybrid.
+
+---
+
+### 13. dbt purpose?
+
+**Question:** What is dbt?
+
+**Answer:** SQL transformation tool — models, tests, docs, lineage in warehouse; analytics engineering standard.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** dbt runs in warehouse not moves data.
+
+---
+
+### 14. Handling late-arriving data?
+
+**Question:** Events arrive late for window aggregation?
+
+**Answer:** Watermarks, allowed lateness, retractions in stream processors; merge jobs for batch correction.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Business SLA drives window design.
+
+---
+
+### 15. Python in Spark?
+
+**Question:** PySpark best practices?
+
+**Answer:** Avoid UDFs (JVM serialization cost) — use Spark SQL/built-ins; broadcast small joins; repartition wisely.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Pandas UDF (vectorized) when needed.
+
+---
+
+### 16. Schema evolution?
+
+**Question:** Handle JSON schema changes?
+
+**Answer:** Optional fields, versioned schemas (Avro/Protobuf), migration scripts, compatibility modes (backward/forward).
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Breaking changes need coordinated rollout.
+
+---
+
+### 17. Orchestration vs processing?
+
+**Question:** Airflow vs Spark division?
+
+**Answer:** Airflow schedules/triggers; Spark executes distributed transform; don't run heavy compute inside Airflow worker if avoidable.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** KubernetesPodOperator pattern.
+
+---
+
+### 18. Data lineage?
+
+**Question:** Why track lineage?
+
+**Answer:** Impact analysis, debugging bad metrics, compliance — know source → transformation → dashboard.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** OpenLineage, dbt docs, Marquez.
+
+---
+
+### 19. Incremental loads?
+
+**Question:** Incremental vs full load?
+
+**Answer:** Incremental pulls changed records since watermark (`updated_at > last_run`) — faster, needs reliable change tracking.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Full load simpler for small tables.
+
+---
+
+### 20. Monitoring data pipelines?
+
+**Question:** What monitor in DE?
+
+**Answer:** SLA duration, row counts, error rates, data freshness, cost, schema drift alerts, DLQ depth.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Data observability tools (Monte Carlo, Soda).
+
+---
+
+# 9. Top 20 Python Automation Questions
+
+---
+
+### 1. Why Python for automation?
+
+**Question:** Why Python for scripting/automation?
+
+**Answer:** Readable, rich stdlib, cross-platform, huge ecosystem (requests, selenium, paramiko), fast to write.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Mention specific automations you've built.
+
+---
+
+### 2. subprocess module?
+
+**Question:** Run shell commands safely?
+
+**Answer:** `subprocess.run(["ls", "-l"], check=True, capture_output=True)` — list args not shell=True unless necessary.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** shell=True injection risk with user input.
+
+---
+
+### 3. pathlib vs os.path?
+
+**Question:** pathlib advantages?
+
+**Answer:** OO paths, `/` operator join, readable methods `.read_text()`, `.glob()`.
+
+**Example:**
+```python
+from pathlib import Path
+for p in Path(".").glob("**/*.py"):
+    print(p)
+```
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** Prefer pathlib in new code.
+
+---
+
+### 4. Automate file organization?
+
+**Question:** Script to organize downloads folder?
+
+**Answer:** Walk directory, classify by extension or date, move with `shutil.move`, logging, dry-run flag.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Handle name collisions and permissions.
+
+---
+
+### 5. Schedule Python scripts?
+
+**Question:** Schedule recurring automation?
+
+**Answer:** cron (Linux), Task Scheduler (Windows), systemd timers, or APScheduler/Celery beat in app context.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Idempotent scripts; lock file prevent overlap.
+
+---
+
+### 6. Email automation?
+
+**Question:** Send email from Python?
+
+**Answer:** `smtplib` or services (SendGrid API); HTML templates; attach files; use app passwords/OAuth not plain credentials in code.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Rate limits and spam compliance.
+
+---
+
+### 7. Web automation Selenium?
+
+**Question:** Selenium basics?
+
+**Answer:** Drive browser programmatically — find elements, click, fill forms; use WebDriverWait not sleep.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Prefer official APIs over scraping when possible; headless mode in CI.
+
+---
+
+### 8. requests for API automation?
+
+**Question:** Automate REST calls?
+
+**Answer:** `requests.get/post` with timeout, retries (urllib3 Retry), session for cookies, handle status codes.
+
+**Example:**
+```python
+r = requests.get(url, timeout=30)
+r.raise_for_status()
+data = r.json()
+```
+
+**Difficulty Level:** Beginner–Intermediate
+
+**Interview Tips:** httpx for async; respect rate limits.
+
+---
+
+### 9. Excel automation?
+
+**Question:** Automate Excel reports?
+
+**Answer:** `openpyxl`, `xlsxwriter`, or pandas `to_excel`; template filling; avoid COM on server unless Windows + pywin32 needed.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** CSV export simpler when formatting not critical.
+
+---
+
+### 10. PDF processing?
+
+**Question:** Extract text from PDF?
+
+**Answer:** `pypdf`, `pdfplumber` for text/tables; OCR (tesseract) for scanned docs.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** PDF structure messy — set expectations.
+
+---
+
+### 11. SSH automation?
+
+**Question:** Remote server automation?
+
+**Answer:** `paramiko` or fabric for SSH commands; prefer Ansible for multi-host declarative config.
+
+**Difficulty Level:** Intermediate–Advanced
+
+**Interview Tips:** Key-based auth; never store passwords plaintext.
+
+---
+
+### 12. Environment-specific scripts?
+
+**Question:** CLI args vs config file?
+
+**Answer:** `argparse` or `typer` for CLI; YAML/JSON config for complex settings; env vars for secrets.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** `--dry-run` flag standard for destructive ops.
+
+---
+
+### 13. Logging in scripts?
+
+**Question:** print vs logging in automation?
+
+**Answer:** logging with levels — INFO progress, ERROR failures; log file rotation for scheduled jobs.
+
+**Difficulty Level:** Beginner
+
+**Interview Tips:** Exit codes 0 success non-zero failure for cron monitoring.
+
+---
+
+### 14. Error notification?
+
+**Question:** Alert on script failure?
+
+**Answer:** Email/Slack webhook on exception; wrap main in try/except; sentry for aggregation.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Include hostname, timestamp, traceback in alert.
+
+---
+
+### 15. Parallel file processing?
+
+**Question:** Process 10k files faster?
+
+**Answer:** `ProcessPoolExecutor` if CPU per file; `ThreadPoolExecutor` if I/O; batch progress bar `tqdm`.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Don't exceed disk IOPS with too much parallelism.
+
+---
+
+### 16. Watch folder for changes?
+
+**Question:** React to new files?
+
+**Answer:** `watchdog` library Observer pattern; debounce events; process then move to processed/.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Handle partial writes — wait until stable size.
+
+---
+
+### 17. Database backup automation?
+
+**Question:** Automate Postgres backup?
+
+**Answer:** `pg_dump` via subprocess; compress; upload to S3 with boto3; retention policy; test restore regularly.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Backup untested = no backup.
+
+---
+
+### 18. Infrastructure as Code?
+
+**Question:** Python vs Terraform for infra?
+
+**Answer:** Terraform declarative standard; Python boto3/pulumi for programmatic infra; Ansible for configuration.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** Know when to pick declarative tools.
+
+---
+
+### 19. GUI automation pyautogui?
+
+**Question:** Desktop GUI automation?
+
+**Answer:** pyautogui for mouse/keyboard; fragile — screen resolution/coords change; use only when no API.
+
+**Difficulty Level:** Intermediate
+
+**Interview Tips:** Image recognition mode slightly more robust.
+
+---
+
+### 20. Packaging automation as executable?
+
+**Question:** Distribute script to non-dev users?
+
+**Answer:** PyInstaller/cx_Freeze bundle; or Docker image; document Python version deps; consider CLI published to internal PyPI.
+
+**Difficulty Level:** Advanced
+
+**Interview Tips:** CI build artifact on tag release.
+
+---
+
+# 10. Python Cheat Sheet Summary
+
+## Core Syntax
+
+| Topic | Syntax / Fact |
+|-------|---------------|
+| Variable assign | `x = 10` |
+| Type check | `isinstance(x, int)` |
+| Identity | `x is None` |
+| f-string | `f"{name=}"` |
+| Walrus | `(n := len(x))` |
+| Slice | `s[start:stop:step]` |
+| Ternary | `a if cond else b` |
+| For + else | `else` runs if no `break` |
+| While + else | same break semantics |
+| Match (3.10+) | `match x: case 1: ...` |
+
+## Data Structures
+
+| Type | Mutable | Ordered | Duplicates | Key Ops |
+|------|---------|---------|------------|---------|
+| list | Yes | Yes | Yes | append, pop, sort |
+| tuple | No | Yes | Yes | unpack, hashable* |
+| dict | Yes | Yes (3.7+) | Keys unique | get, items, keys |
+| set | Yes | No | No | union, intersection |
+| frozenset | No | No | No | hashable set |
+
+## Comprehensions
+
+```python
+[x*2 for x in range(5) if x % 2]      # list
+{x**2 for x in range(5)}               # set
+{k: v for k, v in pairs}               # dict
+(x**2 for x in range(5))               # generator
+```
+
+## Functions
+
+| Feature | Example |
+|---------|---------|
+| Default args | `def f(x, y=1):` |
+| *args | `def f(*a):` |
+| **kwargs | `def f(**k):` |
+| Keyword-only | `def f(*, name):` |
+| Unpack call | `f(*args, **kw)` |
+| Lambda | `lambda x: x+1` |
+| Decorator | `@deco` above `def` |
+
+## OOP Quick Reference
+
+| Concept | Syntax |
+|---------|--------|
+| Class | `class Dog: pass` |
+| Init | `def __init__(self):` |
+| Instance method | first arg `self` |
+| Class method | `@classmethod def f(cls):` |
+| Static method | `@staticmethod def f():` |
+| Property | `@property` / `@x.setter` |
+| Inheritance | `class A(B):` |
+| MRO | `Class.__mro__` |
+| Dunder str/repr | `__str__`, `__repr__` |
+
+## Exception Handling
+
+```python
+try:
+    risky()
+except ValueError as e:
+    handle(e)
+except (TypeError, KeyError):
+    pass
+else:
+    success_path()
+finally:
+    cleanup()
+raise CustomError("msg") from e
+```
+
+## File I/O
+
+```python
+from pathlib import Path
+p = Path("data.txt")
+text = p.read_text(encoding="utf-8")
+p.write_text("content", encoding="utf-8")
+
+with open("f.csv", newline="") as f:
+    import csv
+    rows = list(csv.reader(f))
+```
+
+## Modules & Imports
+
+```python
+import os
+from collections import defaultdict
+from package.module import func as fn
+if TYPE_CHECKING:
+    from typing import Optional
+```
+
+## Typing Essentials
+
+```python
+def greet(name: str) -> str: ...
+from typing import List, Dict, Optional  # legacy
+list[int], dict[str, int], int | None     # py3.10+ style
+```
+
+## Collections & Itertools
+
+| Tool | Use |
+|------|-----|
+| Counter | frequency count |
+| defaultdict | default factory |
+| deque | fast queue/stack ends |
+| chain | flatten iterables |
+| groupby | consecutive grouping |
+| lru_cache | memoization |
+
+## Concurrency
+
+| Tool | Best For |
+|------|----------|
+| threading | I/O-bound blocking |
+| multiprocessing | CPU-bound parallel |
+| asyncio | high-concurrency I/O async |
+| concurrent.futures | pool abstraction |
+| queue.Queue | thread-safe queue |
+
+## Common Time Complexities
+
+| Operation | list | dict/set |
+|-----------|------|----------|
+| Access by index/key | O(1) index | O(1) avg |
+| Search membership | O(n) | O(1) avg |
+| Insert middle | O(n) | — |
+| Append | O(1) amortized | — |
+| Sort | O(n log n) | — |
+
+## HTTP / API Quick Codes
+
+| Code | Meaning |
+|------|---------|
+| 200 | OK |
+| 201 | Created |
+| 400 | Bad request |
+| 401 | Unauthorized |
+| 403 | Forbidden |
+| 404 | Not found |
+| 422 | Validation error |
+| 429 | Rate limited |
+| 500 | Server error |
+
+## Testing
+
+```python
+# pytest
+def test_add():
+    assert add(1, 2) == 3
+
+@pytest.fixture
+def client():
+    return TestClient(app)
+
+@patch("mod.fn")
+def test_mock(mock_fn): ...
+```
+
+## Virtual Env & Packaging
+
+```bash
+python -m venv .venv
+source .venv/bin/activate   # Linux/Mac
+.venv\Scripts\activate      # Windows
+pip install -r requirements.txt
+pip freeze > requirements.txt
+```
+
+## Security Reminders
+
+- Never `eval()` user input
+- Parameterized SQL only
+- No secrets in Git
+- Validate all external input
+- Pin dependencies; audit CVEs
+
+---
+
+# 11. Beginner to Advanced Learning Roadmap
+
+## Phase 1 — Foundations (Weeks 1–4)
+
+**Goals:** Read/write Python confidently; solve basic problems.
+
+| Week | Topics | Practice |
+|------|--------|----------|
+| 1 | Install, REPL, variables, types, I/O | 20 easy exercises |
+| 2 | Operators, if/else, loops | FizzBuzz, grade calculator |
+| 3 | Functions, scope, basic collections | Contact list CLI |
+| 4 | Lists, dicts, tuples, sets, strings | Word counter, todo dict |
+
+**Checkpoint:** Build calculator or guessing game without tutorials.
+
+---
+
+## Phase 2 — Intermediate Core (Weeks 5–10)
+
+**Goals:** Write maintainable modules; handle files and errors.
+
+| Week | Topics | Practice |
+|------|--------|----------|
+| 5 | File I/O, pathlib, CSV/JSON | Log parser script |
+| 6 | Exceptions, context managers | Robust file processor |
+| 7 | OOP basics, classes, inheritance | Bank account model |
+| 8 | Modules, packages, venv, pip | Refactor project into package |
+| 9 | Comprehensions, lambda, map/filter | Data transform utilities |
+| 10 | pytest basics, debugging (pdb) | Add tests to prior project |
+
+**Checkpoint:** File organizer or CLI todo app with tests.
+
+---
+
+## Phase 3 — Advanced Python (Weeks 11–16)
+
+**Goals:** Internals-aware coding; performance and patterns.
+
+| Week | Topics | Practice |
+|------|--------|----------|
+| 11 | Decorators, closures | Timing + retry decorators |
+| 12 | Generators, iterators | Streaming log reader |
+| 13 | Threading, multiprocessing intro | Parallel downloader |
+| 14 | asyncio fundamentals | Async HTTP fetcher |
+| 15 | Type hints, dataclasses, ABCs | Typed domain models |
+| 16 | Memory, GIL, profiling | Optimize slow script |
+
+**Checkpoint:** Explain GIL and when to use threads vs processes aloud.
+
+---
+
+## Phase 4 — Specialization Tracks (Weeks 17–24)
+
+Pick one or more tracks based on target role.
+
+### Track A — Backend / API Developer
+
+- Flask or FastAPI REST APIs
+- SQLAlchemy, migrations (Alembic)
+- Auth (JWT, OAuth2)
+- Docker, CI/CD, deployment
+- **Project:** Production-ready CRUD API with auth + tests
+
+### Track B — Data Engineer / Analyst
+
+- pandas, NumPy, SQL mastery
+- ETL scripts, Airflow basics
+- Parquet, cloud storage (S3)
+- dbt or Spark intro
+- **Project:** End-to-end pipeline dashboard metrics
+
+### Track C — Automation / DevOps
+
+- subprocess, paramiko, Ansible intro
+- boto3 cloud automation
+- Scheduling, monitoring, alerting
+- **Project:** Automated backup + report pipeline
+
+### Track D — ML Engineer (optional extension)
+
+- scikit-learn workflow
+- Feature engineering, model evaluation
+- FastAPI model serving
+- **Project:** Train + serve classifier API
+
+---
+
+## Phase 5 — Interview & Production Readiness (Ongoing)
+
+| Area | Actions |
+|------|---------|
+| Coding | 2–3 LeetCode medium/week in Python |
+| System design | Read API design, caching, queues |
+| Open source | Contribute docs/fixes to Python project |
+| Mock interviews | Explain projects STAR format |
+| Keep current | Python release notes, PEPs |
+
+---
+
+## Skill Level Self-Assessment
+
+| Level | You Can... |
+|-------|------------|
+| Beginner | Write scripts with functions and collections |
+| Intermediate | Design modules, OOP, test, file/API I/O |
+| Advanced | Decorators, concurrency, profiling, patterns |
+| Senior | Architecture trade-offs, mentor, production ops |
+| Architect | Multi-service systems, scalability, org-wide standards |
+
+---
+
+# 12. Common Python Interview Mistakes
+
+## Conceptual Mistakes
+
+1. **Confusing `==` and `is`** — especially with `None`, small ints (don't rely on interning).
+2. **Mutable default arguments** — shared list/dict across calls.
+3. **Shallow copy surprises** — nested lists mutate both copies.
+4. **Thinking lists are arrays** — O(n) membership and insert; use set/dict when appropriate.
+5. **Misunderstanding GIL** — claiming threads never help (they do for I/O).
+6. **Calling Python slow without profiling** — algorithm choice usually matters more first.
+7. **EAFP vs LBYL misuse** — exceptions for expected flow in hot loops.
+
+## Coding Interview Mistakes
+
+8. **Not clarifying requirements** — edge cases (empty input, duplicates, negatives).
+9. **Jumping to code without approach** — always outline brute force then optimize.
+10. **Wrong complexity analysis** — nested loop ≠ always O(n²) if inner breaks early; analyze carefully.
+11. **Off-by-one errors** — binary search boundaries, slice indices.
+12. **Not testing examples aloud** — walk through code with sample input before claiming done.
+13. **Silence** — narrate thought process; interviewers can't help if they don't hear you think.
+14. **Over-engineering** — building classes when a function suffices.
+15. **Ignoring readability** — one-letter variables everywhere in interview code.
+
+## OOP & Design Mistakes
+
+16. **Everything in one god class** — no separation of concerns.
+17. **Inheritance over composition** — deep hierarchies without reason.
+18. **Not knowing MRO / super()** — broken multiple inheritance calls.
+19. **Missing `__repr__`** — can't debug object state in examples.
+20. **Property abuse** — heavy computation in getters without caching.
+
+## API & Production Mistakes
+
+21. **Returning 200 with error body** — use proper HTTP semantics.
+22. **SQL string formatting** — injection vulnerability.
+23. **No input validation at boundary** — trusting client data.
+24. **Logging secrets/passwords** — compliance disaster.
+25. **No timeouts on HTTP/DB calls** — hung workers cascade.
+26. **Global state in web apps** — race conditions under concurrency.
+27. **Not knowing idempotency** — payment/order APIs fail in production.
+
+## Environment & Tooling Mistakes
+
+28. **No virtual environment** — dependency hell story missing.
+29. **Can't explain requirements.txt vs pyproject.toml** — packaging ignorance.
+30. **Never written a test** — red flag for mid+ roles.
+31. **print debugging only** — no logging or pdb mention.
+
+## Communication Mistakes
+
+32. **Buzzwords without depth** — saying "microservices" without trade-offs.
+33. **Can't explain own project** — no metrics, no failures learned.
+34. **Blaming tools** — "Python is just slow" without nuance.
+35. **Not asking questions** — interviews are two-way; ask about stack/team.
+
+## How to Recover in Interview
+
+- Pause: "Let me reconsider edge cases."
+- State assumption: "I'll assume n is positive unless you want otherwise."
+- If stuck, start brute force — partial credit beats silence.
+- After solution, mention improvements: "With more time I'd add tests for X."
+
+---
+
+# 13. FAANG-Level Python Questions
+
+Deep technical questions typical at top-tier companies. Expect follow-ups and whiteboard extensions.
+
+---
+
+### 1. Design a rate limiter
+
+**Question:** Implement a sliding window rate limiter for an API gateway.
+
+**Answer:** Track timestamps per client in Redis sorted set; remove entries older than window; reject if count ≥ limit; alternatively token bucket with refill rate.
+
+**Explanation:** Distributed systems need shared store (Redis) not in-memory dict; clock skew and burst tolerance are design parameters.
+
+**Example:**
+```python
+# Conceptual: ZADD key score=timestamp; ZREMRANGEBYSCORE old; ZCARD vs limit
+```
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Discuss per-user vs global limits, 429 response, and Redis atomic Lua scripts.
+
+---
+
+### 2. LRU Cache from scratch
+
+**Question:** Implement LRU cache O(1) get/put without OrderedDict.
+
+**Answer:** Hash map (key → node) + doubly linked list (MRU head, LRU tail); on get move to head; on put evict tail if over capacity.
+
+**Explanation:** Classic FAANG data structure question testing pointer manipulation and design.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Draw diagram; handle edge case capacity 0.
+
+---
+
+### 3. Serialize binary tree
+
+**Question:** Serialize/deserialize N-ary or binary tree to string.
+
+**Answer:** BFS/DFS with null markers (LeetCode 297 style) or prefix notation; JSON with array representation `[val, left, right]`.
+
+**Explanation:** Must agree on format; handle empty tree; efficient parsing.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Mention JSON overhead vs custom compact format at scale.
+
+---
+
+### 4. Find median from data stream
+
+**Question:** Design class returning median after each insert.
+
+**Answer:** Two heaps — max-heap lower half, min-heap upper half; balance sizes; median from tops O(log n) insert.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Use `heapq` (min-heap only) with inverted values for max-heap.
+
+---
+
+### 5. Word search II (Trie + backtracking)
+
+**Question:** Given board and dictionary, find all words constructable on board.
+
+**Answer:** Build trie from dictionary; DFS from each cell tracking visited; prune trie branches when word not found.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Discuss duplicate path handling and trie memory vs hash set.
+
+---
+
+### 6. Python memory model deep dive
+
+**Question:** Explain reference counting, cyclic GC, and when objects are destroyed.
+
+**Answer:** Refcount hits zero → immediate dealloc; cycles need generational GC (`gc` module); interning for small ints/strings; `__del__` unreliable.
+
+**Explanation:** CPython-specific; affects design of circular structures and weakrefs.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Mention `sys.getrefcount`, `gc.collect()`, weakref caches.
+
+---
+
+### 7. Implement async task pool with semaphore
+
+**Question:** Fetch 1M URLs with max 100 concurrent connections using asyncio.
+
+**Answer:** `asyncio.Semaphore(100)` wrapping fetch; gather with exception handling; connection pool in httpx AsyncClient limits.
+
+**Example:**
+```python
+sem = asyncio.Semaphore(100)
+async def bounded_fetch(url):
+    async with sem:
+        return await client.get(url)
+```
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Backpressure, retry policy, circuit breaker at scale.
+
+---
+
+### 8. Consistent hashing
+
+**Question:** Explain consistent hashing for distributed cache.
+
+**Answer:** Hash ring; keys map to first node clockwise; adding node only remaps fraction of keys; virtual nodes balance load.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Python implementation optional; focus on why not simple `hash(key) % n`.
+
+---
+
+### 9. Design Twitter feed (system + Python)
+
+**Question:** Home timeline for 300M users — architecture?
+
+**Answer:** Fan-out on write for celebrities vs fan-out on read hybrid; Redis sorted sets per user timeline; Cassandra/Scylla storage; Kafka events; Python for API layer, not hot path at extreme scale.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Trade fan-out write cost vs read latency; cap follow list fan-out.
+
+---
+
+### 10. Detect cycle in linked list — prove Floyd works
+
+**Question:** Prove tortoise-hare detects cycle.
+
+**Answer:** If cycle length C, relative speed 1 → meet within C steps after entering cycle; mathematical invariant proof expected.
+
+**Difficulty Level:** Medium–Hard
+
+**Interview Tips:** Follow-up: find cycle start node (LeetCode 142).
+
+---
+
+### 11. Top K elements — multiple approaches
+
+**Question:** Find top K largest in stream of unknown length.
+
+**Answer:** Min-heap size K O(n log k); quickselect O(n) average; bucket sort if range bounded.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Compare when n vs k dominates; distributed partial heaps merge.
+
+---
+
+### 12. Implement thread-safe singleton
+
+**Question:** Singleton in multi-threaded Python without GIL reliance on accident.
+
+**Answer:** Module-level instance, or `__new__` with threading.Lock double-checked, or Borg pattern.
+
+**Example:**
+```python
+import threading
+_lock = threading.Lock()
+_instance = None
+
+def get_singleton():
+    global _instance
+    if _instance is None:
+        with _lock:
+            if _instance is None:
+                _instance = object()
+    return _instance
+```
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Mention module pattern as Pythonic preferred.
+
+---
+
+### 13. Parse and evaluate expression tree
+
+**Question:** Evaluate `"3 + 4 * 2"` with precedence.
+
+**Answer:** Shunting yard to RPN or recursive descent parser; AST evaluation.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Don't use eval; show tokenizer + parser separation.
+
+---
+
+### 14. Longest increasing subsequence O(n log n)
+
+**Question:** LIS length in O(n log n).
+
+**Answer:** Patience sorting — maintain pile tops array; binary search insert position for each element.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Know O(n²) DP first then optimize discussion.
+
+---
+
+### 15. Design in-memory key-value store with TTL
+
+**Question:** KV store with expiration in Python.
+
+**Answer:** dict key → (value, expiry_time); lazy delete on get; background thread or heap for proactive cleanup; thread-safe with lock.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Compare to Redis semantics; persistence optional follow-up.
+
+---
+
+### 16. Merge K sorted iterators
+
+**Question:** Merge k sorted file iterators memory-efficiently.
+
+**Answer:** Min-heap of (value, iterator_id); pop smallest, push next from that iterator — O(total log k).
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** External merge sort connection for big data.
+
+---
+
+### 17. Python descriptor protocol deep dive
+
+**Question:** How does `@property` work internally?
+
+**Answer:** Property is data descriptor with `__get__`, `__set__`; instance lookup skips instance dict if data descriptor on class takes precedence.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Draw attribute lookup diagram from Python docs.
+
+---
+
+### 18. Implement context manager from scratch
+
+**Question:** Build file-like context manager without `@contextmanager`.
+
+**Answer:**
+```python
+class Managed:
+    def __enter__(self):
+        self.resource = acquire()
+        return self.resource
+    def __exit__(self, exc_type, exc, tb):
+        release(self.resource)
+        return False  # don't suppress exceptions
+```
+
+**Difficulty Level:** Medium–Hard
+
+**Interview Tips:** Explain return True suppresses exception.
+
+---
+
+### 19. Subarray sum equals K (prefix hash)
+
+**Question:** Count subarrays with sum K (can include negatives).
+
+**Answer:** Prefix sum + hash map counting occurrences of `prefix - k`; O(n) time.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** Classic FAANG array problem; don't use sliding window (needs positives).
+
+---
+
+### 20. Explain CAP theorem with Python microservice example
+
+**Question:** CAP in context of your Python order service?
+
+**Answer:** During partition, choose CP (consistent order inventory) or AP (available with eventual consistency); Python Flask API behind load balancer with Redis cache and Postgres — partition between cache and DB forces trade-off.
+
+**Difficulty Level:** Hard
+
+**Interview Tips:** No system is fully CA in distributed sense; be precise.
+
+---
+
+# 14. Senior Python Developer Interview Questions
+
+Focus: production experience, mentoring, trade-offs, ownership.
+
+---
+
+### 1. Production incident postmortem
+
+**Question:** Describe a production incident you resolved. What happened and what changed?
+
+**Answer:** Use STAR: Symptom (500 spike), Timeline (logs/metrics), Root cause (bad deploy/migration), Fix (rollback + patch), Prevention (tests, alerts, runbook).
+
+**Explanation:** Seniors own outcomes not just code — blameless postmortem culture.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Quantify impact (duration, users affected) and systemic fixes.
+
+---
+
+### 2. Code review philosophy
+
+**Question:** What do you look for in code reviews?
+
+**Answer:** Correctness, tests, readability, security, performance regressions, API contracts, observability, migration safety — prioritize by risk.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Mention nurturing junior reviewers not gatekeeping.
+
+---
+
+### 3. Technical debt decision
+
+**Question:** When pay tech debt vs deliver feature?
+
+**Answer:** Risk-based: debt causing incidents or blocking velocity gets scheduled; track in backlog with cost estimate; negotiate with product using data.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Avoid absolutes — business context matters.
+
+---
+
+### 4. Designing for testability
+
+**Question:** How make legacy Python code testable?
+
+**Answer:** Dependency injection, seams for I/O, characterize tests before refactor, extract pure functions, fake clock/HTTP, incremental strangler not big bang.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Cite specific refactor technique (extract class, adapter).
+
+---
+
+### 5. Database migration zero-downtime
+
+**Question:** Add NOT NULL column to 500M row table live.
+
+**Answer:** Add nullable column → backfill in batches → set default → enforce NOT NULL in app → lock brief validation; use online schema tools (pt-online-schema-change).
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Expand-contract pattern for API compatibility.
+
+---
+
+### 6. Observability stack
+
+**Question:** What observability do you require in production Python services?
+
+**Answer:** Structured logs (JSON), metrics (Prometheus), distributed tracing (OpenTelemetry), health checks, SLOs/error budgets, alerting on symptoms not causes only.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** RED method: Rate, Errors, Duration.
+
+---
+
+### 7. Async adoption decision
+
+**Question:** Migrate Flask sync app to async — would you?
+
+**Answer:** Evaluate: I/O profile, team expertise, library support, risk — maybe incremental FastAPI sidecar or async endpoints only if justified; not async for fashion.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Mention operational complexity of async debugging.
+
+---
+
+### 8. Mentoring juniors
+
+**Question:** Junior writes working but messy code. Approach?
+
+**Answer:** Praise what works; prioritize feedback (critical vs nit); pair on one improvement; set standards doc; avoid rewriting their PR silently.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Leadership signal as important as technical depth.
+
+---
+
+### 9. Package internal library
+
+**Question:** Design internal shared Python library for 20 teams.
+
+**Answer:** Semantic versioning, changelog, CI, documentation site, deprecation policy, owner on-call, avoid kitchen-sink — focused packages.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Discuss monorepo vs published packages trade-off.
+
+---
+
+### 10. Performance regression detection
+
+**Question:** Prevent performance regressions in CI?
+
+**Answer:** Benchmark suite (pytest-benchmark), load tests on PR for critical paths, profiling on release candidate, budget thresholds fail build.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Microbenchmarks can lie — include integration scenarios.
+
+---
+
+### 11. Security review checklist
+
+**Question:** Security review before launching Python API?
+
+**Answer:** AuthN/Z, input validation, rate limits, TLS, secrets management, dependency scan, OWASP top 10, least privilege DB creds, audit logging.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Mention STRIDE or OWASP API top 10 specifically.
+
+---
+
+### 12. Scaling Celery workers
+
+**Question:** Queue backlog growing — scale strategy?
+
+**Answer:** Measure worker CPU/I/O, task duration, prefetch multiplier; scale workers horizontally; prioritize queues; optimize slow tasks; dead letter poison pills.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Scaling workers without fixing slow task just burns money.
+
+---
+
+### 13. API backward compatibility
+
+**Question:** Breaking change needed in public API — process?
+
+**Answer:** Version bump, deprecation period, sunset headers, communication to consumers, parallel v1/v2 run, metrics on v1 usage before removal.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Expand-contract at DB layer mirrors API versioning.
+
+---
+
+### 14. Choosing ORM vs raw SQL
+
+**Question:** When bypass ORM for raw SQL?
+
+**Answer:** Complex reports, bulk updates, performance-critical queries, DB-specific features — isolate in repository layer with tested SQL files.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** ORM for CRUD velocity; SQL for control — hybrid normal.
+
+---
+
+### 15. Event-driven vs REST integration
+
+**Question:** Service integration: REST vs message queue?
+
+**Answer:** REST for request/response sync flows; events for decoupling, fan-out, async workflows, resilience — often both in system.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Discuss idempotent consumers and schema registry for events.
+
+---
+
+### 16. Python version upgrade strategy
+
+**Question:** Upgrade org from 3.9 to 3.12 — plan?
+
+**Answer:** Inventory deps compatibility, CI matrix test, deprecations list, incremental service upgrades, type hint modernization optional, benchmark 3.11+ speed wins.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** EOL security drives urgency.
+
+---
+
+### 17. Handling ambiguous requirements
+
+**Question:** PM spec unclear — what do you do?
+
+**Answer:** Clarify acceptance criteria, prototype spike, document assumptions, iterative demo — don't code in vacuum for weeks.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Show collaboration not heroics.
+
+---
+
+### 18. Cost optimization cloud Python workload
+
+**Question:** AWS bill too high for Python data jobs.
+
+**Answer:** Right-size instances, spot/preemptible, schedule batch off-peak, S3 lifecycle, compress data, profile code, serverless where fit, reserved capacity if steady.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** FinOps awareness distinguishes senior engineers.
+
+---
+
+### 19. Define done for production feature
+
+**Question:** What is "done" for you shipping a feature?
+
+**Answer:** Code + tests + docs + monitoring + runbook + feature flag + rollback plan + security review if needed + stakeholder sign-off.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Done ≠ merged to main.
+
+---
+
+### 20. Disagree with architect's design
+
+**Question:** You disagree with proposed architecture. Handle how?
+
+**Answer:** Write concise RFC with alternatives, pros/cons, data if available; discuss privately first; disagree and commit if overruled; no sabotage.
+
+**Difficulty Level:** Senior
+
+**Interview Tips:** Emotional intelligence tested here.
+
+---
+
+# 15. Python Architect Interview Questions
+
+Focus: system design, org-scale standards, long-term evolution.
+
+---
+
+### 1. Multi-region active-active design
+
+**Question:** Design active-active Python API across US and EU.
+
+**Answer:** Global load balancer, regional deployments, data residency (EU data in EU), CRDT or conflict resolution for writes, Kafka multi-region replication challenges, sticky sessions or stateless JWT.
+
+**Explanation:** CAP and compliance (GDPR) drive partitioning strategy.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Discuss split-brain and conflict resolution explicitly.
+
+---
+
+### 2. Platform engineering for Python teams
+
+**Question:** Build internal Python platform for 100 developers — components?
+
+**Answer:** Golden path templates (Cookiecutter), CI/CD pipelines, shared observability, secrets vault, dependency scanning, docs portal, service catalog, paved road not mandatory gate.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Balance standardization vs team autonomy.
+
+---
+
+### 3. Monolith decomposition strategy
+
+**Question:** Decompose 500K LOC Django monolith — where start?
+
+**Answer:** Domain-driven bounded contexts, strangler fig, extract highest pain domain (scaling/deploy conflicts), anti-corruption layer, don't distribute monolith data model prematurely.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Draw context map; avoid microservices big bang.
+
+---
+
+### 4. Data platform architecture
+
+**Question:** Design company-wide analytics platform.
+
+**Answer:** Ingestion (Kafka/Fivetran) → lake (S3 Parquet) → warehouse (Snowflake) → transform (dbt) → BI (Looker); governance (catalog, lineage, RBAC); SLAs per layer.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Medallion bronze/silver/gold layering.
+
+---
+
+### 5. API gateway vs service mesh
+
+**Question:** API gateway vs service mesh for Python microservices?
+
+**Answer:** Gateway — edge auth, rate limit, routing, TLS termination. Mesh (Istio/Linkerd) — service-to-service mTLS, retries, traffic split — complementary not either/or.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Operational cost of mesh is high — justify need.
+
+---
+
+### 6. Event sourcing suitability
+
+**Question:** When recommend event sourcing in Python system?
+
+**Answer:** Audit requirements, complex domain history (finance), temporal queries — avoid for simple CRUD; cost: storage, replay complexity, schema evolution.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** CQRS often paired; discuss read model projections.
+
+---
+
+### 7. Multi-tenancy models
+
+**Question:** Compare tenancy isolation models.
+
+**Answer:** Shared DB shared schema (tenant_id) — cost efficient, riskier. Schema per tenant — middle. DB per tenant — highest isolation, ops heavy. Choose by compliance and scale.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Row-level security in Postgres for shared model.
+
+---
+
+### 8. Disaster recovery RPO/RTO
+
+**Question:** Define RPO/RTO for payment Python service.
+
+**Answer:** RPO — max data loss (e.g., 1 min replication lag). RTO — max downtime (e.g., 15 min failover). Multi-AZ, backups tested quarterly, runbooks automated.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** DR untested is fiction — game days.
+
+---
+
+### 9. GraphQL vs REST org standard
+
+**Question:** Standardize on GraphQL or REST?
+
+**Answer:** REST simpler caching, widespread; GraphQL flexible clients, N+1 risk, complexity — pick per client needs; BFF pattern for mobile aggregation.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Federation for large GraphQL orgs.
+
+---
+
+### 10. Python in polyglot architecture
+
+**Question:** When NOT use Python in stack?
+
+**Answer:** Hard real-time, ultra-low latency HFT, mobile native, some high-scale sync serving — use Go/Rust/Java where justified; Python orchestrates/analyzes/rapid delivery.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Pragmatism over language loyalty.
+
+---
+
+### 11. Compliance (SOC2/HIPAA) architecture
+
+**Question:** Architect Python health data platform HIPAA-aware.
+
+**Answer:** Encryption at rest/transit, audit logs immutable, access controls, BAA with vendors, PHI minimization, network segmentation, vulnerability management, no PHI in logs.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Compliance is process + architecture.
+
+---
+
+### 12. Capacity planning
+
+**Question:** Capacity plan for 10× traffic growth.
+
+**Answer:** Load test baseline, identify bottlenecks (DB, CPU, external APIs), horizontal scale limits, caching layers, queue buffering, cost model, autoscaling policies with cooldown.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Use Little's Law; plan headroom not exact fit.
+
+---
+
+### 13. Technical standards governance
+
+**Question:** Enforce Python coding standards org-wide without slowing teams?
+
+**Answer:** Automated lint/format in CI (ruff, black, mypy gradual), architecture decision records (ADRs), guild/chapter reviews, exceptions process with expiry.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Standards as code not PDF policies.
+
+---
+
+### 14. Build vs buy integration
+
+**Question:** Build custom workflow engine vs Airflow/Temporal?
+
+**Answer:** Buy when mature product fits (Temporal for durable workflows); build only for unique competitive advantage — TCO includes maintenance forever.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Hidden cost of internal platforms.
+
+---
+
+### 15. Legacy system integration
+
+**Question:** Integrate 20-year-old mainframe with modern Python services.
+
+**Answer:** Anti-corruption layer, message adapter, idempotent sync jobs, schema translation, circuit breaker, gradual migration off mainframe functions.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Respect legacy uptime requirements.
+
+---
+
+### 16. Zero-trust network for services
+
+**Question:** Zero-trust for internal Python microservices?
+
+**Answer:** mTLS between services, identity per workload (SPIFFE), policy as code, no flat network, secrets short-lived, authenticate every call not VPN trust.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Beyond perimeter security model.
+
+---
+
+### 17. ML platform architecture
+
+**Question:** Design ML model lifecycle platform in Python org.
+
+**Answer:** Feature store, experiment tracking (MLflow), training pipelines, model registry, A/B serving (canary), monitoring drift, reproducible environments (Docker/conda).
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Separate training offline from serving online paths.
+
+---
+
+### 18. Cost of microservices tax
+
+**Question:** What is microservices tax?
+
+**Answer:** Operational overhead: deploy complexity, distributed debugging, network latency, data consistency, testing integration, on-call rotation per service — justify vs modular monolith.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Team topology (Conway's law) alignment.
+
+---
+
+### 19. Evolutionary architecture
+
+**Question:** How keep architecture evolvable?
+
+**Answer:** Fitness functions in CI (architecture tests), loose coupling, high cohesion, feature flags, ADRs for decisions, periodic architecture reviews, reversible decisions preference.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Quote Neal Ford evolutionary architecture concepts if familiar.
+
+---
+
+### 20. Stakeholder communication at architecture level
+
+**Question:** Explain 6-month platform migration to executives.
+
+**Answer:** Business outcomes (faster features, reduced outages, compliance), phases with milestones, risks/mitigations, cost, what won't change for users initially — no deep jargon.
+
+**Difficulty Level:** Architect
+
+**Interview Tips:** Architects translate technical strategy to business value.
+
+---
+
+## Quick Reference — Section Counts
+
+| Section | Count |
+|---------|-------|
+| FAQ Questions | 100 |
+| Coding Problems | 50 |
+| Scenario Questions | 30 |
+| Performance Q&A | 20 |
+| Multi-threading Q&A | 20 |
+| API Development Q&A | 20 |
+| FastAPI Q&A | 20 |
+| Data Engineering Q&A | 20 |
+| Automation Q&A | 20 |
+| FAANG-Level Deep | 20 |
+| Senior Developer Deep | 20 |
+| Architect Deep | 20 |
+
+---
+
+*End of Python Interview Bank — Final Sections. Good luck with your interview preparation.*
+
