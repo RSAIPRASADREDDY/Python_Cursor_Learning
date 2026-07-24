@@ -1,0 +1,3608 @@
+# Python Interview Bank — Level 1 Basics (Part A)
+
+---
+
+### Python Introduction
+
+#### Concept Explanation
+Python is a high-level, interpreted programming language created by Guido van Rossum and first released in 1991. It emphasizes readability through clean syntax and indentation-based blocks rather than braces. Python supports multiple paradigms—procedural, object-oriented, and functional—and runs on virtually every platform via the CPython interpreter and alternative implementations like PyPy and Jython.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What is Python?
+**Answer:** Python is an interpreted, high-level, general-purpose programming language known for simplicity and readability.
+**Explanation:** Unlike compiled languages such as C++, Python source code is executed line-by-line by an interpreter, which makes development and debugging faster.
+**Example:**
+```python
+print("Hello, Python!")
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention both "interpreted" and "high-level"—interviewers listen for precise terminology, not just "easy language."
+
+**Question 2:** Who created Python and when?
+**Answer:** Guido van Rossum created Python; the first public release was in 1991.
+**Explanation:** Python was designed as a successor to ABC, aiming for simplicity and power. Knowing the creator shows genuine interest in the language ecosystem.
+**Example:** N/A (historical fact)
+**Difficulty Level:** Basic
+**Interview Tips:** Optionally mention the name comes from Monty Python's Flying Circus—not the snake.
+
+**Question 3:** Is Python compiled or interpreted?
+**Answer:** Python is primarily interpreted, though source is first compiled to bytecode (.pyc) that the interpreter executes.
+**Explanation:** CPython compiles `.py` files to bytecode, then the Python Virtual Machine runs that bytecode. This hybrid model is often simplified as "interpreted."
+**Example:**
+```python
+# hello.py is compiled to __pycache__/hello.cpython-312.pyc on import
+import hello
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Clarify the compile-then-interpret pipeline—shows deeper understanding than a one-word answer.
+
+**Question 4:** What platforms can Python run on?
+**Answer:** Python is cross-platform and runs on Windows, macOS, Linux, and many embedded systems.
+**Explanation:** The same Python code generally works across OSes because the interpreter abstracts platform differences, though some libraries are OS-specific.
+**Example:**
+```python
+import sys
+print(sys.platform)  # 'win32', 'linux', 'darwin', etc.
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention `sys.platform` or virtual environments as proof of cross-platform awareness.
+
+**Question 5:** What is the current way to run Python 3 on most systems?
+**Answer:** Use the `python` or `python3` command (or `py` launcher on Windows) to start the REPL or execute scripts.
+**Explanation:** Modern systems ship with or recommend Python 3; Python 2 reached end-of-life in 2020.
+**Example:**
+```bash
+python script.py
+python -c "print(2 + 2)"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Confirm you use Python 3—never assume Python 2 unless legacy context is explicit.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is CPython and how does it differ from Python the language?
+**Answer:** CPython is the reference implementation of Python written in C; "Python" often refers to both the language spec and this default runtime.
+**Explanation:** Alternative implementations (PyPy, Jython, IronPython) follow the language specification but differ in performance and platform integration.
+**Example:**
+```python
+import platform
+print(platform.python_implementation())  # 'CPython'
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Distinguish language vs. implementation—senior roles expect this nuance.
+
+**Question 2:** What is the Python Virtual Machine (PVM)?
+**Answer:** The PVM is the runtime engine that executes Python bytecode instruction by instruction.
+**Explanation:** After compilation, bytecode opcodes are dispatched by the interpreter loop (eval frame in CPython), handling stack operations and object references.
+**Example:**
+```python
+import dis
+dis.dis(lambda: (a := 1))  # Shows LOAD_CONST, STORE_NAME opcodes
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Knowing `dis` module demonstrates you understand execution, not just syntax.
+
+**Question 3:** What is PEP and why does it matter?
+**Answer:** PEP (Python Enhancement Proposal) is the design document process for proposing and documenting Python changes.
+**Explanation:** PEP 8 defines style; PEP 20 is the Zen of Python; PEP 484 introduced type hints. PEPs govern language evolution.
+**Example:**
+```python
+import this  # Displays Zen of Python (PEP 20)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Cite PEP 8 for style questions and PEP 484/585 for typing—shows community awareness.
+
+**Question 4:** How does Python manage memory compared to languages like C?
+**Answer:** Python uses automatic memory management via reference counting plus a cyclic garbage collector.
+**Explanation:** Developers rarely call `free()`; objects are deallocated when reference count hits zero, with a GC pass for circular references.
+**Example:**
+```python
+import gc
+gc.collect()  # Forces garbage collection cycle
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Mention reference counting AND cyclic GC—stopping at only one is incomplete.
+
+**Question 5:** What is the Global Interpreter Lock (GIL)?
+**Answer:** The GIL is a mutex in CPython that allows only one thread to execute Python bytecode at a time in a single process.
+**Explanation:** It simplifies memory management but limits CPU-bound multi-threading; I/O-bound threads still benefit from concurrency.
+**Example:**
+```python
+import threading
+# Multiple threads run, but only one executes Python bytecode at once (CPython)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Pair GIL explanation with alternatives: `multiprocessing`, async I/O, or PyPy/other runtimes.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Explain Python's execution model from source file to running program.
+**Answer:** Source is tokenized and parsed into an AST, compiled to bytecode, loaded into code objects, and executed frame-by-frame by the PVM.
+**Explanation:** Import machinery caches bytecode in `__pycache__`; each function call creates a new frame with its own local namespace on the call stack.
+**Example:**
+```python
+import ast, dis
+tree = ast.parse("x = 1 + 2")
+code = compile(tree, "<ast>", "exec")
+dis.dis(code)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Walk through compile → code object → frame—interviewers reward end-to-end clarity.
+
+**Question 2:** How does Python 3 differ fundamentally from Python 2?
+**Answer:** Python 3 made `print` a function, strings default to Unicode, integer division returns float (`3/2 == 1.5`), and removed many Python 2 idioms.
+**Explanation:** Migration tools like `2to3` exist, but greenfield projects must use Python 3 exclusively since Python 2 EOL.
+**Example:**
+```python
+print("text", end="")  # Python 3
+# print "text"          # SyntaxError in Python 3
+result = 3 / 2          # 1.5
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention Unicode-by-default and `/` vs `//` division—common migration pain points.
+
+**Question 3:** What are alternative Python implementations and when would you choose them?
+**Answer:** PyPy (JIT, speed), Jython (JVM integration), IronPython (.NET), MicroPython (embedded)—each trades compatibility for a specific goal.
+**Explanation:** PyPy excels at long-running CPU loops; CPython remains default for broad library support and C-extension compatibility.
+**Example:**
+```python
+# PyPy often 5-10x faster on pure-Python hot loops; C extensions may differ
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Default to CPython unless profiling proves another runtime wins on your workload.
+
+**Question 4:** How does Python's import system resolve modules?
+**Answer:** `sys.meta_path` finders search `sys.path`; successful finds load via loaders that produce module objects cached in `sys.modules`.
+**Explanation:** Package-relative imports, namespace packages (PEP 420), and editable installs all hook into this finder/loader pipeline.
+**Example:**
+```python
+import importlib
+mod = importlib.import_module("json")
+print(mod.__file__)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention `sys.modules` caching—re-import does not re-execute top-level code.
+
+**Question 5:** What is the status of the GIL removal effort in CPython?
+**Answer:** PEP 703 proposes optional free-threading (no-GIL) builds; Python 3.13+ includes experimental `--disable-gil` support evolving toward mainstream adoption.
+**Explanation:** Removing the GIL requires thread-safe reference counting and broader internal locking changes; library authors must audit extension code.
+**Example:**
+```bash
+# Experimental (version-dependent):
+# python3.13t script.py
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Show awareness of ongoing changes without claiming production readiness unless your team uses it.
+
+#### Common Interview Traps
+- Saying Python is "only interpreted" without mentioning bytecode compilation.
+- Confusing Python (language) with CPython (implementation).
+- Claiming the GIL makes threading useless for all workloads.
+- Referencing Python 2 syntax or APIs in a Python 3 interview.
+
+#### Real-world Applications
+- Web backends (Django, FastAPI), data science (pandas, NumPy), automation/scripts, DevOps tooling, ML/AI pipelines, and API integrations.
+
+#### Follow-up Questions Interviewers May Ask
+- How would you debug a slow Python application?
+- When would you choose Python over Go or Java?
+- Explain virtual environments and dependency isolation.
+- How do you package and distribute Python applications?
+
+---
+
+### Features of Python
+
+#### Concept Explanation
+Python is known for simple, English-like syntax that reduces boilerplate and accelerates development. It is dynamically typed, meaning variable types are determined at runtime, and it supports multiple programming paradigms within the same codebase. Python ships with a rich standard library ("batteries included") and a vast ecosystem of third-party packages via PyPI.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** Name three key features of Python.
+**Answer:** Readable syntax, dynamic typing, and an extensive standard library.
+**Explanation:** These features reduce time-to-first-result and make Python accessible to beginners while remaining powerful for experts.
+**Example:**
+```python
+name = "Ada"       # No type declaration needed
+import pathlib     # Rich stdlib available immediately
+print(name.upper())
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Pick features relevant to the job—web dev might emphasize frameworks; data roles emphasize libraries.
+
+**Question 2:** What does "dynamically typed" mean in Python?
+**Answer:** Variable types are checked at runtime; you do not declare types when assigning values.
+**Explanation:** The same name can refer to different types over its lifetime, though readability usually keeps types consistent.
+**Example:**
+```python
+x = 10      # int
+x = "ten"   # now str — legal but often discouraged
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Contrast with static typing (Java, Rust) and mention optional type hints in Python 3.
+
+**Question 3:** What is meant by "batteries included"?
+**Answer:** Python's standard library provides modules for file I/O, networking, dates, JSON, threading, and more without extra installs.
+**Explanation:** This reduces dependency on external packages for common tasks and keeps deployments simpler.
+**Example:**
+```python
+import json, datetime, urllib.request
+data = json.loads('{"key": "value"}')
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Give one concrete stdlib module example beyond `os` and `sys`.
+
+**Question 4:** Is Python object-oriented?
+**Answer:** Yes. Everything in Python is an object, including functions, classes, and modules.
+**Explanation:** Python supports OOP (classes, inheritance, polymorphism) but does not force OOP—procedural and functional styles coexist.
+**Example:**
+```python
+class Dog:
+    def speak(self):
+        return "woof"
+
+d = Dog()
+print(d.speak())
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Emphasize "everything is an object"—even `42` has methods like `.bit_length()`.
+
+**Question 5:** Can Python be used for scripting and large applications?
+**Answer:** Yes. Python scales from one-liner scripts to large systems like Instagram, Dropbox backends, and scientific platforms.
+**Explanation:** Modularity, packages, testing frameworks, and typing support make large codebases maintainable.
+**Example:**
+```python
+# Script
+if __name__ == "__main__":
+    main()
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Balance honesty—mention performance limits for certain low-latency systems.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** How does Python support functional programming?
+**Answer:** Via first-class functions, lambda expressions, map/filter/reduce patterns, and tools like `functools`, `itertools`, and comprehensions.
+**Explanation:** Functions can be passed as arguments, returned from other functions, and stored in data structures.
+**Example:**
+```python
+nums = [1, 2, 3, 4]
+evens = list(filter(lambda n: n % 2 == 0, nums))  # [2, 4]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Prefer list comprehensions over map/filter in modern Python unless functional style is clearer.
+
+**Question 2:** What are Python's typing features (PEP 484+)?
+**Answer:** Optional static type hints via annotations, checked by tools like mypy/pyright, without affecting runtime behavior.
+**Explanation:** Hints document intent and catch bugs early in CI; Python remains dynamically typed at runtime.
+**Example:**
+```python
+def greet(name: str) -> str:
+    return f"Hello, {name}"
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Clarify hints are not enforced at runtime by default—static analyzers enforce them.
+
+**Question 3:** How extensible is Python?
+**Answer:** Python extends via C/C++ extensions, Cython, ctypes, and foreign-function interfaces; many core libraries wrap optimized native code.
+**Explanation:** NumPy, pandas, and cryptography leverage native code while exposing Python APIs.
+**Example:**
+```python
+import numpy as np
+arr = np.array([1, 2, 3])  # Backed by optimized C implementation
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Mention C extensions when discussing performance—not rewriting everything in C.
+
+**Question 4:** What is duck typing?
+**Answer:** "If it walks like a duck and quacks like a duck, it's a duck"—behavior matters, not explicit type inheritance.
+**Explanation:** Python calls methods on objects without requiring a shared base class, enabling flexible interfaces.
+**Example:**
+```python
+class MockFile:
+    def read(self): return "data"
+
+def load(f): return f.read()  # Works with MockFile or real file object
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Contrast with Java interfaces; mention protocols (PEP 544) for formal duck typing.
+
+**Question 5:** What are Python's main limitations?
+**Answer:** Slower raw CPU performance vs. compiled languages, GIL limiting CPU-bound threading in CPython, and mobile deployment constraints.
+**Explanation:** Teams mitigate with native extensions, multiprocessing, async I/O, or hybrid architectures.
+**Example:**
+```python
+# CPU-bound: prefer multiprocessing over threading in CPython
+from multiprocessing import Pool
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Show you know limits AND mitigations—avoid sounding anti-Python.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Explain Python's data model and how it enables operator overloading.
+**Answer:** Objects implement dunder methods (`__add__`, `__len__`, etc.) defined in the language data model; operators dispatch to these methods.
+**Explanation:** Understanding the data model unlocks custom classes that behave like built-ins.
+**Example:**
+```python
+class Vector:
+    def __init__(self, x, y): self.x, self.y = x, y
+    def __add__(self, other): return Vector(self.x + other.x, self.y + other.y)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Reference "dunder" methods and `help(int.__add__)` as study habits.
+
+**Question 2:** How does Python achieve introspection and metaprogramming?
+**Answer:** Via `getattr`, `setattr`, `inspect`, metaclasses, and dynamic code generation—runtime inspection and modification of objects and classes.
+**Explanation:** Frameworks like Django ORM and dataclasses rely heavily on introspection and metaclass hooks.
+**Example:**
+```python
+class Meta(type):
+    def __new__(mcs, name, bases, namespace):
+        namespace["created_by"] = "Meta"
+        return super().__new__(mcs, name, bases, namespace)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Use metaclasses sparingly—interviewers want judgment, not cleverness for its own sake.
+
+**Question 3:** Compare CPython, PyPy, and GraalPy trade-offs.
+**Answer:** CPython: best compatibility; PyPy: JIT speed for pure Python; GraalPy: experimental GraalVM integration with polyglot potential.
+**Explanation:** Extension modules and startup time differ; benchmark your specific workload before switching.
+**Example:** N/A (architectural comparison)
+**Difficulty Level:** Advanced
+**Interview Tips:** Always say "profile first" when discussing runtime choice.
+
+**Question 4:** What role do descriptors play in Python's feature set?
+**Answer:** Descriptors implement the attribute access protocol (`__get__`, `__set__`, `__delete__`) powering properties, methods, and ORM fields.
+**Explanation:** `@property` is a descriptor wrapper; understanding descriptors explains how `self.method` binds to functions.
+**Example:**
+```python
+class Celsius:
+    def __get__(self, obj, owner): return obj._c
+    def __set__(self, obj, value): obj._c = value
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Link descriptors to `@property` and classmethod/staticmethod—shows unified mental model.
+
+**Question 5:** How does Python's async/await feature extend its concurrency model?
+**Answer:** Async provides cooperative multitasking for I/O-bound workloads via event loops, coroutines, and non-blocking I/O primitives.
+**Explanation:** It complements threading (I/O wait) and multiprocessing (CPU parallelism) without replacing them universally.
+**Example:**
+```python
+import asyncio
+
+async def fetch():
+    await asyncio.sleep(1)
+    return "done"
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Never claim async speeds up CPU-bound code—it can make it worse.
+
+#### Common Interview Traps
+- Calling Python "slow" without context or mitigation strategies.
+- Claiming type hints make Python statically typed at runtime.
+- Overstating that "Python can do everything equally well."
+- Ignoring the standard library and reaching for PyPI unnecessarily.
+
+#### Real-world Applications
+- Rapid prototyping, ETL pipelines, REST APIs, CLI tools, test automation, scientific computing, and glue code between systems.
+
+#### Follow-up Questions Interviewers May Ask
+- How do type hints improve large-team development?
+- When would you use async vs. threading vs. multiprocessing?
+- What Python features do you avoid in production and why?
+- How do descriptors relate to `@property`?
+
+---
+
+### Variables
+
+#### Concept Explanation
+Variables in Python are names bound to objects in memory, not typed memory boxes like in C or Java. Assignment uses `=` to create or rebind a name to an object reference. Python follows LEGB (Local, Enclosing, Global, Built-in) scope rules to resolve names.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you declare a variable in Python?
+**Answer:** Assign a value with `=`; no explicit type or keyword is required.
+**Explanation:** The name becomes a reference to the object on the right-hand side.
+**Example:**
+```python
+age = 25
+message = "Hello"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Avoid saying "declare type"—Python binds names, it doesn't declare typed slots.
+
+**Question 2:** Can a variable change its type in Python?
+**Answer:** Yes. Reassigning a name can bind it to an object of a different type.
+**Explanation:** Types belong to objects, not variable names; the name simply points to whatever object it currently references.
+**Example:**
+```python
+x = 10
+x = "ten"  # Legal
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Note that mutating an object in place is different from rebinding the name.
+
+**Question 3:** What naming rules apply to Python variables?
+**Answer:** Names must start with a letter or underscore, contain letters/digits/underscores, and cannot be keywords.
+**Explanation:** Convention uses `snake_case` for variables and functions; constants often use `UPPER_SNAKE_CASE`.
+**Example:**
+```python
+user_count = 0
+MAX_RETRIES = 3
+# 2fast = 1  # SyntaxError
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention PEP 8 naming—shows professional habits.
+
+**Question 4:** What is the difference between `=` and `==`?
+**Answer:** `=` assigns a value; `==` compares two values for equality.
+**Explanation:** Confusing these is a common beginner bug, especially in conditions.
+**Example:**
+```python
+x = 5
+print(x == 5)  # True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Also know `is` vs `==` for identity vs equality—often the next question.
+
+**Question 5:** What happens when you assign one variable to another?
+**Answer:** Both names refer to the same object (shared reference), not a copy.
+**Explanation:** For mutable objects, changes through one name are visible through the other.
+**Example:**
+```python
+a = [1, 2]
+b = a
+b.append(3)
+print(a)  # [1, 2, 3]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Use `copy()` or `copy.deepcopy()` when you need independence.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** Explain LEGB scope resolution.
+**Answer:** Python searches Local, Enclosing (nested functions), Global (module), then Built-in namespaces for a name.
+**Explanation:** Inner functions can read outer variables; assignment creates locals unless declared `nonlocal` or `global`.
+**Example:**
+```python
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        print(x)  # 'enclosing'
+    inner()
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Draw nested boxes on a whiteboard—visual LEGB wins interview points.
+
+**Question 2:** What is the difference between `global` and `nonlocal`?
+**Answer:** `global` binds a name in the module namespace; `nonlocal` binds in the nearest enclosing (non-global) function scope.
+**Explanation:** Without these keywords, assignment inside a function creates a new local variable.
+**Example:**
+```python
+count = 0
+def inc():
+    global count
+    count += 1
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Prefer returning values over mutating globals—mention cleaner alternatives.
+
+**Question 3:** What are Python's assignment operators beyond `=`?
+**Answer:** Augmented assignment: `+=`, `-=`, `*=`, `/=`, `//=`, `%=`, `**=`, `&=`, `|=`, `^=`, `>>=`, `<<=`.
+**Explanation:** For mutables, `+=` often mutates in place (e.g., list.extend behavior) rather than creating a new object.
+**Example:**
+```python
+nums = [1, 2]
+nums += [3]      # mutates list
+print(nums)      # [1, 2, 3]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know list `+=` vs tuple `+=` (tuple creates new object due to immutability).
+
+**Question 4:** What is unpacking assignment?
+**Answer:** Python can assign multiple names from iterables using parallel assignment or starred unpacking.
+**Explanation:** Enables elegant swaps and parsing structured data without index access.
+**Example:**
+```python
+a, b = 1, 2
+a, b = b, a          # swap
+first, *rest = [1, 2, 3, 4]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Star unpacking in function signatures (`*args`, `**kwargs`) connects to this concept.
+
+**Question 5:** What is the walrus operator `:=`?
+**Answer:** Introduced in Python 3.8, it assigns a value to a name as part of an expression.
+**Explanation:** Reduces duplication when you need a value both for testing and reuse within a condition or comprehension.
+**Example:**
+```python
+while (line := input()) != "quit":
+    print(line)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Use sparingly—readability beats clever one-liners in interviews.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How does Python store variables internally?
+**Answer:** Names live in namespaces (dicts); values are references to heap objects with reference counts.
+**Explanation:** `locals()` and `globals()` expose namespace mappings; frames on the call stack hold local namespaces during execution.
+**Example:**
+```python
+def demo():
+    x = 1
+    print(locals())  # {'x': 1}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Connect namespaces to modules, classes, and instances—each has its own dict.
+
+**Question 2:** Explain late binding in closures and the classic loop variable trap.
+**Answer:** Closures capture variables by name, not value; loop variables in lambdas often resolve to the final iteration value.
+**Explanation:** Fix by default argument binding or copying the value at definition time.
+**Example:**
+```python
+# Bug:
+funcs = [lambda: i for i in range(3)]
+# Fix:
+funcs = [lambda i=i: i for i in range(3)]
+print(funcs[0]())  # 0
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** This trap appears constantly in interviews—have the fix ready.
+
+**Question 3:** What is name mangling and when does it apply?
+**Answer:** Class attributes prefixed with `__` (not trailing `__`) are rewritten to `_ClassName__attr` to reduce accidental override in subclasses.
+**Explanation:** It is not true privacy—just a convention enforced by the interpreter's renaming.
+**Example:**
+```python
+class A:
+    def __init__(self): self.__secret = 42
+print(A().__dict__)  # {'_A__secret': 42}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Distinguish `_single` (convention), `__mangle` (name mangling), and `__dunder__` (magic methods).
+
+**Question 4:** How do annotated assignments work (PEP 526)?
+**Answer:** Syntax like `x: int = 5` stores annotations on the variable and assigns the value; bare annotations `x: int` declare intent without assignment.
+**Explanation:** Class-level annotations populate `__annotations__`; runtime typing uses optional checkers, not enforcement.
+**Example:**
+```python
+class Point:
+    x: float
+    y: float
+    def __init__(self, x, y): self.x, self.y = x, y
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Know `from __future__ import annotations` postpones evaluation of annotations.
+
+**Question 5:** Compare shallow vs deep copy in variable assignment contexts.
+**Answer:** Assignment copies references; `copy.copy()` duplicates container structure but shares nested objects; `copy.deepcopy()` recursively copies all nested objects.
+**Explanation:** Critical when passing mutable defaults or nested configs between components.
+**Example:**
+```python
+import copy
+original = [[1, 2], [3, 4]]
+shallow = copy.copy(original)
+deep = copy.deepcopy(original)
+shallow[0].append(99)
+print(original)  # [[1, 2, 99], [3, 4]]
+print(deep[0])   # unaffected if deep copied before mutation
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Always mention mutable default argument antipattern: `def f(lst=[]):`.
+
+#### Common Interview Traps
+- Thinking `b = a` creates a copy of the object.
+- Using `global` when returning a value would be cleaner.
+- Closure lambdas in loops capturing the loop variable incorrectly.
+- Confusing `is` (identity) with `==` (equality).
+
+#### Real-world Applications
+- Configuration objects, shared state in applications, dependency injection via names, environment variable loading, and request-scoped context in web frameworks.
+
+#### Follow-up Questions Interviewers May Ask
+- What is the mutable default argument problem?
+- How do context variables (`contextvars`) differ from globals?
+- Explain `id()` and object identity.
+- When would you use `nonlocal` in a decorator?
+
+---
+
+### Data Types
+
+#### Concept Explanation
+Python's built-in data types include numeric types (`int`, `float`, `complex`), sequences (`str`, `list`, `tuple`, `bytes`), sets (`set`, `frozenset`), mappings (`dict`), and booleans (`bool`, a subclass of `int`). Types are associated with objects, not variable names, and can be inspected at runtime with `type()` and `isinstance()`.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What are Python's main built-in data types?
+**Answer:** int, float, complex, str, list, tuple, set, frozenset, dict, bool, bytes, bytearray, and NoneType.
+**Explanation:** These cover numeric, textual, sequential, unordered, and key-value data models.
+**Example:**
+```python
+print(type(42), type(3.14), type("hi"), type([1]), type({1}))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Group by category (numeric, sequence, set, mapping)—structured answers impress.
+
+**Question 2:** What is the difference between `list` and `tuple`?
+**Answer:** Lists are mutable; tuples are immutable ordered sequences.
+**Explanation:** Use tuples for fixed collections (coordinates, records); lists when you need to add, remove, or modify elements.
+**Example:**
+```python
+coords = (10.0, 20.0)   # tuple
+items = [1, 2, 3]       # list
+items.append(4)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention tuples can be dict keys; lists cannot (unhashable).
+
+**Question 3:** What is `None` in Python?
+**Answer:** `None` is the singleton object representing the absence of a value, with type `NoneType`.
+**Explanation:** Functions without an explicit return yield `None`; use `is None` for comparison, not `== None`.
+**Example:**
+```python
+def noop(): pass
+print(noop() is None)  # True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Always use `is None` / `is not None`—PEP 8 recommendation.
+
+**Question 4:** How do you check an object's type?
+**Answer:** Use `type(obj)` for exact type or `isinstance(obj, cls)` for inheritance-aware checks.
+**Explanation:** `isinstance` is preferred because it respects subclass relationships (e.g., `bool` is subclass of `int`).
+**Example:**
+```python
+isinstance(True, int)   # True
+type(True) is int       # False (exact type is bool)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Prefer `isinstance` over `type(x) == SomeClass` in production code.
+
+**Question 5:** What is the difference between `set` and `list`?
+**Answer:** Sets are unordered collections of unique hashable elements; lists are ordered and allow duplicates.
+**Explanation:** Sets support O(1) average membership tests; lists preserve insertion order and index access.
+**Example:**
+```python
+{1, 2, 2, 3}        # {1, 2, 3}
+[1, 2, 2, 3]        # [1, 2, 2, 3]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Note sets require hashable elements—lists cannot be set members.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is mutability and which built-in types are mutable?
+**Answer:** Mutable objects can change in place; immutable objects cannot. Mutable: list, dict, set, bytearray. Immutable: int, float, str, tuple, frozenset, bytes.
+**Explanation:** Mutability affects copying, hashing, and whether an object can be a dict key or set element.
+**Example:**
+```python
+s = "hello"
+# s[0] = "H"  # TypeError — str is immutable
+t = (1, [2, 3])
+t[1].append(4)  # OK — mutating nested list inside tuple
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Nested mutability in tuples catches many candidates off guard.
+
+**Question 2:** Explain `bool` as a subclass of `int`.
+**Answer:** `True` and `False` are instances of `bool`, which inherits from `int`; `True == 1` and `False == 0`.
+**Explanation:** Historical compatibility means booleans participate in numeric contexts, though explicit bool usage is preferred.
+**Example:**
+```python
+print(True + True)  # 2
+print(isinstance(True, int))  # True
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Mention `bool` is a subclass, not the same type—`type(True) is int` is False.
+
+**Question 3:** What are `bytes` and `bytearray`?
+**Answer:** `bytes` is an immutable sequence of 0–255 integers; `bytearray` is its mutable counterpart.
+**Explanation:** Used for binary I/O, network protocols, and interfacing with C extensions.
+**Example:**
+```python
+data = b"\x48\x69"       # b'Hi'
+mutable = bytearray(b"Hi")
+mutable[0] = 104          # b'hi'
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Contrast with `str` (Unicode text)—never decode binary blindly.
+
+**Question 4:** What is arbitrary-precision integer arithmetic in Python?
+**Answer:** Python `int` has unlimited precision, limited only by available memory, unlike fixed-width C integers.
+**Explanation:** Large integers are used in cryptography, combinatorics, and arbitrary-precision math without overflow errors.
+**Example:**
+```python
+big = 2 ** 1000
+print(len(str(big)))  # 302 digits
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Note floats have IEEE 754 limits—use `decimal` or `int` for money.
+
+**Question 5:** What are `complex` numbers in Python?
+**Answer:** Written as `a + bj` where `j` is the imaginary unit; type `complex` with `.real` and `.imag` attributes.
+**Explanation:** Supported natively for scientific computing, though NumPy often handles complex arrays at scale.
+**Example:**
+```python
+z = 3 + 4j
+print(abs(z))  # 5.0 — magnitude
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know `cmath` module for complex math functions.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How does CPython represent integers internally (conceptually)?
+**Answer:** Small integers are cached; larger ints use variable-length digit arrays (base 2^30 on 64-bit builds).
+**Explanation:** This enables arbitrary precision transparently; interning of small ints explains `is` behavior for -5 to 256.
+**Example:**
+```python
+a, b = 256, 256
+print(a is b)   # May be False (outside small int cache on some builds)
+small_a, small_b = 5, 5
+print(small_a is small_b)  # True (cached)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Exact cache range can vary—state the concept, not just memorize 256.
+
+**Question 2:** Explain hashability and its relationship to dict keys.
+**Answer:** Hashable objects have a fixed `__hash__` for their lifetime and compare equal consistently; unhashable mutables cannot be dict keys.
+**Explanation:** Custom classes become hashable if they define `__eq__` and `__hash__` (or use `@dataclass(frozen=True)`).
+**Example:**
+```python
+class FrozenPoint:
+    __slots__ = ("x", "y")
+    def __init__(self, x, y): self.x, self.y = x, y
+    def __eq__(self, o): return (self.x, self.y) == (o.x, o.y)
+    def __hash__(self): return hash((self.x, self.y))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** If you define `__eq__` without `__hash__`, instances become unhashable by default.
+
+**Question 3:** What is the `typing` module's role vs built-in types?
+**Answer:** `typing` provides generic aliases (`List[int]`, `Dict[str, int]`) and protocols for static analysis; at runtime many reduce to built-ins.
+**Explanation:** Python 3.9+ prefers built-in generics: `list[int]` instead of `List[int]`.
+**Example:**
+```python
+def process(items: list[str]) -> dict[str, int]:
+    return {s: len(s) for s in items}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention PEP 585 (built-in generics) and PEP 604 (`X | Y` unions).
+
+**Question 4:** Compare `float` precision issues and mitigation strategies.
+**Answer:** Floats use binary IEEE 754 representation, causing rounding artifacts like `0.1 + 0.2 != 0.3`.
+**Explanation:** Use `decimal.Decimal` for financial math or integers (cents) to avoid representation errors.
+**Example:**
+```python
+from decimal import Decimal
+print(0.1 + 0.2)                        # 0.30000000000000004
+print(Decimal("0.1") + Decimal("0.2"))  # 0.3
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Never use float for currency—interviewers flag this immediately.
+
+**Question 5:** What are `NamedTuple`, `dataclass`, and when to choose each?
+**Answer:** `NamedTuple` creates immutable tuple subclasses with named fields; `dataclass` generates boilerplate for mutable (or frozen) classes.
+**Explanation:** Both improve readability over raw tuples/dicts; choose based on mutability and performance needs.
+**Example:**
+```python
+from dataclasses import dataclass
+from typing import NamedTuple
+
+class Point(NamedTuple):
+    x: float
+    y: float
+
+@dataclass
+class User:
+    name: str
+    age: int
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention `slots=True` in dataclasses for memory optimization (3.10+).
+
+#### Common Interview Traps
+- Using lists as dict keys (unhashable).
+- Comparing floats with `==` for exact equality.
+- Assuming `type()` and `isinstance()` are interchangeable.
+- Forgetting that `bool` is a subclass of `int`.
+
+#### Real-world Applications
+- JSON parsing maps to dict/list types; database rows as tuples or dataclasses; unique IDs in sets; binary protocols with bytes; config files as dicts.
+
+#### Follow-up Questions Interviewers May Ask
+- Why are strings immutable?
+- What makes an object hashable?
+- How would you model a domain entity: dict, dataclass, or NamedTuple?
+- Explain NaN behavior in floats.
+
+---
+
+### Type Casting
+
+#### Concept Explanation
+Type casting (type conversion) in Python transforms a value from one type to another using built-in constructors like `int()`, `float()`, `str()`, and `bool()`. Implicit conversion (coercion) occurs in mixed-type operations, such as int + float promoting to float. Not all conversions succeed—invalid casts raise `ValueError` or `TypeError`.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you convert a string to an integer?
+**Answer:** Use `int(string_value)`, optionally with base for non-decimal strings.
+**Explanation:** The string must represent a valid integer literal; whitespace is stripped automatically.
+**Example:**
+```python
+age = int("25")
+hex_val = int("ff", 16)  # 255
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention base parameter for hex/binary parsing—shows depth beyond `int("5")`.
+
+**Question 2:** How do you convert a number to a string?
+**Answer:** Use `str(number)` or formatted strings like `f"{number}"`.
+**Explanation:** `str()` produces a human-readable representation; `repr()` produces a developer-oriented form.
+**Example:**
+```python
+n = 42
+print(str(n))      # '42'
+print(f"Value: {n}")
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Know when to use `str()` vs `repr()` in debugging/logging.
+
+**Question 3:** How do you convert float to int?
+**Answer:** Use `int(float_value)`, which truncates toward zero (does not round).
+**Explanation:** For rounding, use `round()` before casting or math functions explicitly.
+**Example:**
+```python
+print(int(3.9))    # 3
+print(int(-3.9))   # -3
+print(round(3.9))  # 4
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Clarify truncate vs round—interviewers love this distinction.
+
+**Question 4:** How does bool conversion work?
+**Answer:** `bool(x)` is `False` for falsy values (0, empty containers, `None`, `""`) and `True` otherwise.
+**Explanation:** Falsy/truthy rules drive conditional logic and short-circuit evaluation.
+**Example:**
+```python
+print(bool(0), bool(""), bool([]), bool("hello"))
+# False False False True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Memorize the full falsy list: `None`, `False`, 0, empty sequences/collections.
+
+**Question 5:** Can you convert a list to a tuple and vice versa?
+**Answer:** Yes, using `tuple(list_obj)` and `list(tuple_obj)`.
+**Explanation:** This creates a new container with the same elements; nested objects are not deep-copied.
+**Example:**
+```python
+t = tuple([1, 2, 3])
+lst = list((4, 5, 6))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention `set()` conversion removes duplicates—natural follow-up.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is implicit type conversion in Python?
+**Answer:** Python automatically promotes types in mixed operations, e.g., `int + float` yields `float`.
+**Explanation:** Boolean values also coerce to int in arithmetic (`True + 1 == 2`).
+**Example:**
+```python
+result = 5 + 2.5   # 7.5 (float)
+print(type(result))
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Python 3 does not implicitly convert str to int in `+` operations—`"5" + 5` raises TypeError.
+
+**Question 2:** What happens with `int("3.14")`?
+**Answer:** It raises `ValueError` because the string contains a decimal point and is not a valid int literal.
+**Explanation:** Convert to float first, then int if needed: `int(float("3.14"))`.
+**Example:**
+```python
+int(float("3.14"))  # 3
+# int("3.14")     # ValueError
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Always validate user input before casting in production code.
+
+**Question 3:** How do you convert between bytes and str?
+**Answer:** Use `.encode()` (str → bytes) and `.decode()` (bytes → str) with an encoding like UTF-8.
+**Explanation:** Wrong encoding causes `UnicodeEncodeError` or `UnicodeDecodeError`; always specify encoding explicitly.
+**Example:**
+```python
+text = "café"
+b = text.encode("utf-8")
+restored = b.decode("utf-8")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Default encoding is UTF-8 in Python 3—still specify it in file I/O for clarity.
+
+**Question 4:** What is the difference between `list()`, `set()`, and `dict()` constructors for conversion?
+**Answer:** They consume iterables (or mappings for dict) to build new collections of the target type.
+**Explanation:** `dict()` accepts mapping objects or iterable of key-value pairs; `set()` requires hashable elements.
+**Example:**
+```python
+set([1, 2, 2])                    # {1, 2}
+dict([("a", 1), ("b", 2)])        # {'a': 1, 'b': 2}
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** `dict(zip(keys, values))` is a common interview pattern.
+
+**Question 5:** What does `float("nan")` and `float("inf")` produce?
+**Answer:** Special IEEE 754 values: `nan` (Not a Number) and `inf` (infinity), with unique comparison behavior.
+**Explanation:** `nan != nan`; use `math.isnan()` for reliable checks.
+**Example:**
+```python
+import math
+x = float("nan")
+print(x == x)           # False
+print(math.isnan(x))    # True
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** NaN comparisons are a classic trap in data cleaning interviews.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How does `__int__`, `__float__`, and `__str__` enable custom casting?
+**Answer:** Defining these dunder methods lets custom classes participate in built-in conversion functions.
+**Explanation:** `int(obj)` calls `obj.__int__()` if defined; similar for float and str protocols.
+**Example:**
+```python
+class Percent:
+    def __init__(self, value): self.value = value
+    def __float__(self): return self.value / 100
+print(float(Percent(50)))  # 0.5
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Also know `__index__` for objects usable as sequence indices.
+
+**Question 2:** Explain lossy vs lossless conversion with examples.
+**Answer:** Lossless: int 5 → float 5.0. Lossy: float 3.7 → int 3, or float to str with limited precision formatting.
+**Explanation:** Design APIs to preserve precision—store money as int cents or Decimal, not float.
+**Example:**
+```python
+from decimal import Decimal
+price = Decimal("19.99")  # lossless decimal representation
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Tie lossy conversion to business impact (billing errors, audit failures).
+
+**Question 3:** What is `ast.literal_eval` and when is it safer than `eval`?
+**Answer:** `ast.literal_eval` safely parses strings containing Python literals (strings, numbers, tuples, lists, dicts, booleans, None) without executing code.
+**Explanation:** Never use `eval()` on untrusted input; `literal_eval` prevents arbitrary code execution.
+**Example:**
+```python
+import ast
+data = ast.literal_eval("[1, 2, 3]")
+# ast.literal_eval("__import__('os').system('rm -rf /')")  # ValueError
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention JSON for cross-language config instead of Python literal strings.
+
+**Question 4:** How do NumPy/pandas casting rules differ from pure Python?
+**Answer:** NumPy uses fixed dtypes with explicit casting rules that may truncate, overflow, or upcast arrays; pandas adds nullable extension dtypes.
+**Explanation:** `astype("int64")` on a Series may introduce NaN handling differences vs Python `int()`.
+**Example:**
+```python
+import pandas as pd
+s = pd.Series(["1", "2", None])
+print(s.astype("Int64"))  # nullable integer dtype
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Show awareness when interview shifts from core Python to data stack.
+
+**Question 5:** What is structural pattern matching (3.10+) and its relation to type-based dispatch?
+**Answer:** `match/case` matches values by structure, types, and guards—not traditional casting, but related to type-driven control flow.
+**Explanation:** Enables cleaner parsing of nested data compared to chains of isinstance checks.
+**Example:**
+```python
+def describe(value):
+    match value:
+        case int() | float(): return "number"
+        case str(): return "text"
+        case _: return "other"
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Don't confuse pattern matching with automatic type conversion.
+
+#### Common Interview Traps
+- Assuming `int()` rounds instead of truncates.
+- Using `eval()` on user input instead of safe parsing.
+- Forgetting `bool("False")` is `True` (non-empty string is truthy).
+- Comparing NaN with `==`.
+
+#### Real-world Applications
+- Parsing form/API input, reading CSV numeric fields, serializing objects to JSON strings, encoding HTTP payloads, and validating configuration values.
+
+#### Follow-up Questions Interviewers May Ask
+- How do you validate input before casting?
+- When would you use Decimal over float?
+- How does JSON serialization handle non-serializable types?
+- What is the difference between `str()` and `repr()`?
+
+---
+
+### Input and Output
+
+#### Concept Explanation
+Python handles input via `input()` (always returns a string) and output via `print()` or writing to file objects. File I/O uses `open()` with context managers (`with`) for safe resource handling. Standard streams `sys.stdin`, `sys.stdout`, and `sys.stderr` connect programs to the terminal and can be redirected.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you read user input in Python?
+**Answer:** Use `input(prompt)` which reads a line from stdin and returns it as a string.
+**Explanation:** Always cast or validate input before numeric or boolean use.
+**Example:**
+```python
+name = input("Enter your name: ")
+age = int(input("Enter age: "))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention EOFError when stdin closes—relevant for piped input.
+
+**Question 2:** How does `print()` work?
+**Answer:** `print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)` converts objects to strings and writes to output.
+**Explanation:** Customizing `sep`, `end`, and `file` enables flexible formatting and logging.
+**Example:**
+```python
+print("a", "b", sep="-", end="!\n")
+print("log message", file=open("log.txt", "a"))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Know default sep/end—interviewers ask about suppressing newlines.
+
+**Question 3:** How do you read and write a text file?
+**Answer:** Use `open(path, mode)` with modes `'r'`, `'w'`, `'a'`; prefer `with open(...) as f:` for automatic closing.
+**Explanation:** Text mode handles encoding; binary mode (`'rb'`, `'wb'`) handles raw bytes.
+**Example:**
+```python
+with open("data.txt", "w", encoding="utf-8") as f:
+    f.write("Hello\n")
+with open("data.txt", "r", encoding="utf-8") as f:
+    content = f.read()
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Always specify `encoding="utf-8"` in Python 3 file I/O answers.
+
+**Question 4:** What is the difference between `read()`, `readline()`, and `readlines()`?
+**Answer:** `read()` returns entire file; `readline()` one line; `readlines()` list of all lines (includes trailing `\n`).
+**Explanation:** For large files, iterate line-by-line to avoid loading everything into memory.
+**Example:**
+```python
+with open("data.txt") as f:
+    for line in f:
+        process(line)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Recommend iteration over `readlines()` for memory efficiency.
+
+**Question 5:** How do you format output strings?
+**Answer:** Use f-strings (preferred), `str.format()`, or `%` formatting for legacy code.
+**Explanation:** f-strings are faster, readable, and support expressions inside `{}`.
+**Example:**
+```python
+name, score = "Alice", 95
+print(f"{name} scored {score}%")
+print("{} scored {}%".format(name, score))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Default to f-strings unless maintaining Python 3.5 or older codebases.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What are file modes and when use `'r+'`, `'w+'`, `'a+'`?
+**Answer:** `'r'` read, `'w'` write (truncate), `'a'` append, `'x'` exclusive create; `'+'` adds read/write; `'b'` binary.
+**Explanation:** `'w'` destroys existing content; use `'a'` for logs; `'x'` fails if file exists (safe create).
+**Example:**
+```python
+with open("new.txt", "x") as f:
+    f.write("created once")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Warn that `'w+'` truncates—common production footgun.
+
+**Question 2:** How do context managers improve I/O safety?
+**Answer:** `with` ensures `__enter__`/`__exit__` runs, closing files even if exceptions occur.
+**Explanation:** Prevents resource leaks; same pattern applies to locks, DB connections, and temp files.
+**Example:**
+```python
+from contextlib import contextmanager
+
+@contextmanager
+def managed_resource():
+    r = acquire()
+    try:
+        yield r
+    finally:
+        release(r)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Explain `__exit__` receives exception info—can suppress exceptions by returning True.
+
+**Question 3:** How do you handle JSON I/O?
+**Answer:** Use `json.load`/`json.loads` for reading and `json.dump`/`json.dumps` for writing structured data.
+**Explanation:** JSON supports limited types; custom objects need a default encoder or manual conversion.
+**Example:**
+```python
+import json
+data = {"name": "Ada", "scores": [98, 87]}
+with open("data.json", "w") as f:
+    json.dump(data, f, indent=2)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know `default=str` hack vs proper serialization for datetime objects.
+
+**Question 4:** What is `sys.argv` and how is it used?
+**Answer:** `sys.argv` is a list of command-line arguments; `sys.argv[0]` is the script name.
+**Explanation:** Enables CLI scripts; `argparse` builds on this for robust parsing.
+**Example:**
+```python
+import sys
+if len(sys.argv) > 1:
+    print(f"Hello, {sys.argv[1]}")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Prefer `argparse` over manual `sys.argv` parsing in production.
+
+**Question 5:** How do you redirect stdout temporarily?
+**Answer:** Use `contextlib.redirect_stdout` or reassign `sys.stdout` with restoration in `finally`.
+**Explanation:** Useful for testing functions that print or capturing CLI output.
+**Example:**
+```python
+import io
+from contextlib import redirect_stdout
+
+buf = io.StringIO()
+with redirect_stdout(buf):
+    print("captured")
+print(buf.getvalue())  # 'captured\n'
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Also mention `logging` module as the production alternative to print debugging.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Compare buffering modes for file I/O.
+**Answer:** Text files use universal newline translation; buffering can be line-buffered, fully buffered, or unbuffered (`buffering=0` binary only).
+**Explanation:** Line-buffered stdout means prints appear when newline is written or buffer fills.
+**Example:**
+```python
+with open("log.txt", "w", buffering=1, encoding="utf-8") as f:
+    f.write("line\n")  # may flush on newline
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention `flush=True` in print for real-time logging.
+
+**Question 2:** How does `pathlib` improve file I/O over `os.path`?
+**Answer:** `pathlib.Path` provides object-oriented path manipulation and convenient read/write methods.
+**Explanation:** Cross-platform, readable, and composable with `/` operator for path joining.
+**Example:**
+```python
+from pathlib import Path
+p = Path("data") / "input.txt"
+text = p.read_text(encoding="utf-8")
+p.write_text(text.upper(), encoding="utf-8")
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Modern Python interviews expect pathlib fluency.
+
+**Question 3:** Explain standard input/output encoding issues on Windows.
+**Answer:** Console code pages may differ from UTF-8, causing mojibake when reading/writing Unicode.
+**Explanation:** Set `PYTHONIOENCODING=utf-8`, use `encoding="utf-8"` in open(), and configure terminal for UTF-8.
+**Example:**
+```python
+import sys
+sys.stdout.reconfigure(encoding="utf-8")  # Python 3.7+
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Shows real-world deployment awareness beyond Linux-centric examples.
+
+**Question 4:** How do you stream large files without loading into memory?
+**Answer:** Iterate line-by-line, use generators, or process chunks with `read(size)`.
+**Explanation:** Essential for GB-scale logs, CSV ETL, and data pipelines.
+**Example:**
+```python
+def lines(path):
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            yield line.strip()
+
+for row in lines("huge.log"):
+    if "ERROR" in row:
+        handle(row)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Connect to generator patterns and memory profiling.
+
+**Question 5:** What are best practices for structured logging vs print?
+**Answer:** Use the `logging` module with levels, formatters, handlers (file, syslog, JSON), and correlation IDs.
+**Explanation:** Print lacks levels, rotation, and centralized aggregation; logging integrates with observability stacks.
+**Example:**
+```python
+import logging
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+logging.info("Server started on port %s", 8080)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention structured JSON logs for ELK/Datadog ingestion.
+
+#### Common Interview Traps
+- Forgetting `input()` returns a string, causing type errors in arithmetic.
+- Not closing files (omitting `with`).
+- Using `'w'` mode when append or read-modify-write was intended.
+- Relying on `print` for production diagnostics.
+
+#### Real-world Applications
+- CLI tools, log processing, config file management, CSV/JSON data pipelines, user prompts in scripts, and API response serialization.
+
+#### Follow-up Questions Interviewers May Ask
+- How would you build a robust CLI with argparse?
+- How do you handle binary file formats?
+- Explain the logging hierarchy and handlers.
+- How do you read environment variables vs config files?
+
+---
+
+### Operators
+
+#### Concept Explanation
+Python operators perform operations on operands: arithmetic (`+`, `-`, `*`, `/`), comparison (`==`, `!=`, `<`), logical (`and`, `or`, `not`), bitwise (`&`, `|`, `^`, `<<`), assignment (`=`, `+=`), and membership/identity (`in`, `is`). Operator precedence follows standard rules, with parentheses overriding defaults. Many operators delegate to dunder methods on objects.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What is the difference between `/` and `//`?
+**Answer:** `/` is true division (always float in Python 3); `//` is floor division (truncates toward negative infinity).
+**Explanation:** Use `//` when you need integer quotient; use `/` for precise ratios.
+**Example:**
+```python
+print(7 / 2)    # 3.5
+print(7 // 2)   # 3
+print(-7 // 2)  # -4
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Negative floor division surprises many—memorize `-7 // 2 == -4`.
+
+**Question 2:** What does the `%` operator do?
+**Answer:** It returns the remainder of division; for positive numbers, `a == (a // b) * b + (a % b)`.
+**Explanation:** Also used for cyclic patterns, hash slots, and formatting.
+**Example:**
+```python
+print(10 % 3)   # 1
+print(10 % 2)   # 0 (even check)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Know `%` behavior with negatives differs from some C implementations—Python follows divmod rule.
+
+**Question 3:** What are logical operators in Python?
+**Answer:** `and`, `or`, and `not` evaluate truthiness and short-circuit.
+**Explanation:** `and`/`or` return the last evaluated operand, not strictly bool—important subtlety.
+**Example:**
+```python
+print(0 and 5)     # 0
+print(3 or 5)      # 3
+print(not "")      # True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Short-circuit means right side may never execute—security and performance implication.
+
+**Question 4:** What is the difference between `==` and `is`?
+**Answer:** `==` compares values (via `__eq__`); `is` compares object identity (same memory address).
+**Explanation:** Use `is` only for singletons like `None`, `True`, `False`; use `==` for value equality.
+**Example:**
+```python
+a = [1, 2]
+b = [1, 2]
+print(a == b)  # True
+print(a is b)  # False
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Small integer caching can make `is` appear to work for ints—still use `==`.
+
+**Question 5:** What does the `in` operator do?
+**Answer:** Tests membership in a container (sequence, set, dict keys, etc.).
+**Explanation:** Membership time complexity varies: O(1) for sets/dicts, O(n) for lists.
+**Example:**
+```python
+print(2 in [1, 2, 3])      # True
+print("a" in {"a": 1})     # True (key membership)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention performance when checking membership in large lists vs sets.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** Explain operator precedence with an example.
+**Answer:** PEMDAS-like rules: parentheses, exponentiation, unary, mul/div, add/sub, comparisons, not, and, or.
+**Explanation:** When unsure, use parentheses for clarity—readability over memorization.
+**Example:**
+```python
+print(2 + 3 * 4)       # 14
+print((2 + 3) * 4)     # 20
+print(not False and True)  # True
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know that comparisons chain: `1 < 2 < 3` is valid and True.
+
+**Question 2:** What are augmented assignment operators?
+**Answer:** Operators like `+=`, `-=`, `*=` combine operation and assignment in one step.
+**Explanation:** For mutables, they often mutate in place but may rebind for immutables (creating new objects).
+**Example:**
+```python
+x = 10
+x += 5        # new int object 15
+nums = [1]
+nums += [2]   # in-place extend
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** List `+=` vs `+`: `+` creates new list; `+=` mutates when possible.
+
+**Question 3:** What are bitwise operators used for?
+**Answer:** `&`, `|`, `^`, `~`, `<<`, `>>` manipulate individual bits of integers.
+**Explanation:** Used in flags, permissions, compression, low-level protocols, and certain optimizations.
+**Example:**
+```python
+READ = 1 << 0   # 1
+WRITE = 1 << 1  # 2
+perms = READ | WRITE
+print(perms & READ)  # non-zero if READ set
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Connect to `enum.Flag` as modern Pythonic alternative.
+
+**Question 4:** What is the walrus operator and is it an operator?
+**Answer:** `:=` (PEP 572) is assignment expression syntax, allowing assignment within larger expressions.
+**Explanation:** Not traditional arithmetic/logical operator but commonly grouped in operator discussions.
+**Example:**
+```python
+if (n := len(data)) > 10:
+    print(f"Large dataset: {n} items")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Parentheses are required in many contexts—syntax rules matter.
+
+**Question 5:** How does `@` work as an operator?
+**Answer:** `@` is matrix multiplication (PEP 465), primarily for NumPy arrays and `@` decorator syntax for functions.
+**Explanation:** Do not confuse `@decorator` (syntax) with `A @ B` (operator)—same symbol, different contexts.
+**Example:**
+```python
+import numpy as np
+A = np.array([[1, 2], [3, 4]])
+B = np.array([[5, 6], [7, 8]])
+print(A @ B)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Clarify context when `@` appears—decorator vs matmul.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How do dunder methods map to operators?
+**Answer:** `__add__`, `__sub__`, `__eq__`, `__lt__`, etc. implement operator behavior; missing methods fall back to reflected ops (`__radd__`).
+**Explanation:** Full data model knowledge enables rich domain-specific types.
+**Example:**
+```python
+class Money:
+    def __init__(self, cents): self.cents = cents
+    def __add__(self, other): return Money(self.cents + other.cents)
+    def __eq__(self, other): return self.cents == other.cents
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention `@total_ordering` from functools for comparison boilerplate.
+
+**Question 2:** Explain chained comparisons in Python.
+**Answer:** `a < b < c` evaluates as `(a < b) and (b < c)` with `b` evaluated once.
+**Explanation:** Elegant for range checks without redundant variable storage.
+**Example:**
+```python
+x = 15
+if 10 < x < 20:
+    print("in range")
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Contrast with C-style `x > 10 && x < 20`—Python idiom is cleaner.
+
+**Question 3:** What is operator overloading limitation with `and`/`or`?
+**Answer:** `and`/`or` cannot be overloaded; they rely on truthiness and short-circuit logic, not `__and__`.
+**Explanation:** Use bitwise `&`/`|` on bools for boolean logic without short-circuit, or explicit methods.
+**Example:**
+```python
+# No __and__ for custom classes with 'and' keyword
+result = True and obj  # uses truthiness of obj
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Shows deep language knowledge—rare but impressive.
+
+**Question 4:** How does `divmod(a, b)` relate to `/` and `//`?
+**Answer:** Returns `(a // b, a % b)` pair consistent with floor division semantics.
+**Explanation:** Useful for pagination, time conversion (seconds → hours, minutes).
+**Example:**
+```python
+hours, rem = divmod(130, 60)  # 2 hours, 10 minutes
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** One function, two results—cleaner than separate // and %.
+
+**Question 5:** Compare `is`, `==`, and `hash()` consistency rules.
+**Answer:** If `a == b`, then `hash(a) == hash(b)` must hold for hashable objects; `is` equality implies both.
+**Explanation:** Violating hash/equality invariant breaks dict/set behavior.
+**Example:**
+```python
+class Bad:
+    def __eq__(self, other): return True
+    # __hash__ = None implicitly — unhashable
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Link to dataclass `eq=True, frozen=True` auto-generating consistent hash.
+
+#### Common Interview Traps
+- Using `is` for string or int value comparison.
+- Assuming `and`/`or` always return True/False.
+- Forgetting floor division direction with negative numbers.
+- Confusing `@` decorator with matrix multiplication operator.
+
+#### Real-world Applications
+- Permission flags (bitwise), pagination (divmod), deduplication sets (`in`), price calculations, sorting comparisons, and numpy linear algebra (`@`).
+
+#### Follow-up Questions Interviewers May Ask
+- Implement a Fraction class with operator overloading.
+- Why does `0.1 + 0.2 == 0.3` fail?
+- How does `@functools.total_ordering` work?
+- What is the difference between shallow and deep equality?
+
+---
+
+### Conditional Statements
+
+#### Concept Explanation
+Conditional statements control program flow based on boolean expressions using `if`, `elif`, and `else`. Python uses indentation (not braces) to define blocks. Conditions rely on truthiness; any expression can serve as a condition, not just comparisons.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What is the syntax of an if statement in Python?
+**Answer:** `if condition:` followed by an indented block; optional `elif` and `else` branches.
+**Explanation:** Colon and indentation are mandatory; blocks are defined by consistent whitespace (typically 4 spaces).
+**Example:**
+```python
+score = 85
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Never mention braces—immediate red flag in Python interviews.
+
+**Question 2:** What values are considered False in a condition?
+**Answer:** `None`, `False`, zero numbers, empty sequences/collections (`""`, `[]`, `{}`, `set()`).
+**Explanation:** Everything else is truthy, including non-zero numbers and non-empty containers.
+**Example:**
+```python
+if []:
+    print("won't run")
+if "hello":
+    print("runs")
+```
+**Difficulty Level:** Basic
+**Interview Tips:** `if x is not None` is safer than `if x` when 0 or empty string are valid.
+
+**Question 3:** Can you write a one-line conditional?
+**Answer:** Yes, using the ternary expression: `value_if_true if condition else value_if_false`.
+**Explanation:** Useful for simple assignments; avoid nesting ternaries—they harm readability.
+**Example:**
+```python
+status = "adult" if age >= 18 else "minor"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Contrast with C's `?:` syntax—order differs in Python.
+
+**Question 4:** What happens if you use `=` instead of `==` in an if condition?
+**Answer:** In Python 3, `if x = 5` is a SyntaxError; assignment is not an expression in conditions (except walrus `:=`).
+**Explanation:** This prevents accidental assignment bugs common in C/Java.
+**Example:**
+```python
+if (n := len(items)) > 0:  # assignment expression OK
+    print(n)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Highlight Python's deliberate design choice vs C.
+
+**Question 5:** How do you check multiple conditions?
+**Answer:** Combine with `and`, `or`, `not`, or chain comparisons; use parentheses for clarity.
+**Explanation:** Short-circuit evaluation skips remaining operands once outcome is determined.
+**Example:**
+```python
+if 18 <= age <= 65 and has_license:
+    allow_drive = True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Prefer chained comparisons over `age >= 18 and age <= 65`.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is the difference between `if not x` and `if x is None`?
+**Answer:** `not x` is False for None, 0, empty string, etc.; `x is None` checks identity only for None.
+**Explanation:** APIs returning 0 or "" need explicit None checks when those are valid values.
+**Example:**
+```python
+count = 0
+if not count:        # True — may be wrong logic
+if count is None:    # False
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** This distinction appears in almost every mid-level Python interview.
+
+**Question 2:** How does `match/case` (3.10+) compare to if/elif chains?
+**Answer:** `match` supports structural pattern matching on value shape, types, sequences, and mappings with guards.
+**Explanation:** Cleaner for parsing ADTs, JSON shapes, and command dispatch vs long elif chains.
+**Example:**
+```python
+match command.split():
+    case ["quit"]: break
+    case ["load", filename]: load(filename)
+    case _: print("unknown")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know it's not switch-case with fall-through—no C-style break needed between cases.
+
+**Question 3:** What is guard clause style and why use it?
+**Answer:** Early returns/exits for invalid conditions reduce nesting and improve readability.
+**Explanation:** Prefer flat code over deeply nested if/else pyramids.
+**Example:**
+```python
+def process(user):
+    if user is None:
+        return
+    if not user.is_active:
+        return
+    # main logic at base indentation
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Interviewers value readability—mention guard clauses proactively.
+
+**Question 4:** How do truthy custom objects work in conditions?
+**Answer:** Objects define truthiness via `__bool__()` or, if absent, `__len__()` (empty = False).
+**Explanation:** Empty containers return False; custom classes can override behavior.
+**Example:**
+```python
+class Stack:
+    def __init__(self): self.items = []
+    def __bool__(self): return len(self.items) > 0
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** If both `__bool__` and `__len__` exist, `__bool__` takes precedence.
+
+**Question 5:** What is exhaustiveness checking with elif/else?
+**Answer:** Ensure all cases are covered; final `else` catches unexpected states or documents intentional default.
+**Explanation:** Missing branches cause silent bugs; type checkers help with Union types and match cases.
+**Example:**
+```python
+def sign(n):
+    if n > 0: return 1
+    elif n < 0: return -1
+    else: return 0  # n == 0 covered
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Mention `# type: ignore` vs fixing logic—prefer fixing.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How do short-circuit operators interact with side effects?
+**Answer:** `and`/`or` skip evaluating right operand if left determines outcome—side effects may not run.
+**Explanation:** Never rely on side effects in unreachable branches; bad for readability and security.
+**Example:**
+```python
+def expensive(): print("called"); return True
+False and expensive()  # 'called' never prints
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Security: never use short-circuit for auth checks split across expressions.
+
+**Question 2:** Implement if/else logic without if (using dict or operator).
+**Answer:** Dispatch tables map keys to functions; `operator.truth` patterns exist but are anti-patterns for clarity.
+**Explanation:** Dict dispatch scales better than long elif for command routing.
+**Example:**
+```python
+handlers = {"add": add_fn, "delete": delete_fn}
+handlers.get(action, default_fn)(payload)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Show dict dispatch as pattern, not as trick to avoid if entirely.
+
+**Question 3:** How does static analysis improve conditional correctness?
+**Answer:** Tools like mypy narrow types after isinstance checks and flag unreachable code after return.
+**Explanation:** Type narrowing makes conditionals self-documenting and catches missing branches.
+**Example:**
+```python
+def handle(value: str | int):
+    if isinstance(value, str):
+        return value.upper()  # mypy knows str here
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Tie isinstance branches to PEP 604 union types.
+
+**Question 4:** Explain boolean coercion in SQLAlchemy/Django QuerySet contexts.
+**Answer:** Lazy query objects override `__bool__` to avoid accidental DB hits; empty queryset is falsy but unevaluated queryset may be truthy.
+**Explanation:** Framework-specific truthiness differs from plain Python objects—read docs before `if queryset`.
+**Example:**
+```python
+# Django: if User.objects.filter(active=True): hits DB
+# Prefer: if User.objects.filter(active=True).exists():
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Shows framework awareness beyond core Python.
+
+**Question 5:** What are pattern matching guards and capture patterns?
+**Answer:** Guards add `if condition` to cases; capture patterns bind sub-values during destructuring.
+**Explanation:** Enables expressive parsing of nested API payloads and AST-like structures.
+**Example:**
+```python
+match point:
+    case (x, y) if x == y:
+        print(f"on diagonal at {x}")
+    case (x, y):
+        print(f"({x}, {y})")
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Know `case _` is wildcard, not variable assignment.
+
+#### Common Interview Traps
+- Using `if x == None` instead of `if x is None`.
+- Treating empty-but-valid values (0, "") as missing.
+- Deeply nested if/else instead of guard clauses.
+- Assuming Django/SQLAlchemy querysets behave like lists in boolean context.
+
+#### Real-world Applications
+- Authorization checks, input validation, feature flags, error handling branches, business rule engines, and API response routing.
+
+#### Follow-up Questions Interviewers May Ask
+- When would you use match/case over if/elif?
+- How do you avoid the arrow anti-pattern (deep nesting)?
+- Explain EAFP vs LBYL in relation to conditionals.
+- How does isinstance differ from pattern matching?
+
+---
+
+### Loops
+
+#### Concept Explanation
+Python provides `for` loops to iterate over iterables and `while` loops to repeat while a condition is true. The `for` loop uses the iterator protocol (`__iter__`/`__next__`) under the hood. Loop constructs pair naturally with `range()`, comprehensions, and enumerate/zipping utilities.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How does a for loop work in Python?
+**Answer:** `for item in iterable:` assigns each element from the iterable to `item` and runs the block.
+**Explanation:** Works with lists, strings, dicts (keys by default), files, generators, and any iterable.
+**Example:**
+```python
+for fruit in ["apple", "banana", "cherry"]:
+    print(fruit)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Say "iterable," not "list only"—shows protocol understanding.
+
+**Question 2:** How do you loop a specific number of times?
+**Answer:** Use `range(n)` or `range(start, stop, step)` with a for loop.
+**Explanation:** `range` produces lazy integers; it is memory-efficient for large counts.
+**Example:**
+```python
+for i in range(5):        # 0, 1, 2, 3, 4
+    print(i)
+for i in range(2, 10, 2): # 2, 4, 6, 8
+    print(i)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Know `range` stop is exclusive—`range(5)` goes to 4.
+
+**Question 3:** What is a while loop?
+**Answer:** Repeats a block while the condition remains True; condition checked before each iteration.
+**Explanation:** Risk infinite loops if condition never becomes False—ensure progress inside loop.
+**Example:**
+```python
+n = 3
+while n > 0:
+    print(n)
+    n -= 1
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Always explain loop termination—interviewers watch for infinite loop bugs.
+
+**Question 4:** How do you iterate over a dictionary?
+**Answer:** `.items()` for key-value pairs, `.keys()` for keys, `.values()` for values.
+**Explanation:** Iterating dict directly yields keys; use `.items()` for most use cases.
+**Example:**
+```python
+scores = {"Alice": 90, "Bob": 85}
+for name, score in scores.items():
+    print(name, score)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention dict insertion order is preserved (3.7+).
+
+**Question 5:** What is `enumerate()`?
+**Answer:** Wraps an iterable yielding `(index, value)` pairs, starting at 0 by default.
+**Explanation:** Avoid manual counter variables when you need both index and element.
+**Example:**
+```python
+for i, char in enumerate("abc"):
+    print(i, char)  # 0 a, 1 b, 2 c
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Know `start=` parameter: `enumerate(items, start=1)`.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is the difference between for and while loops?
+**Answer:** `for` iterates known/collection-driven sequences; `while` repeats until a condition fails.
+**Explanation:** Prefer `for` when iterating collections; use `while` for unknown iteration counts or event loops.
+**Example:**
+```python
+# while: read until sentinel
+while (line := input()) != "quit":
+    handle(line)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Default to for—while is easier to get wrong.
+
+**Question 2:** How does `zip()` work in loops?
+**Answer:** Aggregates multiple iterables in parallel, stopping at shortest length.
+**Explanation:** Common for pairing names with values or merging parallel lists.
+**Example:**
+```python
+names = ["Alice", "Bob"]
+scores = [90, 85]
+for name, score in zip(names, scores):
+    print(name, score)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Python 3.10+ `zip(..., strict=True)` raises on length mismatch.
+
+**Question 3:** What are loop `else` clauses?
+**Answer:** `else` on a loop runs if the loop completes without a `break`.
+**Explanation:** Useful for search patterns—else triggers when item not found.
+**Example:**
+```python
+for n in nums:
+    if n == target:
+        print("found")
+        break
+else:
+    print("not found")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Many developers don't know loop else—explaining it stands out.
+
+**Question 4:** How do you iterate in reverse?
+**Answer:** Use `reversed(sequence)` or `range(len(s)-1, -1, -1)` for indices.
+**Explanation:** `reversed` works on any reversible sequence without copying (for lists, uses reverse iterator).
+**Example:**
+```python
+for item in reversed([1, 2, 3]):
+    print(item)  # 3, 2, 1
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Slicing `[::-1]` creates copy—reversed is often more efficient.
+
+**Question 5:** What is an infinite loop and how to avoid it?
+**Answer:** Condition always True or no progress toward termination; fix by updating loop variables or using break.
+**Explanation:** `while True:` with internal break is idiomatic for server/event loops.
+**Example:**
+```python
+while True:
+    cmd = input("> ")
+    if cmd == "exit":
+        break
+    process(cmd)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Distinguish intentional `while True` from accidental infinite loops.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Explain the iterator protocol.
+**Answer:** Iterables implement `__iter__()` returning an iterator; iterators implement `__next__()` raising StopIteration when exhausted.
+**Explanation:** For loops call iter(), then next() repeatedly—custom iterables integrate seamlessly.
+**Example:**
+```python
+class Countdown:
+    def __init__(self, n): self.n = n
+    def __iter__(self): return self
+    def __next__(self):
+        if self.n <= 0: raise StopIteration
+        self.n -= 1
+        return self.n + 1
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Generators are simpler iterator implementations—mention yield.
+
+**Question 2:** Compare loop comprehensions vs explicit loops.
+**Answer:** Comprehensions are faster, more concise, and create new collections; loops better for side effects and complex logic.
+**Explanation:** `[f(x) for x in items if cond]` replaces filter-map loop patterns.
+**Example:**
+```python
+squares = [x**2 for x in range(10) if x % 2 == 0]
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Nested comprehensions beyond 2 levels hurt readability—switch to loop.
+
+**Question 3:** How do you iterate large datasets without memory blowup?
+**Answer:** Use generators, iterator consumption, chunked reads, and itertools/islice.
+**Explanation:** Materializing millions of rows into lists fails; stream processing succeeds.
+**Example:**
+```python
+def read_chunks(path, size=1024):
+    with open(path, "rb") as f:
+        while chunk := f.read(size):
+            yield chunk
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Connect generators to lazy evaluation and pipeline architecture.
+
+**Question 4:** What is itertools and give three useful functions?
+**Answer:** `itertools` provides iterator algebra: `islice`, `chain`, `groupby`, `product`, `cycle`, etc.
+**Explanation:** Avoid reimplementing combinatorial iteration manually.
+**Example:**
+```python
+from itertools import islice, chain
+first_5 = list(islice(range(100), 5))
+combined = list(chain([1, 2], [3, 4]))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Warn that `groupby` requires sorted input for grouping all equal keys.
+
+**Question 5:** How does async iteration differ from sync loops?
+**Answer:** `async for` awaits `__anext__()` on async iterables; used with async generators and streaming I/O.
+**Explanation:** Event loop drives concurrency; don't mix blocking I/O inside async loops.
+**Example:**
+```python
+async for line in async_file_reader():
+    await process(line)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention `async for` only if interview covers asyncio—otherwise note briefly.
+
+#### Common Interview Traps
+- Modifying a list while iterating over it (skips elements or errors).
+- Using range(len(lst)) when direct iteration or enumerate suffices.
+- Forgetting loop else runs when no break—not when condition is False.
+- Creating huge range/list unnecessarily instead of generator.
+
+#### Real-world Applications
+- Processing CSV rows, retry loops with backoff, batch API pagination, game main loops, ETL transformations, and test case iteration.
+
+#### Follow-up Questions Interviewers May Ask
+- Why shouldn't you remove items from a list while iterating?
+- What is a generator and how does yield work?
+- Compare map/filter comprehensions vs loops for readability.
+- How would you implement retry logic with exponential backoff?
+
+---
+
+### Break, Continue, Pass
+
+#### Concept Explanation
+`break` exits the innermost enclosing loop immediately; `continue` skips the rest of the current iteration and proceeds to the next; `pass` is a null statement placeholder that does nothing. All three are statements (not functions) and apply to the nearest loop for break/continue. `pass` is also used for empty class/function bodies required by syntax.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What does `break` do?
+**Answer:** Terminates the nearest enclosing loop (`for` or `while`) and continues execution after the loop.
+**Explanation:** Only breaks one level of nesting; nested loops need explicit flags or functions for multi-level exit.
+**Example:**
+```python
+for n in range(10):
+    if n == 5:
+        break
+    print(n)  # 0, 1, 2, 3, 4
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Clarify break does not exit if/else—only loops (and doesn't apply to if alone).
+
+**Question 2:** What does `continue` do?
+**Answer:** Skips remaining code in the current loop iteration and jumps to the next iteration.
+**Explanation:** Useful for filtering unwanted items without deep nesting.
+**Example:**
+```python
+for n in range(5):
+    if n % 2 == 0:
+        continue
+    print(n)  # 1, 3
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Overuse of continue can harm readability—sometimes invert condition instead.
+
+**Question 3:** What is `pass` used for?
+**Answer:** A syntactic no-op placeholder where a statement is required but no action is needed yet.
+**Explanation:** Common in stub classes, empty exception handlers (discouraged), and TODO blocks.
+**Example:**
+```python
+class TodoAPI:
+    pass  # methods to be implemented
+
+def future_feature():
+    pass
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Never use bare `except: pass` in production—interviewers penalize this.
+
+**Question 4:** Does `break` work inside an if within a loop?
+**Answer:** Yes. `break` inside if within a loop exits that loop when the if condition is true.
+**Explanation:** The if is not the target—break always targets the enclosing loop.
+**Example:**
+```python
+while True:
+    cmd = input("> ")
+    if cmd == "quit":
+        break
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Contrast with return which exits the entire function.
+
+**Question 5:** Can you use break or continue outside a loop?
+**Answer:** No. Using them outside a loop raises `SyntaxError`.
+**Explanation:** They are loop control statements only; pass can appear anywhere a statement is valid.
+**Example:**
+```python
+# break  # SyntaxError outside loop
+if True:
+    pass  # OK
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention pass works in if blocks; break/continue do not.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** How does `break` interact with loop `else`?
+**Answer:** If `break` executes, the loop's `else` clause is skipped; else runs only on natural completion.
+**Explanation:** Pattern for search: break on found, else handles not found.
+**Example:**
+```python
+for x in data:
+    if x == target:
+        print("found")
+        break
+else:
+    print("missing")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** This is a favorite Python-specific interview question.
+
+**Question 2:** How do you break out of nested loops?
+**Answer:** Use a flag variable, wrap in a function and `return`, or (Python 3.11+) `break` with labeled loops is NOT available—use function return.
+**Explanation:** Unlike Java, Python has no labeled break; refactor to functions or iterators.
+**Example:**
+```python
+def find_pair(matrix, target):
+    for i, row in enumerate(matrix):
+        for j, val in enumerate(row):
+            if val == target:
+                return i, j
+    return None
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Function return is the cleanest nested-loop exit pattern.
+
+**Question 3:** When is `continue` preferred over nested if?
+**Answer:** When skipping invalid items early in a loop body keeps main logic at one indentation level.
+**Explanation:** Guard-style continue reduces pyramid nesting for validation loops.
+**Example:**
+```python
+for user in users:
+    if not user.is_active:
+        continue
+    if user.is_banned:
+        continue
+    send_email(user)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Too many continues suggest filtering upstream (list comp or SQL WHERE).
+
+**Question 4:** What alternatives exist to `pass` for stubs?
+**Answer:** `raise NotImplementedError`, ellipsis `...`, or abstract methods with `@abstractmethod`.
+**Explanation:** Explicit NotImplementedError signals incomplete code more clearly than silent pass.
+**Example:**
+```python
+def compute():
+    raise NotImplementedError("TODO: implement compute")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** In ABCs, `@abstractmethod` prevents instantiation—better than pass stubs.
+
+**Question 5:** Does `continue` affect finally blocks?
+**Answer:** If try/finally is inside the loop, `continue` still runs `finally` before next iteration.
+**Explanation:** finally always executes on leaving try block, including via continue/break/return.
+**Example:**
+```python
+for i in range(3):
+    try:
+        if i == 1:
+            continue
+    finally:
+        print(f"cleanup {i}")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** finally behavior with continue is a subtle but testable topic.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How does `break`/`continue` interact with generators?
+**Answer:** `break`/`continue` control the loop consuming the generator, not the generator's internal state directly; generator cleanup uses `GeneratorExit` on close.
+**Explanation:** Use `try/finally` inside generator with yield for resource cleanup.
+**Example:**
+```python
+def gen():
+    try:
+        yield 1
+        yield 2
+    finally:
+        print("generator cleanup")
+
+for x in gen():
+    if x == 1:
+        break  # triggers finally in generator
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** PEP 525/525 async generators have analogous cleanup semantics.
+
+**Question 2:** Compare EAFP loop patterns vs continue-heavy validation.
+**Answer:** EAFP uses try/except inside loop for expected failures; continue/if validates upfront (LBYL).
+**Explanation:** EAFP fits unpredictable parsing; LBYL fits cheap predictable checks.
+**Example:**
+```python
+for token in tokens:
+    try:
+        value = int(token)
+    except ValueError:
+        continue
+    process(value)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Zen of Python: "Easier to Ask Forgiveness than Permission."
+
+**Question 3:** What is `contextlib.suppress` as alternative to try/continue?
+**Answer:** `with suppress(Exception):` silently ignores specified exceptions—cleaner for known-safe failures.
+**Explanation:** Avoid bare except; suppress is explicit about ignored errors.
+**Example:**
+```python
+from contextlib import suppress
+for path in paths:
+    with suppress(FileNotFoundError):
+        data = read(path)
+        process(data)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Explicit exception types always—never suppress Exception broadly.
+
+**Question 4:** How do break/continue behave in list comprehensions?
+**Answer:** They cannot be used inside comprehensions; comprehensions are expressions, not statement blocks.
+**Explanation:** Filter with `if` at end of comprehension instead of continue; no break equivalent—use loop or generator.
+**Example:**
+```python
+evens = [x for x in range(10) if x % 2 == 0]  # not continue
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** If you need break, use a for loop or itertools.takewhile.
+
+**Question 5:** Explain control flow in `try/except/else/finally` vs loop control.
+**Answer:** `return`/`break`/`continue` from try still execute finally; except can catch and decide whether to continue loop.
+**Explanation:** Complex control flow mixing try and loops requires careful ordering to avoid swallowed exceptions.
+**Example:**
+```python
+for item in items:
+    try:
+        process(item)
+    except RecoverableError:
+        continue
+    except FatalError:
+        break
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Draw control flow diagram if asked—shows mastery.
+
+#### Common Interview Traps
+- Expecting labeled break like Java (doesn't exist).
+- Using bare `except: pass` swallowing all errors.
+- Thinking break exits if block rather than loop.
+- Using continue/break inside comprehensions.
+
+#### Real-world Applications
+- Search loops (break on find), input validation (continue on bad rows), API stubs (pass/NotImplementedError), retry loops (break on success), and parser skip logic.
+
+#### Follow-up Questions Interviewers May Ask
+- How do you exit nested loops cleanly?
+- What happens to finally when break runs?
+- When is loop else better than a flag variable?
+- How does return differ from break inside a function-with-loop?
+
+---
+
+### Strings
+
+#### Concept Explanation
+Strings in Python are immutable sequences of Unicode characters, created with single, double, or triple quotes. They support indexing, slicing, iteration, and concatenation but cannot be modified in place. Python 3 strings (`str`) represent text; bytes handle raw binary data separately.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you create a string in Python?
+**Answer:** Use quotes: `'single'`, `"double"`, or `'''triple'''` for multiline strings.
+**Explanation:** There is no character type—single-char strings are just str of length 1.
+**Example:**
+```python
+s1 = 'Hello'
+s2 = "World"
+multiline = """Line 1
+Line 2"""
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Triple quotes preserve newlines—useful for docstrings and SQL templates.
+
+**Question 2:** Are strings mutable or immutable?
+**Answer:** Immutable. Any "modification" creates a new string object.
+**Explanation:** Immutability enables hashing (strings can be dict keys) and interning optimizations.
+**Example:**
+```python
+s = "hello"
+s = s.upper()  # new object, not in-place change
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Link immutability to performance when building large strings—use join/list.
+
+**Question 3:** How do you access characters in a string?
+**Answer:** Indexing `s[i]` and slicing `s[start:stop:step]` with zero-based indices; negative indices count from end.
+**Explanation:** Out-of-range index raises IndexError; slicing is forgiving with out-of-range bounds.
+**Example:**
+```python
+word = "Python"
+print(word[0], word[-1], word[2:5])  # P n tho
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Slicing stop is exclusive—`[0:3]` gives indices 0,1,2.
+
+**Question 4:** How do you concatenate strings?
+**Answer:** Use `+` operator or `''.join(iterable)` for multiple parts; f-strings for formatted concatenation.
+**Explanation:** Repeated `+` in loops is O(n²) due to immutability; join is O(n).
+**Example:**
+```python
+full = "Hello" + " " + "World"
+parts = ["a", "b", "c"]
+joined = "-".join(parts)  # 'a-b-c'
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Always recommend join over += in loops—classic interview follow-up.
+
+**Question 5:** How do you get the length of a string?
+**Answer:** Use `len(string)`.
+**Explanation:** Length counts code points in the str abstraction; grapheme clusters may differ for complex Unicode.
+**Example:**
+```python
+print(len("hello"))   # 5
+print(len("café"))    # 4
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention emoji/grapheme edge cases only if interviewer goes deep on Unicode.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What are raw strings and when use them?
+**Answer:** Prefix `r"..."` treats backslashes literally—ideal for regex patterns and Windows paths.
+**Explanation:** Raw strings still treat quote characters specially; trailing backslash can be problematic.
+**Example:**
+```python
+import re
+pattern = r"\d+\.\d+"
+path = r"C:\Users\name\new_folder"
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Raw strings don't help with line-ending backslash at end of string.
+
+**Question 2:** Explain string encoding and decoding.
+**Answer:** str is Unicode; encode converts to bytes; decode converts bytes to str using a codec like utf-8.
+**Explanation:** Mismatch between file encoding and decode causes UnicodeDecodeError.
+**Example:**
+```python
+text = "naïve"
+b = text.encode("utf-8")
+back = b.decode("utf-8")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** bytes ≠ str in Python 3—never concatenate them without conversion.
+
+**Question 3:** What are f-strings and their advantages?
+**Answer:** f"...{expr}..." embeds expressions at runtime; fast, readable, supports format specs.
+**Explanation:** Introduced in 3.6; preferred over `%` and `.format()` for most cases.
+**Example:**
+```python
+name, pi = "Ada", 3.14159
+print(f"{name}, pi={pi:.2f}")
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know `{value=}` debug syntax (3.8+): `f"{value=}"` prints `value=42`.
+
+**Question 4:** What is string interning?
+**Answer:** CPython caches some strings (identifiers, small strings) so identical literals may share memory.
+**Explanation:** Never rely on interning for logic; use `==` for comparison, `is` only for None.
+**Example:**
+```python
+a = "hello"
+b = "hello"
+print(a == b)  # True — always use this
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** `sys.intern()` exists but is niche—mention only if advanced Unicode/perf topic arises.
+
+**Question 5:** How do escape sequences work in strings?
+**Answer:** Backslash introduces escapes: `\n`, `\t`, `\\`, `\'`, `\"`, and `\uXXXX` Unicode escapes.
+**Explanation:** Unknown escapes deprecated; raw strings disable most escape processing.
+**Example:**
+```python
+print("Line1\nLine2")
+print("\u0041")  # 'A'
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** `\x`, `\u`, `\U` escapes useful for binary protocols and Unicode literals.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Explain Unicode normalization (NFC vs NFD).
+**Answer:** Same visual character may have multiple code point sequences; normalization forms standardize representation.
+**Explanation:** Critical for string comparison, deduplication, and search in international apps.
+**Example:**
+```python
+import unicodedata
+s1 = "é"           # single code point
+s2 = "e\u0301"     # e + combining accent
+print(s1 == s2)                    # False
+print(unicodedata.normalize("NFC", s2) == s1)  # True
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention unicodedata.normalize before comparing user input strings.
+
+**Question 2:** What is the difference between str and bytes performance-wise?
+**Answer:** bytes are ASCII-ish 0-255 values; str carries Unicode overhead; encode/decode has cost at boundaries.
+**Explanation:** Process binary data as bytes; decode only at presentation/logging boundaries.
+**Example:**
+```python
+payload = b"\x00\x01\xff"
+# text = payload + "suffix"  # TypeError
+text = payload.decode("latin-1") + "suffix"
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** latin-1 maps bytes 0-255 bijectively—handy for lossless bytes→str bridge.
+
+**Question 3:** How does string formatting mini-language work?
+**Answer:** `{value:[fill][align][width][,][.precision][type]}` controls padding, alignment, grouping, precision.
+**Explanation:** Works in f-strings and str.format; powerful for tables and reports.
+**Example:**
+```python
+print(f"{42:05d}")       # '00042'
+print(f"{3.14159:.2f}")  # '3.14'
+print(f"{'hi':>10}")     # '        hi'
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** `!r` calls repr, `!s` str, `!a` ascii in format specs.
+
+**Question 4:** Compare str.build performance patterns for large output.
+**Answer:** Use list append + join, io.StringIO, or itertools chain; avoid repeated concatenation.
+**Explanation:** Building a 1MB string with += allocates repeatedly; join allocates once.
+**Example:**
+```python
+parts = []
+for i in range(10000):
+    parts.append(str(i))
+result = "".join(parts)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Quantify: O(n²) vs O(n)—interviewers appreciate complexity analysis.
+
+**Question 5:** What are pathlib and str path interoperability concerns on Windows?
+**Answer:** Paths may be str or Path objects; Windows accepts `\` and `/`; long paths need `\\?\` prefix or policy.
+**Explanation:** Always normalize paths with pathlib for cross-platform code.
+**Example:**
+```python
+from pathlib import Path
+p = Path("data") / "file.txt"
+print(str(p))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention os.fspath() for C API interop.
+
+#### Common Interview Traps
+- Modifying strings in place (`s[0] = 'x'` raises TypeError).
+- Using `+` in loops for large string building.
+- Confusing str with bytes in I/O.
+- Assuming equal-looking Unicode strings are equal without normalization.
+
+#### Real-world Applications
+- Text processing, URL/path handling, template rendering, log formatting, CSV field cleaning, password validation, and API payload construction.
+
+#### Follow-up Questions Interviewers May Ask
+- Why are strings immutable?
+- How do you reverse a string?
+- Explain regex vs string methods trade-offs.
+- How do you handle emoji in string length validation?
+
+---
+
+### String Methods
+
+#### Concept Explanation
+Python strings provide rich built-in methods for searching, transforming, validating, and splitting text without importing external libraries. Methods return new strings (or bool/list) since str is immutable. Common groups include case conversion, strip/pad, find/split, and membership tests.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you convert a string to uppercase and lowercase?
+**Answer:** Use `.upper()` and `.lower()` methods.
+**Explanation:** Locale-sensitive case mapping may differ; `.casefold()` is stronger for caseless comparisons.
+**Example:**
+```python
+s = "Hello World"
+print(s.upper())  # HELLO WORLD
+print(s.lower())  # hello world
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention casefold for i18n case-insensitive matching.
+
+**Question 2:** How do you remove whitespace from a string?
+**Answer:** `.strip()` removes both ends; `.lstrip()` left; `.rstrip()` right; pass chars to strip specific ones.
+**Explanation:** Default strip removes spaces, tabs, newlines—common for cleaning user input.
+**Example:**
+```python
+"  hello  ".strip()      # 'hello'
+"***hello***".strip("*")  # 'hello'
+```
+**Difficulty Level:** Basic
+**Interview Tips:** strip only removes from ends, not middle whitespace.
+
+**Question 3:** How do you check if a string starts or ends with a substring?
+**Answer:** `.startswith(prefix)` and `.endswith(suffix)` return bool; accept tuples of options.
+**Explanation:** Cleaner and often faster than slicing comparison.
+**Example:**
+```python
+url = "https://api.example.com"
+print(url.startswith("https://"))
+print(url.endswith((".com", ".io")))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Tuple form avoids multiple or-chains.
+
+**Question 4:** How do you split and join strings?
+**Answer:** `.split(sep)` divides into list; `'sep'.join(list)` combines list elements.
+**Explanation:** Default split splits on any whitespace; specify sep for exact delimiter control.
+**Example:**
+```python
+"apple,banana,cherry".split(",")
+"-".join(["2024", "07", "24"])
+```
+**Difficulty Level:** Basic
+**Interview Tips:** `splitlines()` handles `\n`, `\r\n` cross-platform line breaks.
+
+**Question 5:** How do you replace substrings?
+**Answer:** `.replace(old, new, count=-1)` replaces occurrences; returns new string.
+**Explanation:** Not regex—literal substring only; for patterns use `re.sub`.
+**Example:**
+```python
+"hello world".replace("world", "Python")
+"a-b-c".replace("-", "", 1)  # 'ab-c' (one replacement)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** replace returns copy even if no match—original unchanged.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is the difference between `find()` and `index()`?
+**Answer:** Both search for substring; `find` returns -1 if not found; `index` raises ValueError.
+**Explanation:** Choose find for optional presence; index when absence is exceptional.
+**Example:**
+```python
+s = "hello"
+print(s.find("l"))     # 2
+print(s.find("z"))     # -1
+# s.index("z")         # ValueError
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Also know `in` operator for boolean membership without position.
+
+**Question 2:** How do `isalpha()`, `isdigit()`, `isalnum()` work?
+**Answer:** Return True if all characters match the category and string is non-empty (except isspace nuances).
+**Explanation:** Useful for lightweight validation; not substitute for robust parsing.
+**Example:**
+```python
+print("abc".isalpha())    # True
+print("123".isdigit())    # True
+print("abc123".isalnum()) # True
+print("".isdigit())       # False
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Unicode digits pass isdigit—`"²".isdigit()` is True.
+
+**Question 3:** Explain `partition()` vs `split()`.
+**Answer:** `partition(sep)` splits into exactly three parts (before, sep, after) on first occurrence; rpartition on last.
+**Explanation:** Ideal for parsing `key=value` lines without over-splitting values containing sep.
+**Example:**
+```python
+"key=value=extra".partition("=")  # ('key', '=', 'value=extra')
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** CSV with embedded commas needs csv module, not naive split.
+
+**Question 4:** What does `str.maketrans()` and `translate()` do?
+**Answer:** Build translation table mapping characters; translate applies it efficiently for bulk char replacement.
+**Explanation:** Faster than repeated replace for many character mappings.
+**Example:**
+```python
+table = str.maketrans("aeiou", "12345")
+print("hello".translate(table))  # h2ll4
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** delete chars via third arg: maketrans('', '', 'aeiou').
+
+**Question 5:** How do you center, left, and right pad strings?
+**Answer:** `.center(width, fillchar)`, `.ljust(width, fillchar)`, `.rjust(width, fillchar)`.
+**Explanation:** Useful for CLI tables and fixed-width reports; default fill is space.
+**Example:**
+```python
+print("42".rjust(5, "0"))   # '00042'
+print("hi".center(6, "-"))  # '--hi--'
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** f-string padding `{n:05d}` often cleaner for numbers.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** When should you use regex instead of string methods?
+**Answer:** Use regex for complex patterns, alternation, quantifiers; string methods for fixed literal operations (faster, simpler).
+**Explanation:** Regex adds maintenance cost; prefer str methods when sufficient.
+**Example:**
+```python
+import re
+# String method: simple
+"hello@email.com".endswith(".com")
+# Regex: pattern
+re.match(r"[\w.-]+@[\w.-]+\.\w+", email)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Always mention re.compile for repeated patterns.
+
+**Question 2:** Explain casefold vs lower for comparisons.
+**Answer:** casefold is more aggressive (e.g., German ß → ss) for caseless matching per Unicode standard.
+**Explanation:** Use casefold for search/dedup; lower for display transformation.
+**Example:**
+```python
+"straße".casefold() == "STRASSE".casefold()  # True with casefold
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Turkish locale I/i issues—locale-aware libs needed for full correctness.
+
+**Question 3:** How does `removeprefix` and `removesuffix` (3.9+) improve on slicing?
+**Answer:** Explicit, readable, handles edge cases without manual len(prefix) arithmetic.
+**Explanation:** Safer than startswith check + slice when stripping known affixes.
+**Example:**
+```python
+name = "test_module.py"
+if name.endswith(".py"):
+    base = name.removesuffix(".py")
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Before 3.9, pattern was `s[len(p):] if s.startswith(p) else s`.
+
+**Question 4:** Performance: count vs regex for large text search.
+**Answer:** str.count for literal substring is highly optimized C code; regex has compilation overhead.
+**Explanation:** Benchmark on representative data; Aho-Corasick or dedicated libs for multi-pattern search.
+**Example:**
+```python
+text = "ab" * 1_000_000
+text.count("aba")  # fast literal scan
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention memory-mapped files for searching huge logs.
+
+**Question 5:** How do you safely format user-controlled strings for HTML/SQL?
+**Answer:** Never use f-strings directly; use framework escaping (html.escape), parameterized queries, template engines.
+**Explanation:** String methods don't prevent injection; security layer required.
+**Example:**
+```python
+import html
+safe = html.escape(user_input)
+# SQL: cursor.execute("SELECT * FROM t WHERE id=%s", (user_id,))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Injection prevention is top security interview topic.
+
+#### Common Interview Traps
+- Using split when partition is needed (over-splitting).
+- Assuming isdigit validates integers (`"-3".isdigit()` is False but float checks differ).
+- Chaining many replace calls instead of translate or regex.
+- Using strip to remove internal spaces.
+
+#### Real-world Applications
+- Input sanitization, log parsing, slug generation, email/domain validation, CSV preprocessing, and report column alignment.
+
+#### Follow-up Questions Interviewers May Ask
+- Implement a function to reverse words in a sentence.
+- How would you parse a query string without urllib?
+- Compare split vs regex split for tokenization.
+- How do you detect palindromes ignoring case and spaces?
+
+---
+
+### Lists
+
+#### Concept Explanation
+Lists are ordered, mutable sequences that can hold heterogeneous elements and allow duplicates. They support indexing, slicing, iteration, and dynamic resizing. Lists are the most commonly used container for ordered collections in Python and are implemented as dynamic arrays in CPython.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you create a list in Python?
+**Answer:** Using square brackets `[]`, the `list()` constructor, or list comprehensions.
+**Explanation:** Empty list `[]` is falsy; lists can nest to form multi-dimensional structures.
+**Example:**
+```python
+nums = [1, 2, 3]
+mixed = [1, "two", 3.0, True]
+empty = list()
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention list comprehension as the Pythonic creation pattern.
+
+**Question 2:** How do you access and modify list elements?
+**Answer:** Index with `lst[i]` to read; assign with `lst[i] = value` to modify.
+**Explanation:** Negative indices access from end; slicing returns new list (shallow copy of slice range).
+**Example:**
+```python
+fruits = ["apple", "banana", "cherry"]
+print(fruits[1])      # banana
+fruits[0] = "apricot"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Out-of-range assignment raises IndexError—unlike some dynamic languages.
+
+**Question 3:** How do you add elements to a list?
+**Answer:** `append(x)` adds one item at end; `extend(iterable)` adds multiple; `insert(i, x)` at position.
+**Explanation:** append adds the object as single element—even if iterable; extend flattens one level.
+**Example:**
+```python
+lst = [1, 2]
+lst.append(3)        # [1, 2, 3]
+lst.extend([4, 5])   # [1, 2, 3, 4, 5]
+lst.insert(0, 0)     # [0, 1, 2, 3, 4, 5]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Classic trap: append([4,5]) → [1,2,[4,5]].
+
+**Question 4:** How do you remove elements from a list?
+**Answer:** `remove(x)` by value, `pop(i)` by index (default last), `del lst[i]`, or `clear()`.
+**Explanation:** remove raises ValueError if not found; pop returns removed item.
+**Example:**
+```python
+lst = [10, 20, 30, 20]
+lst.remove(20)   # removes first 20
+last = lst.pop() # 30
+```
+**Difficulty Level:** Basic
+**Interview Tips:** pop(-1) is O(1); pop(0) is O(n) due to shifting.
+
+**Question 5:** How do you iterate over a list?
+**Answer:** Direct iteration, indexing with range, or enumerate for index-value pairs.
+**Explanation:** Prefer direct `for item in lst` when index not needed.
+**Example:**
+```python
+colors = ["red", "green", "blue"]
+for i, color in enumerate(colors):
+    print(i, color)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Avoid range(len(lst)) when unnecessary—code smell in interviews.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What is list slicing and how does it behave?
+**Answer:** `lst[start:stop:step]` returns new list; omitting start/stop uses bounds; step can reverse.
+**Explanation:** Slicing creates shallow copy—nested objects still shared.
+**Example:**
+```python
+nums = [0, 1, 2, 3, 4, 5]
+print(nums[1:4])     # [1, 2, 3]
+print(nums[::-1])    # reversed copy
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** `lst[:]` shallow copies list—useful before mutating while preserving original.
+
+**Question 2:** What is the difference between shallow and deep copy for lists?
+**Answer:** Shallow copy duplicates list structure but shares nested objects; deepcopy recursively copies all levels.
+**Explanation:** Assignment `b = a` shares same list object; `a.copy()` or `list(a)` shallow copies top level.
+**Example:**
+```python
+import copy
+a = [[1, 2], [3, 4]]
+b = a.copy()
+c = copy.deepcopy(a)
+b[0].append(99)
+print(a)  # [[1, 2, 99], [3, 4]]
+print(c[0])  # [1, 2] unchanged
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Always draw diagram of shared inner lists for shallow copy.
+
+**Question 3:** How do list comprehensions work?
+**Answer:** `[expr for item in iterable if condition]` builds list in one expression.
+**Explanation:** Faster and more readable than map/filter loops for simple transforms.
+**Example:**
+```python
+squares = [x**2 for x in range(10)]
+evens = [x for x in range(10) if x % 2 == 0]
+matrix = [[i*j for j in range(3)] for i in range(3)]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know generator equivalent: `(x**2 for x in range(10))` saves memory.
+
+**Question 4:** Why is modifying a list while iterating dangerous?
+**Answer:** Adding/removing shifts indices, causing skipped elements or unexpected behavior.
+**Explanation:** Iterate over copy, use list comprehension filter, or walk backwards when deleting by index.
+**Example:**
+```python
+nums = [1, 2, 3, 4, 5]
+nums = [n for n in nums if n % 2 != 0]  # safe filter
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Classic bug: remove in loop—interviewers may ask you to spot it live.
+
+**Question 5:** How do you sort a list?
+**Answer:** `sorted(lst)` returns new sorted list; `lst.sort()` sorts in place; both accept `key` and `reverse`.
+**Explanation:** Sort is stable in Python—equal elements preserve relative order.
+**Example:**
+```python
+words = ["banana", "pie", "Washington"]
+words.sort(key=len)
+print(sorted(words, key=str.lower))
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Tuples sort by first element then second—key function essential for custom ordering.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** What is the time complexity of common list operations?
+**Answer:** Index access O(1); append amortized O(1); insert/pop at front O(n); search O(n); sort O(n log n).
+**Explanation:** CPython over-allocates for append amortization; know Big-O for system design discussions.
+**Example:**
+```python
+from collections import deque
+dq = deque()  # O(1) appendleft/pop left
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Recommend deque for queue/stack at both ends.
+
+**Question 2:** Explain list multiplication pitfalls.
+**Answer:** `[obj] * n` repeats references, not copies—mutable inner objects aliased across slots.
+**Explanation:** Famous bug: `[[0]*3]*3` creates three refs to same inner list.
+**Example:**
+```python
+# Bug:
+grid = [[0] * 3] * 3
+grid[0][0] = 1  # entire column 0 becomes 1
+
+# Fix:
+grid = [[0] * 3 for _ in range(3)]
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** This question appears constantly—have fix memorized.
+
+**Question 3:** How does bisect module support sorted lists?
+**Answer:** `bisect.insort` maintains sorted order on insert; binary search O(log n) locate.
+**Explanation:** Alternative to resorting or linear scan for maintaining ordered sequences.
+**Example:**
+```python
+import bisect
+sorted_list = [1, 3, 4, 7]
+bisect.insort(sorted_list, 5)  # [1, 3, 4, 5, 7]
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** bisect requires list already sorted—document invariant.
+
+**Question 4:** Compare lists vs arrays (array module, NumPy).
+**Answer:** list holds arbitrary Python objects; array/NumPy store homogeneous C types with compact memory and vectorized ops.
+**Explanation:** Use NumPy for numeric computation; list for general-purpose heterogeneous data.
+**Example:**
+```python
+import array
+int_array = array.array("i", [1, 2, 3])  # typed C ints
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** NumPy views vs copies—separate advanced topic if data science role.
+
+**Question 5:** What are views vs copies in slicing (NumPy vs list)?
+**Answer:** Python list slices always copy; NumPy slices may be views sharing memory.
+**Explanation:** Don't assume list slice is view—modifying slice won't affect original (for top-level elements).
+**Example:**
+```python
+a = [1, 2, 3, 4]
+b = a[1:3]
+b[0] = 99
+print(a)  # [1, 2, 3, 4] unchanged
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Clarify nested mutability still shared even in list slice shallow copy.
+
+#### Common Interview Traps
+- `[[0]*3]*3` mutable multiplication bug.
+- append vs extend confusion.
+- Modifying list during iteration.
+- Assuming list slice is a view like NumPy.
+
+#### Real-world Applications
+- Task queues, result aggregation, dynamic menus, batch processing buffers, matrix representation (list of lists), and in-memory caches.
+
+#### Follow-up Questions Interviewers May Ask
+- Implement two-pointer techniques on lists.
+- When would you use deque instead of list?
+- How do you flatten a nested list?
+- Explain stable sort with a practical example.
+
+---
+
+### List Methods
+
+#### Concept Explanation
+List methods mutate the list in place (except when returning a value like pop) and are invoked on the list object. Key groups include adding/removing elements, sorting/reversing, counting/finding, and copying. Methods return None for mutating ops— a common source of bugs.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** What is the difference between `append()` and `extend()`?
+**Answer:** `append` adds single element; `extend` adds each element from an iterable.
+**Explanation:** extend flattens one level; append nests iterables as one item.
+**Example:**
+```python
+a = [1, 2]
+a.append([3, 4])    # [1, 2, [3, 4]]
+b = [1, 2]
+b.extend([3, 4])    # [1, 2, 3, 4]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Also mention `+=` on lists behaves like extend.
+
+**Question 2:** What does `pop()` do?
+**Answer:** Removes and returns item at index (default -1, the last element).
+**Explanation:** Empty list pop raises IndexError.
+**Example:**
+```python
+stack = [1, 2, 3]
+top = stack.pop()     # 3, stack=[1,2]
+first = stack.pop(0)  # 1, stack=[2]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Stack use pop(); queue at front use deque.popleft().
+
+**Question 3:** What does `sort()` return?
+**Answer:** `None`—it sorts the list in place and returns nothing usable.
+**Explanation:** Chaining `.sort()` result causes bugs: `lst = lst.sort()` sets lst to None.
+**Example:**
+```python
+nums = [3, 1, 4]
+result = nums.sort()
+print(result)  # None
+print(nums)    # [1, 3, 4]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Use sorted() when you need new list and keep original.
+
+**Question 4:** How do `index()` and `count()` work?
+**Answer:** `index(x)` returns first index of value (ValueError if missing); `count(x)` counts occurrences.
+**Explanation:** Optional start/stop bounds for index search.
+**Example:**
+```python
+lst = [1, 2, 3, 2, 1]
+print(lst.index(2))   # 1
+print(lst.count(2))   # 2
+```
+**Difficulty Level:** Basic
+**Interview Tips:** For membership only, `in` is clearer than index in try/except.
+
+**Question 5:** What do `reverse()` and `reversed()` do?
+**Answer:** `lst.reverse()` reverses in place, returns None; `reversed(lst)` returns iterator over reversed sequence without mutating.
+**Explanation:** Use slicing `[::-1]` for reversed copy without mutating original.
+**Example:**
+```python
+nums = [1, 2, 3]
+nums.reverse()
+print(nums)  # [3, 2, 1]
+print(list(reversed([1, 2, 3])))  # [3, 2, 1]
+```
+**Difficulty Level:** Basic
+**Interview Tips:** reversed works on any sequence; reverse is list-only method.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** Explain `sort(key=..., reverse=...)`.
+**Answer:** `key` function transforms elements before comparison; `reverse=True` descending order.
+**Explanation:** Sort is stable—multiple keys via tuple: `key=lambda x: (x[1], x[0])`.
+**Example:**
+```python
+students = [("Alice", 90), ("Bob", 85), ("Charlie", 90)]
+students.sort(key=lambda s: (-s[1], s[0]))
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Schwartzian transform built-in via key—no manual decorate-sort-undecorate.
+
+**Question 2:** What does `copy()` vs `[:]` vs `list()` produce?
+**Answer:** All create shallow copies of the list; nested objects still shared.
+**Explanation:** Equivalent for top-level duplication; deepcopy needed for nested independence.
+**Example:**
+```python
+a = [1, [2, 3]]
+b = a.copy()
+b[1].append(4)
+print(a)  # [1, [2, 3, 4]]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** copy() most readable; [:] idiomatic but less clear to beginners.
+
+**Question 3:** How does `clear()` compare to `del lst[:]`?
+**Answer:** Both remove all elements; clear() is explicit method; del slice also empties list.
+**Explanation:** clear() more readable; both O(n) to release references.
+**Example:**
+```python
+lst = [1, 2, 3]
+lst.clear()
+print(lst)  # []
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Reusing cleared list vs creating new []—cleared list keeps same object id.
+
+**Question 4:** What is `remove()` behavior with duplicates?
+**Answer:** Removes first matching occurrence only; ValueError if not found.
+**Explanation:** Loop remove for all matches is error-prone—use list comp filter instead.
+**Example:**
+```python
+lst = [1, 2, 2, 3]
+lst.remove(2)   # [1, 2, 3] — only first 2 removed
+lst = [x for x in lst if x != 2]  # remove all 2s
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Never remove all duplicates with while item in lst: lst.remove(item) without care.
+
+**Question 5:** How does `insert()` affect performance?
+**Answer:** Insert at index i is O(n) due to shifting elements; append at end is amortized O(1).
+**Explanation:** Frequent front inserts suggest deque instead of list.
+**Example:**
+```python
+from collections import deque
+dq = deque([2, 3])
+dq.appendleft(1)  # O(1)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know amortized analysis for append—interviewer may probe.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** Why do mutating methods return None?
+**Answer:** Python design avoids chaining ambiguity and signals in-place mutation vs functional style returning new objects.
+**Explanation:** Contrast with str methods returning new str because str is immutable.
+**Example:**
+```python
+# Wrong:
+# sorted_list = items.sort()
+
+# Right:
+items.sort()
+# or
+sorted_list = sorted(items)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Same applies to list.reverse(), random.shuffle().
+
+**Question 2:** How does TimSort exploit existing order in sort()?
+**Answer:** Python's sort is TimSort—a hybrid stable merge/insertion sort optimized for partially ordered real-world data.
+**Explanation:** O(n log n) worst case, often faster on nearly sorted input; exploits runs in data.
+**Example:**
+```python
+# Nearly sorted data sorts faster than random
+data = list(range(10000))
+data.sort()  # highly optimized path
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention stability and galloping mode if discussing algorithm depth.
+
+**Question 3:** Thread-safety of list methods in CPython.
+**Answer:** Individual bytecode ops are atomic due to GIL, but compound operations (check-then-pop) are not thread-safe without locks.
+**Explanation:** Race conditions possible in multi-threaded list mutation—use queue.Queue or locks.
+**Example:**
+```python
+import threading
+lock = threading.Lock()
+with lock:
+    shared_list.append(item)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** GIL protects op-level, not logic-level atomicity.
+
+**Question 4:** Custom sort with cmp (legacy) vs key (modern).
+**Answer:** Python 3 removed cmp parameter; use key or functools.cmp_to_key for old-style comparators.
+**Explanation:** key-based sort is faster and clearer—cmp_to_key bridges legacy code.
+**Example:**
+```python
+from functools import cmp_to_key
+def compare(a, b):
+    return (a > b) - (a < b)
+sorted(items, key=cmp_to_key(compare))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention Python 2 cmp removal as migration note if legacy context.
+
+**Question 5:** Memory implications of list over-allocation on append.
+**Answer:** CPython lists over-allocate capacity to amortize append cost; memory may exceed len(list).
+**Explanation:** sys.getsizeof includes allocated slots not just len; pop doesn't always shrink capacity immediately.
+**Example:**
+```python
+import sys
+lst = []
+for i in range(1000):
+    lst.append(i)
+print(len(lst), sys.getsizeof(lst))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** trim not built-in—create new list or use array/deque if memory critical.
+
+#### Common Interview Traps
+- Assigning result of sort()/reverse() (None).
+- remove during forward iteration missing elements.
+- insert(0, x) in loop causing O(n²) performance.
+- Expecting extend to deep-copy nested structures.
+
+#### Real-world Applications
+- Maintaining sorted leaderboards (bisect + insort), undo stacks (pop), batch buffers (extend), deduplication pipelines (filter + clear), and priority preprocessing (sort with key).
+
+#### Follow-up Questions Interviewers May Ask
+- Implement a stack using list methods.
+- Write a function to merge two sorted lists.
+- How would you remove duplicates preserving order?
+- Explain why sort is stable and give a use case.
+
+---
+
+### Tuples
+
+#### Concept Explanation
+Tuples are ordered, immutable sequences written with parentheses (or comma syntax). They support indexing, slicing, and iteration like lists but cannot be modified after creation. Tuples are hashable when all elements are hashable, making them usable as dict keys and set members.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you create a tuple?
+**Answer:** Comma-separated values in parentheses: `(1, 2, 3)` or `1, 2, 3`; single-element tuple needs trailing comma: `(1,)`.
+**Explanation:** Parentheses are optional; comma creates tuple.
+**Example:**
+```python
+t1 = (1, 2, 3)
+t2 = 1, 2, 3
+single = (42,)    # not (42) which is int
+```
+**Difficulty Level:** Basic
+**Interview Tips:** `(42)` is int, `(42,)` is tuple—classic syntax trap.
+
+**Question 2:** Are tuples mutable?
+**Answer:** No. Tuples are immutable—you cannot add, remove, or reassign elements.
+**Explanation:** Rebinding a name to a new tuple is allowed; the tuple object itself doesn't change.
+**Example:**
+```python
+t = (1, 2, 3)
+# t[0] = 10  # TypeError
+t = (10, 2, 3)  # rebind name to new tuple
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Nested mutable objects inside tuples CAN change—important nuance.
+
+**Question 3:** How do you access tuple elements?
+**Answer:** Indexing `t[i]`, slicing `t[start:stop]`, unpacking, and iteration.
+**Explanation:** Same sequence protocol as lists for read operations.
+**Example:**
+```python
+point = (10, 20, 30)
+x, y, z = point
+print(point[0], point[-1])
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Unpacking works in for loops: `for x, y in points:`.
+
+**Question 4:** Why use tuples instead of lists?
+**Answer:** Immutability signals fixed data, enables hashing, and can be slightly more memory-efficient.
+**Explanation:** Use for coordinates, DB records, function returns with fixed structure.
+**Example:**
+```python
+RGB = (255, 128, 0)
+locations = {(0, 0): "origin", (1, 1): "corner"}
+```
+**Difficulty Level:** Basic
+**Interview Tips:** "Immutable record" is the soundbite interviewers want.
+
+**Question 5:** Can tuples contain duplicate values?
+**Answer:** Yes. Tuples allow duplicates like lists.
+**Explanation:** Immutability does not imply uniqueness of elements.
+**Example:**
+```python
+t = (1, 1, 2, 2, 3)
+print(t.count(1))  # 2
+```
+**Difficulty Level:** Basic
+**Interview Tips:** count and index methods exist on tuples too.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** When is a tuple hashable?
+**Answer:** When all elements are hashable (no mutable list/dict/set inside).
+**Explanation:** Unhashable tuple cannot be dict key or set element.
+**Example:**
+```python
+hash((1, 2, 3))        # OK
+# hash(([1, 2], 3))    # TypeError
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** `(1, [2, 3])` is tuple but unhashable—nested mutability trap.
+
+**Question 2:** What is tuple unpacking?
+**Answer:** Assigning tuple elements to multiple variables in one statement; starred unpacking captures rest.
+**Explanation:** Used in function returns, swap idiom, and parsing structured data.
+**Example:**
+```python
+a, b, *rest = (1, 2, 3, 4, 5)
+print(a, b, rest)  # 1 2 [3, 4, 5]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Function `return a, b` actually returns tuple `(a, b)`.
+
+**Question 3:** Compare tuple vs list performance and memory.
+**Answer:** Tuples are slightly smaller and faster to create/access due to fixed size in CPython; lists better for dynamic growth.
+**Explanation:** Micro-optimization rarely matters; choose by semantics first.
+**Example:**
+```python
+import sys
+print(sys.getsizeof((1, 2, 3)))  # typically smaller than [1, 2, 3]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** NamedTuple/dataclass often replace raw tuples in modern code.
+
+**Question 4:** What is `namedtuple`?
+**Answer:** Factory from collections creating tuple subclass with named fields for readable attribute access.
+**Explanation:** Immutable, memory-efficient alternative to simple class or dict for records.
+**Example:**
+```python
+from collections import namedtuple
+Point = namedtuple("Point", ["x", "y"])
+p = Point(10, 20)
+print(p.x, p.y)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Python 3.7+ dataclass(frozen=True) is often preferred today.
+
+**Question 5:** How does tuple immutability affect containing mutable objects?
+**Answer:** Tuple cannot change which objects it references, but mutable objects inside can be modified in place.
+**Explanation:** Immutability is shallow—inner list can grow without changing tuple's identity or length of reference slots.
+**Example:**
+```python
+t = ([1, 2], 3)
+t[0].append(99)
+print(t)  # ([1, 2, 99], 3)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Draw shallow vs deep immutability diagram.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How are tuples represented in CPython?
+**Answer:** Fixed-size array of PyObject pointers; size determined at creation; no overallocation like lists.
+**Explanation:** Single-element tuple and small tuples may be cached/reused in some cases.
+**Example:**
+```python
+a = (1, 2)
+b = (1, 2)
+print(a == b)  # True; don't rely on `is` for tuple value equality
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Interning of literals is implementation detail—use ==.
+
+**Question 2:** Explain tuple packing and unpacking in function calls.
+**Answer:** `*args` collects positional args into tuple; `**kwargs` collects keywords into dict.
+**Explanation:** Unpacking with `*tuple` expands into positional arguments in calls.
+**Example:**
+```python
+def add(a, b, c):
+    return a + b + c
+
+args = (1, 2, 3)
+print(add(*args))  # 6
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Order matters; too many/ few args raise TypeError.
+
+**Question 3:** When to use NamedTuple vs dataclass vs TypedDict?
+**Answer:** NamedTuple: immutable lightweight records; dataclass: mutable/frozen with methods; TypedDict: dict shape typing without runtime class.
+**Explanation:** Choose based on mutability, methods needed, and JSON-like vs object semantics.
+**Example:**
+```python
+from typing import TypedDict
+class UserTD(TypedDict):
+    name: str
+    age: int
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** TypedDict values still mutable at runtime—typing aid only.
+
+**Question 4:** Tuple as dict keys in caching/memoization.
+**Answer:** Hashable tuples of arguments memoize function results in manual caches or `@lru_cache`.
+**Explanation:** Lists as args fail hashing; convert to tuple for cache key.
+**Example:**
+```python
+from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def paths(start, end):
+    return compute(start, end)
+
+paths(1, 2)  # ints hash fine
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** lru_cache requires hashable args—know limitation.
+
+**Question 5:** Compare tuple concatenation and multiplication semantics.
+**Answer:** `t1 + t2` creates new tuple; `t * n` repeats elements; no in-place += on immutable... actually tuple supports += creating new object rebound if variable used... Wait: `t += (4,)` works because it rebinds like `t = t + (4,)` creating new tuple.
+**Explanation:** += on immutable creates new object and rebinds name—id may change.
+**Example:**
+```python
+t = (1, 2)
+old_id = id(t)
+t += (3, 4)
+print(id(t) != old_id)  # True — new tuple
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** += on tuple rebinds; += on list mutates in place—contrast explicitly.
+
+#### Common Interview Traps
+- Forgetting comma in single-element tuple.
+- Assuming full deep immutability with nested lists.
+- Using list as dict key instead of tuple.
+- `(42)` vs `(42,)` confusion.
+
+#### Real-world Applications
+- Function return of multiple values, coordinates, DB row snapshots, cache keys, immutable config records, and dictionary composite keys.
+
+#### Follow-up Questions Interviewers May Ask
+- Swap two variables using tuple unpacking.
+- How do dataclasses compare to namedtuple?
+- Can you sort a list of tuples? How?
+- Why are tuples used in `@lru_cache`?
+
+---
+
+### Sets
+
+#### Concept Explanation
+Sets are unordered collections of unique, hashable elements. They support fast membership testing, union, intersection, difference, and symmetric difference operations. Python also provides `frozenset`, an immutable hashable set usable as dict keys or nested set members.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you create a set?
+**Answer:** Curly braces `{1, 2, 3}` or `set(iterable)`; empty set must use `set()`, not `{}` (which is empty dict).
+**Explanation:** Sets automatically deduplicate elements on creation.
+**Example:**
+```python
+s = {1, 2, 3, 3, 2}
+empty = set()
+print(s)  # {1, 2, 3}
+```
+**Difficulty Level:** Basic
+**Interview Tips:** `{}` is dict—memorize `set()` for empty set.
+
+**Question 2:** Are sets ordered?
+**Answer:** Sets are unordered; no indexing or slicing.
+**Explanation:** Python 3.7+ dicts preserve insertion order, but sets remain unordered collections.
+**Example:**
+```python
+s = {3, 1, 2}
+print(s)  # order not guaranteed (may appear arbitrary)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Don't rely on iteration order in assertions or tests.
+
+**Question 3:** How do you add and remove elements?
+**Answer:** `add(x)` adds one element; `remove(x)` raises KeyError if missing; `discard(x)` silently ignores missing; `pop()` removes arbitrary element.
+**Explanation:** choose discard for idempotent removal.
+**Example:**
+```python
+s = {1, 2}
+s.add(3)
+s.discard(99)  # no error
+s.remove(1)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** pop() on empty set raises KeyError.
+
+**Question 4:** How do you check membership?
+**Answer:** Use `in` or `not in`—average O(1) time complexity.
+**Explanation:** Much faster than list membership O(n) for large collections.
+**Example:**
+```python
+users = {"alice", "bob", "charlie"}
+print("alice" in users)  # True
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Convert list to set when doing many membership checks.
+
+**Question 5:** What elements can a set contain?
+**Answer:** Only hashable, immutable elements: numbers, strings, tuples (if hashable), frozensets.
+**Explanation:** Lists and dicts cannot be set elements because they are unhashable.
+**Example:**
+```python
+valid = {1, "a", (1, 2), frozenset([3])}
+# invalid = {[1, 2]}  # TypeError
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Hashability requirement links sets and dict keys.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** Explain set operations: union, intersection, difference.
+**Answer:** Union `|` or `.union()`: all elements in either; intersection `&`: both; difference `-`: in first not second; symmetric diff `^`: in one but not both.
+**Explanation:** Operators and methods available; both accept multiple iterables.
+**Example:**
+```python
+a, b = {1, 2, 3}, {2, 3, 4}
+print(a | b)   # {1, 2, 3, 4}
+print(a & b)   # {2, 3}
+print(a - b)   # {1}
+print(a ^ b)   # {1, 4}
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know both operator and method forms for whiteboard flexibility.
+
+**Question 2:** What is a frozenset?
+**Answer:** Immutable set; hashable; supports set ops returning new frozensets.
+**Explanation:** Use as dict key or element of another set; function default immutable collections.
+**Example:**
+```python
+fs = frozenset([1, 2, 3])
+cache = {fs: "result"}
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Never use mutable set as dict key or default arg.
+
+**Question 3:** How do you remove duplicates from a list preserving order?
+**Answer:** `list(dict.fromkeys(lst))` (3.7+) or manual loop with seen set.
+**Explanation:** set(lst) loses order; dict.fromkeys preserves insertion order.
+**Example:**
+```python
+items = [3, 1, 2, 3, 1, 4]
+unique = list(dict.fromkeys(items))  # [3, 1, 2, 4]
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Classic interview coding question—know order-preserving solution.
+
+**Question 4:** Compare set vs list for membership and uniqueness.
+**Answer:** Set enforces uniqueness and O(1) lookup; list allows duplicates and O(n) lookup.
+**Explanation:** Trade-off: sets use more memory per element hash table overhead.
+**Example:**
+```python
+# Bad for large n repeated checks:
+# if item in big_list
+
+# Good:
+big_set = set(big_list)
+if item in big_set:
+    ...
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Quantify n threshold only if asked—conceptual answer suffices.
+
+**Question 5:** What does `issubset` and `issuperset` do?
+**Answer:** `a <= b` or `a.issubset(b)`: all elements of a in b; superset is reverse.
+**Explanation:** Proper subset `<` excludes equality.
+**Example:**
+```python
+a, b = {1, 2}, {1, 2, 3}
+print(a <= b)   # True
+print(a < b)    # True (proper subset)
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Set comparison operators mirror math set theory notation.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How are sets implemented in CPython?
+**Answer:** Hash table like dict but without values—only keys with dummy entries for deleted slots.
+**Explanation:** Load factor triggers resize; iteration order reflects hash table layout, not insertion order.
+**Example:**
+```python
+# Implementation detail explains lack of order guarantee
+s = set(range(1000))
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Relate to dict implementation for unified mental model.
+
+**Question 2:** Set comprehension syntax and use cases.
+**Answer:** `{expr for item in iterable if cond}` builds set directly with deduplication.
+**Explanation:** Cleaner than set(generator) wrapper for inline construction.
+**Example:**
+```python
+words = ["Hello", "hello", "World"]
+lower_unique = {w.lower() for w in words}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Dict comp `{k:v}`, set comp `{x}`, list comp `[x]`—know all three.
+
+**Question 3:** Multiset/bag operations when sets aren't enough.
+**Answer:** Sets ignore multiplicity; use Counter from collections for element counts.
+**Explanation:** Set ops answer uniqueness questions; Counter handles frequency.
+**Example:**
+```python
+from collections import Counter
+c1 = Counter("aabbc")
+c2 = Counter("abcc")
+print(c1 & c2)  # intersection min counts
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention Counter when interviewer asks "set with duplicates."
+
+**Question 4:** Thread-safe set operations.
+**Answer:** Standard set is not thread-safe for concurrent mutations; use locks or queue patterns.
+**Explanation:** GIL doesn't protect read-modify-write race on shared set across threads.
+**Example:**
+```python
+import threading
+lock = threading.Lock()
+with lock:
+    shared_set.add(item)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** For concurrent uniqueness, consider database unique constraint.
+
+**Question 5:** Set algebra in data processing (ETL example).
+**Answer:** Compare ID sets between systems: new = current - previous, removed = previous - current, common = current & previous.
+**Explanation:** Efficient reconciliation of user IDs, SKUs, permissions between snapshots.
+**Example:**
+```python
+prev_users = {"u1", "u2", "u3"}
+curr_users = {"u2", "u3", "u4"}
+new_users = curr_users - prev_users       # {'u4'}
+churned = prev_users - curr_users         # {'u1'}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Real-world set ops impress more than abstract definitions.
+
+#### Common Interview Traps
+- `{}` creating empty dict not set.
+- Putting unhashable list in set.
+- Expecting set to preserve insertion order.
+- Using set to dedupe list of dicts (unhashable).
+
+#### Real-world Applications
+- Tag systems, permission sets, deduplication, graph neighbor sets, anomaly detection (symmetric difference), and blacklist/whitelist filtering.
+
+#### Follow-up Questions Interviewers May Ask
+- Find common elements in two lists efficiently.
+- Implement set intersection manually.
+- When would you use Counter over set?
+- Can sets be sorted? How?
+
+---
+
+### Dictionaries
+
+#### Concept Explanation
+Dictionaries are mutable mappings from hashable keys to arbitrary values, implemented as hash tables in CPython. They provide average O(1) lookup, insertion, and deletion. Since Python 3.7, dicts preserve insertion order as an official language guarantee.
+
+#### 5 Basic Questions and Answers
+
+**Question 1:** How do you create a dictionary?
+**Answer:** `{key: value}`, `dict(key=value)`, or `dict(iterable_of_pairs)`.
+**Explanation:** Keys must be hashable; values can be any type.
+**Example:**
+```python
+user = {"name": "Alice", "age": 30}
+empty = {}
+also = dict(name="Bob", age=25)
+```
+**Difficulty Level:** Basic
+**Interview Tips:** dict comprehensions `{k: v for ...}` show intermediate fluency.
+
+**Question 2:** How do you access dictionary values?
+**Answer:** `d[key]` raises KeyError if missing; `d.get(key, default)` returns default safely.
+**Explanation:** Choose get when absence is expected; bracket access when absence is bug.
+**Example:**
+```python
+scores = {"Alice": 90, "Bob": 85}
+print(scores["Alice"])
+print(scores.get("Charlie", 0))
+```
+**Difficulty Level:** Basic
+**Interview Tips:** `d.get(k, default)` vs `d[k]` is a top interview distinction.
+
+**Question 3:** How do you add or update entries?
+**Answer:** Assign `d[key] = value`; updates existing key or inserts new one.
+**Explanation:** Single syntax for insert and update—no separate add method.
+**Example:**
+```python
+config = {"debug": False}
+config["debug"] = True
+config["host"] = "localhost"
+```
+**Difficulty Level:** Basic
+**Interview Tips:** Mention update() for merging multiple mappings.
+
+**Question 4:** How do you iterate over a dictionary?
+**Answer:** `.keys()`, `.values()`, `.items()` for respective views; iterate dict directly for keys.
+**Explanation:** Views are dynamic—reflect dict changes during iteration (with care).
+**Example:**
+```python
+for key, value in user.items():
+    print(f"{key}: {value}")
+```
+**Difficulty Level:** Basic
+**Interview Tips:** items() avoids repeated key lookup in loop body.
+
+**Question 5:** How do you remove items from a dict?
+**Answer:** `del d[key]`, `d.pop(key)`, `d.popitem()` (LIFO 3.7+), or `d.clear()`.
+**Explanation:** pop returns value; popitem removes and returns arbitrary/last inserted pair.
+**Example:**
+```python
+d = {"a": 1, "b": 2}
+val = d.pop("a")
+last = d.popitem()
+```
+**Difficulty Level:** Basic
+**Interview Tips:** popitem() useful for stack-like dict processing.
+
+#### 5 Intermediate Questions and Answers
+
+**Question 1:** What keys are allowed in a dictionary?
+**Answer:** Hashable keys: str, numbers, tuple (if hashable), frozenset; not list, dict, or set.
+**Explanation:** Key must maintain stable hash and equality contract.
+**Example:**
+```python
+valid = {(1, 2): "point", "name": "Ada"}
+# invalid = {[1, 2]: "x"}  # TypeError
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Custom class keys need __hash__ and __eq__ consistency.
+
+**Question 2:** Explain dict insertion order guarantee (3.7+).
+**Answer:** Iteration order matches insertion order; re-inserting key moves it to end (3.7+ behavior refined in 3.8).
+**Explanation:** Enables dict as ordered mapping without OrderedDict for most cases.
+**Example:**
+```python
+d = {}
+d["a"] = 1
+d["b"] = 2
+d["a"] = 3  # moves 'a' to end in 3.8+
+list(d.keys())
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** OrderedDict still useful for move_to_end and equality ignoring order.
+
+**Question 3:** How does `setdefault` work?
+**Answer:** If key exists, return value; else set key to default (or callable result) and return default.
+**Explanation:** Idiom for building nested dicts or grouping without double lookup.
+**Example:**
+```python
+groups = {}
+for word in ["apple", "banana", "apricot"]:
+    groups.setdefault(word[0], []).append(word)
+# {'a': ['apple', 'apricot'], 'b': ['banana']}
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** defaultdict often cleaner for grouping patterns.
+
+**Question 4:** What is dictionary merging in Python 3.9+?
+**Answer:** `d1 | d2` and `d1 |= d2` merge dicts; later keys override earlier on conflict.
+**Explanation:** Replaces verbose `{**d1, **d2}` in modern code.
+**Example:**
+```python
+defaults = {"debug": False, "host": "localhost"}
+overrides = {"debug": True}
+config = defaults | overrides  # debug True
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Know ** unpacking still needed for merging into function calls.
+
+**Question 5:** Compare dict vs list for lookup-heavy workloads.
+**Answer:** Dict O(1) average key lookup; list O(n) scan; dict uses more memory.
+**Explanation:** Index-based list access O(1) but requires integer keys known upfront—not arbitrary keys.
+**Example:**
+```python
+# O(n) scan
+users_list = [("alice", 90), ("bob", 85)]
+# O(1) lookup
+users_dict = {"alice": 90, "bob": 85}
+```
+**Difficulty Level:** Intermediate
+**Interview Tips:** Mention hash collisions degrade to O(n) worst case theoretically.
+
+#### 5 Advanced Questions and Answers
+
+**Question 1:** How does hash collision handling work in CPython dicts?
+**Answer:** Open addressing with probing; each slot stores key+value; resize when load factor exceeded.
+**Explanation:** Hash randomization (PYTHONHASHSEED) mitigates hash collision DoS attacks.
+**Example:**
+```python
+# All keys hash to same bucket pathological case rare with hash randomization
+d = {str(i): i for i in range(10000)}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Mention keys must compare equal iff hashes equal (for equal objects).
+
+**Question 2:** Explain defaultdict, Counter, and OrderedDict.
+**Answer:** defaultdict auto-creates missing keys; Counter counts hashables; OrderedDict remembers order with extra ops (mostly legacy post-3.7).
+**Explanation:** collections module extends dict for specialized patterns.
+**Example:**
+```python
+from collections import defaultdict, Counter
+dd = defaultdict(list)
+dd["key"].append(1)
+counts = Counter("mississippi")
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Counter.most_common(n) frequent in interview coding.
+
+**Question 3:** What are dict comprehensions and inversion patterns?
+**Answer:** `{k: v for ...}` constructs dicts; swap keys/values with comprehension if values unique/hashable.
+**Explanation:** Inverting non-unique values loses information—handle collisions explicitly.
+**Example:**
+```python
+original = {"a": 1, "b": 2}
+inverted = {v: k for k, v in original.items()}
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** Warn about duplicate values on inversion.
+
+**Question 4:** How do you merge nested dictionaries deeply?
+**Answer:** Standard merge is shallow; deep merge requires recursion or libraries like deepmerge.
+**Explanation:** `{**d1, **d2}` overwrites nested dict entirely, not recursive merge.
+**Example:**
+```python
+def deep_merge(a, b):
+    result = a.copy()
+    for k, v in b.items():
+        if k in result and isinstance(result[k], dict) and isinstance(v, dict):
+            result[k] = deep_merge(result[k], v)
+        else:
+            result[k] = v
+    return result
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** YAML/config merge interviews love this question.
+
+**Question 5:** Dict views, copying, and shallow merge pitfalls.
+**Answer:** `.keys()`, `.values()`, `.items()` are dynamic views; `copy()` shallow; nested objects shared between copies.
+**Explanation:** Mutating nested list in copied dict affects original if not deep copied.
+**Example:**
+```python
+import copy
+a = {"items": [1, 2]}
+b = a.copy()
+b["items"].append(3)
+print(a["items"])  # [1, 2, 3]
+c = copy.deepcopy(a)
+```
+**Difficulty Level:** Advanced
+**Interview Tips:** dict comprehension copy `{k: v for k,v in d.items()}` also shallow.
+
+#### Common Interview Traps
+- Using mutable object as dict key.
+- KeyError vs get() misuse.
+- Assuming shallow merge deep-merges nested dicts.
+- Modifying dict size during iteration over same dict (RuntimeError in 3.x).
+
+#### Real-world Applications
+- JSON/object parsing, caches/memoization, frequency counting, configuration maps, graph adjacency lists, and database row keyed lookups.
+
+#### Follow-up Questions Interviewers May Ask
+- Implement LRU cache using OrderedDict or dict.
+- How do you sort a dict by values?
+- Explain why dict keys must be hashable.
+- Compare dict to database index conceptually.
+
+---
+
+*End of Level 1 Basics — Part A*
+
